@@ -235,6 +235,11 @@ public class Beatmap : IBeatmap
         TimingPoints = BeatmapTools.TimingPointProcessor(timingPoints, this);
         InlineStoryBoardCommand = BeatmapTools.StoryCommandProcessor(inlineStoryboardCommand, this);
     }
+
+    public override string ToString()
+    {
+        return $"{Metadata.Artist} - {Metadata.Title} [{Metadata.Version}]";
+    }
     public List<TimingPoint> TimingPoints { get; set; }
     public List<BreakTime> BreakTimes { get; } = new();
     public StoryBoardCommandBase[]? InlineStoryBoardCommand { get; private set; }
