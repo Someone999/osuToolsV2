@@ -25,7 +25,7 @@ public class Spinner : IHitObject
         EndTime = double.Parse(data[5]);
         if (data.Length > 6)
         {
-            HitSample = HitSample.Parse(data.Skip(6).ToArray());
+            HitSample = HitSample.Parse(data[6]);
         }
 
     }

@@ -3,7 +3,7 @@ using osuToolsV2.Graphic;
 
 namespace osuToolsV2.Beatmaps.HitObjects.Mania;
 
-public class ManiaHold : IManiaNote
+public class ManiaHold : IManiaHitObject
 {
 
     public OsuPixel Position { get; set; }
@@ -20,7 +20,7 @@ public class ManiaHold : IManiaNote
         string hitSampleStr = data[5].Substring(colonIdx + 1);
         EndTime = double.Parse(endTimeStr);
         HitSample = HitSample.Parse(hitSampleStr);
-
+        Column = (int) Math.Floor(Position.X * BeatmapColumn / 512d);
     }
     public int Column { get; set; }
     public int BeatmapColumn { get; set; }

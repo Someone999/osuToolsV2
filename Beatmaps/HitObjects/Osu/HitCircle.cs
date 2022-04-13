@@ -24,7 +24,7 @@ public class HitCircle : IHitObject
        
        if (data.Length > 5)
        {
-           HitSample = HitSample.Parse(data.Skip(5).ToArray());
+           HitSample = HitSample.Parse(data[5]);
        }
        
     }

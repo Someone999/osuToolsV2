@@ -44,7 +44,7 @@ public class Beatmap : IBeatmap
         {
             throw new InvalidBeatmapException();
         }
-        Metadata.BeatmapFileVersion = int.Parse(m.Value);
+        Metadata.BeatmapFileVersion = int.Parse(m.Groups[1].Value);
         List<string> inlineStoryboardCommand = new List<string>();
         List<string> hitObjects = new List<string>();
         List<string> timingPoints = new List<string>();
@@ -59,11 +59,12 @@ public class Beatmap : IBeatmap
             if (line.StartsWith("[") && line.EndsWith("]"))
             {
                 currentSection = (DataSection)Enum.Parse(typeof(DataSection), line.TrimStart('[').TrimEnd(']'));
+                continue;
             }
             string key = "";
             string value = "";
             string[] commaSplit = line.Split(':');
-            if (commaSplit.Length > 0)
+            if (commaSplit.Length > 1)
             {
                 key = commaSplit[0];
                 value = commaSplit[1];
@@ -99,7 +100,7 @@ public class Beatmap : IBeatmap
                             CountdownType = (CountdownType)Enum.Parse(typeof(CountdownType), value);
                             break;
                         case "SampleSet":
-                            SampleSet = (SampleSet)int.Parse(value);
+                            SampleSet = (SampleSet)Enum.Parse(typeof(SampleSet), value);
                             break;
                         case "StackLeniency":
                             StackLeniency = double.Parse(value);

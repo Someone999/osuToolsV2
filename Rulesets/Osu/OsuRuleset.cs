@@ -16,19 +16,19 @@ public class OsuRuleset : Ruleset
     public override IScoreInfo CreateScoreInfo() => new OsuScoreInfo();
     public override IHitObject CreateHitObject(IBeatmap beatmap, string[] data)
     {
-        OriginalHitObjectType type = (OriginalHitObjectType)int.Parse(data[2]);
+        OriginalHitObjectType type = (OriginalHitObjectType)int.Parse(data[3]);
         IHitObject? hitObject = null;
-        switch (type)
+        if ((type & OriginalHitObjectType.HitCircle) != 0)
         {
-            case OriginalHitObjectType.HitCircle:
-                hitObject = new HitCircle();
-                break;
-            case OriginalHitObjectType.Slider:
-                hitObject = new Slider();
-                break;
-            case OriginalHitObjectType.Spinner:
-                hitObject = new Spinner();
-                break;
+            hitObject = new HitCircle();
+        }
+        else if ((type & OriginalHitObjectType.Slider) != 0)
+        {
+            hitObject = new Slider();
+        }
+        else if ((type & OriginalHitObjectType.Spinner) != 0)
+        {
+            hitObject = new Spinner();
         }
 
         if (hitObject == null)

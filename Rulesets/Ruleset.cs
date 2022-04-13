@@ -13,38 +13,49 @@ namespace osuToolsV2.Rulesets;
 public abstract class Ruleset
 {
     
-    private static Dictionary<string, Ruleset> _rulesets = new Dictionary<string, Ruleset>();
+    private static Dictionary<string, Ruleset>? _rulesets;
+    public static readonly object StaticLock = new object();
     private static void InitRulesets()
     {
-        _rulesets = new Dictionary<string, Ruleset>();
-        Assembly asm = typeof(Ruleset).Assembly;
-        Type[] types = asm.GetTypes();
-        foreach (var type in types)
+        lock (StaticLock)
         {
-            if (type.BaseType != typeof(Ruleset))
+            _rulesets = new Dictionary<string, Ruleset>();
+            Assembly asm = typeof(Ruleset).Assembly;
+            Type[] types = asm.GetTypes();
+            foreach (var type in types)
             {
-                continue;
-            }
-            try
-            {
-                Ruleset? ruleset = (Ruleset?)Activator.CreateInstance(type);
-                if (ruleset == null)
+                if (type.BaseType != typeof(Ruleset))
                 {
                     continue;
                 }
-                _rulesets.Add(ruleset.Name, ruleset);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error when creating ruleset. Please read log file to get more information.");
-                FileLogger.GlobalFileLogger.LogException("Ruleset::InitRulesets",
-                    $"Error occured when creating ruleset {type.FullName} {e.Message}");
+                try
+                {
+                    Ruleset? ruleset = (Ruleset?)Activator.CreateInstance(type);
+                    if (ruleset == null)
+                    {
+                        continue;
+                    }
+                    _rulesets.Add(ruleset.Name, ruleset);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error when creating ruleset. Please read log file to get more information.");
+                    FileLogger.GlobalFileLogger.LogException("Ruleset::InitRulesets",
+                        $"Error occured when creating ruleset {type.FullName} {e.Message}");
+                }
             }
         }
     }
 
-    public static Ruleset FromRulesetName(string name) => _rulesets[name];
-    public static Ruleset FromLegacyRuleset(LegacyRuleset ruleset) => _rulesets[ruleset.ToString()];
+    public static Ruleset FromRulesetName(string name)
+    {
+        if (_rulesets != null)
+            return _rulesets[name];
+        _rulesets = new Dictionary<string, Ruleset>();
+        InitRulesets();
+        return _rulesets[name];
+    }
+    public static Ruleset FromLegacyRuleset(LegacyRuleset ruleset) => FromRulesetName(ruleset.ToString());
     
     public abstract string Name { get; }
     public abstract Mod[] AvailableMods {get;}

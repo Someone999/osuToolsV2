@@ -22,7 +22,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override string Description => "自动按键，只需要定位";
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[]
+        public override Type[] ConflictMods => new[]
         {
             typeof(AutoPilotMod), typeof(AutoPlayMod), typeof(CinemaMod), typeof(SuddenDeathMod),
             typeof(PerfectMod), typeof(NoFailMod)

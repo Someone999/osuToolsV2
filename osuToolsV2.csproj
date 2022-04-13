@@ -5,7 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>10.0</LangVersion>
-        <OutputType>Exe</OutputType>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>Someone999</Authors>
+        <RepositoryUrl>https://github.com/Someone999/osuToolsV2</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>

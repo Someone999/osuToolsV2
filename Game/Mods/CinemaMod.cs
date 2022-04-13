@@ -23,7 +23,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override string Description =>  "看不到Note的全自动游玩";
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[]
+        public override Type[] ConflictMods => new[]
         {
             typeof(RelaxMod), typeof(AutoPilotMod), typeof(SpunOutMod), typeof(AutoPlayMod), typeof(SuddenDeathMod),
             typeof(PerfectMod)

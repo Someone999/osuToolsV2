@@ -26,16 +26,15 @@ public class ManiaRuleset : Ruleset
     public override IScoreInfo CreateScoreInfo() => new ManiaScoreInfo();
     public override IHitObject CreateHitObject(IBeatmap beatmap, string[] data)
     {
-        OriginalHitObjectType type = (OriginalHitObjectType)int.Parse(data[2]);
-        IManiaNote? maniaNote = null;
-        switch (type)
+        OriginalHitObjectType type = (OriginalHitObjectType)int.Parse(data[3]);
+        IManiaHitObject? maniaNote = null;
+        if ((type & OriginalHitObjectType.HitCircle) != 0)
         {
-            case OriginalHitObjectType.HitCircle:
-                maniaNote = new ManiaHit();
-                break;
-            case OriginalHitObjectType.ManiaHold:
-                maniaNote = new ManiaHold();
-                break;
+            maniaNote = new ManiaHit();
+        }
+        else if ((type & OriginalHitObjectType.ManiaHold) != 0)
+        {
+            maniaNote = new ManiaHold();
         }
 
         if (maniaNote == null)

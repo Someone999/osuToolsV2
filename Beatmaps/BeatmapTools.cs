@@ -24,7 +24,12 @@ public static class BeatmapTools
             {
                 continue;
             }
-            StoryBoardEventType type = (StoryBoardEventType)int.Parse(splitData[0]);
+            if (string.IsNullOrEmpty(str) || str.StartsWith("//"))
+            {
+                continue;
+            }
+            
+            StoryBoardEventType type = (StoryBoardEventType)Enum.Parse(typeof(StoryBoardEventType),splitData[0]);
             switch (type)
             {
                 case StoryBoardEventType.Background:
@@ -60,6 +65,10 @@ public static class BeatmapTools
         List<TimingPoint> timingPoints = new List<TimingPoint>();
         foreach (var line in lines)
         {
+            if (string.IsNullOrEmpty(line))
+            {
+                continue;
+            }
             timingPoints.Add(new TimingPoint(line));
         }
         return timingPoints;

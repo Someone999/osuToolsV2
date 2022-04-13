@@ -22,7 +22,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override string Description => "无论如何都不会失败";
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[] { typeof(SuddenDeathMod), typeof(PerfectMod) };
+        public override Type[] ConflictMods => new[] { typeof(SuddenDeathMod), typeof(PerfectMod) };
         /// <inheritdoc />
         public LegacyGameMod LegacyMod => LegacyGameMod.NoFail;
     }

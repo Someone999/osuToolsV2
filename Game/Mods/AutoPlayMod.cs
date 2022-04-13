@@ -24,7 +24,7 @@ namespace osuToolsV2.Game.Mods
         public override string Description => "全自动游玩";
         /// <inheritdoc />
 
-        public override Type[] ConflictMods => new Type[]
+        public override Type[] ConflictMods => new[]
         {
             typeof( RelaxMod), typeof( AutoPilotMod), typeof( SpunOutMod), typeof( CinemaMod), typeof( SuddenDeathMod),
             typeof( PerfectMod)

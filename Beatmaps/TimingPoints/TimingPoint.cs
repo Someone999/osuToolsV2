@@ -83,7 +83,7 @@ namespace osuToolsV2.Beatmaps.TimingPoints
         /// <summary>
         ///     是否省略Mania或Taiko的第一条小节线
         /// </summary>
-        public bool OmitFirstBarline { get; private set; }
+        public bool OmitFirstBarLine { get; private set; }
 
         /// <summary>
         ///     滑条速度，单位为百分比
@@ -134,7 +134,7 @@ namespace osuToolsV2.Beatmaps.TimingPoints
                 }
                 if (i == 3)
                 {
-                    OmitFirstBarline = true;
+                    OmitFirstBarLine = true;
                 }
             }
         }
@@ -146,7 +146,7 @@ namespace osuToolsV2.Beatmaps.TimingPoints
         public override string ToString()
         {
             return
-                $"Offset:{Offset} BPM:{Bpm} BeatLength:{BeatLength} Uninherited:{Inherited} KiaiTime:{KiaiTime} OmitFirstBarline:{OmitFirstBarline}";
+                $"Offset:{Offset} BPM:{Bpm} BeatLength:{BeatLength} Inherited:{Inherited} KiaiTime:{KiaiTime} OmitFirstBarLine:{OmitFirstBarLine}";
         }
     }
 }

@@ -22,10 +22,11 @@ public class HitSample
         string additionSampleStr = data[1];
         string idxStr = data[2], volumeStr = data[3];
         
-        hitSample.NormalSet = (SampleSet)Enum.Parse(typeof(SampleSet),normalSampleStr);
-        hitSample.NormalSet = (SampleSet)Enum.Parse(typeof(SampleSet),additionSampleStr);
-        hitSample.Index = int.Parse(idxStr);
-        hitSample.Volume = int.Parse(volumeStr);
+        hitSample.NormalSet = string.IsNullOrEmpty(normalSampleStr)? SampleSet.None : (SampleSet)Enum.Parse(typeof(SampleSet),normalSampleStr);
+        hitSample.AdditionSet = string.IsNullOrEmpty(additionSampleStr)? SampleSet.None :(SampleSet)Enum.Parse(typeof(SampleSet),additionSampleStr);
+        
+        hitSample.Index = string.IsNullOrEmpty(idxStr) ? 0 : int.Parse(idxStr);
+        hitSample.Volume =string.IsNullOrEmpty(volumeStr) ? 100 : int.Parse(volumeStr);
         hitSample.FileName = data[4];
         return hitSample;
     }

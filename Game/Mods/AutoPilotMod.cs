@@ -21,7 +21,7 @@ namespace osuToolsV2.Game.Mods
         public override string Description => "光标会自动移动，只需要按键";
         /// <inheritdoc />
         public override ModType ModType => ModType.Automation;
-        public override Type[] ConflictMods => new Type[]
+        public override Type[] ConflictMods => new[]
         {
             typeof(RelaxMod), typeof(SpunOutMod), typeof(AutoPlayMod), typeof(CinemaMod), typeof(SuddenDeathMod),
             typeof(PerfectMod), typeof(NoFailMod)

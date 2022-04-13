@@ -24,19 +24,19 @@ public class CatchRuleset : Ruleset
     public override IScoreInfo CreateScoreInfo() => new CatchScoreInfo();
     public override IHitObject CreateHitObject(IBeatmap beatmap, string[] data)
     {
-        OriginalHitObjectType type = (OriginalHitObjectType)int.Parse(data[2]);
+        OriginalHitObjectType type = (OriginalHitObjectType)int.Parse(data[3]);
         IHitObject? hitObject = null;
-        switch (type)
+        if ((type & OriginalHitObjectType.HitCircle) != 0)
         {
-            case OriginalHitObjectType.HitCircle:
-                hitObject = new Fruit();
-                break;
-            case OriginalHitObjectType.Slider:
-                hitObject = new JuiceStream();
-                break;
-            case OriginalHitObjectType.Spinner:
-                hitObject = new Banana();
-                break;
+            hitObject = new Fruit();
+        }
+        else if ((type & OriginalHitObjectType.Slider) != 0)
+        {
+            hitObject = new JuiceStream();
+        }
+        else if ((type & OriginalHitObjectType.Spinner) != 0)
+        {
+            hitObject = new Banana();
         }
 
         if (hitObject == null)

@@ -20,7 +20,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override string Description => "所有的难度参数都降低一点，并有3次满血复活的机会";
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[] { typeof(HardRockMod) };
+        public override Type[] ConflictMods => new[] { typeof(HardRockMod) };
         /// <inheritdoc />
         public LegacyGameMod LegacyMod => LegacyGameMod.Easy;
     }

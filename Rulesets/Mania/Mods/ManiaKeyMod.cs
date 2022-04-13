@@ -26,6 +26,6 @@ namespace osuToolsV2.Rulesets.Mania.Mods
         /// <inheritdoc />
         public virtual LegacyGameMod LegacyMod => LegacyGameMod.KeyMod;
 
-        public override Type[] ConflictMods => new Type[] { typeof(ManiaKeyMod) };
+        public override Type[] ConflictMods => new[] { typeof(ManiaKeyMod) };
     }
 }

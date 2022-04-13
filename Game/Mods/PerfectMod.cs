@@ -18,7 +18,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override string Description => "感受痛苦吧";
         /// <inheritdoc />
-        public override Type[] ConflictMods =>new Type[] {typeof(SuddenDeathMod),typeof(NoFailMod) };
+        public override Type[] ConflictMods =>new[] {typeof(SuddenDeathMod),typeof(NoFailMod) };
 
         public LegacyGameMod LegacyMod => LegacyGameMod.Perfect;
     }

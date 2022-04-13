@@ -20,7 +20,7 @@ namespace osuToolsV2.Game.Mods
         /// <summary>
         ///     与这个Mod相冲突的Mod
         /// </summary>
-        public override Type[] ConflictMods => new Type[] { typeof(PerfectMod), typeof(NoFailMod) };
+        public override Type[] ConflictMods => new[] { typeof(PerfectMod), typeof(NoFailMod) };
         /// <inheritdoc />
         public LegacyGameMod LegacyMod => LegacyGameMod.SuddenDeath;
 

@@ -4,7 +4,7 @@ using osuToolsV2.Graphic;
 
 namespace osuToolsV2.Beatmaps.HitObjects.Mania;
 
-public class ManiaHit : IManiaNote
+public class ManiaHit : IManiaHitObject
 {
 
     public OsuPixel Position { get; set; }
@@ -20,6 +20,7 @@ public class ManiaHit : IManiaNote
         StartTime = hitCircle.StartTime;
         HitSound = hitCircle.HitSound;
         HitSample = hitCircle.HitSample;
+        Column = (int) Math.Floor(Position.X * BeatmapColumn / 512d);
     }
     public int Column { get; set; }
     public int BeatmapColumn { get; set; }

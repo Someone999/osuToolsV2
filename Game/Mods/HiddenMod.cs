@@ -21,7 +21,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override string Description => "渐隐";
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[] { typeof(FadeInMod) };
+        public override Type[] ConflictMods => new[] { typeof(FadeInMod) };
         /// <inheritdoc />
         public LegacyGameMod LegacyMod => LegacyGameMod.Hidden;
     }

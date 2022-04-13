@@ -20,7 +20,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override string Description => "所有难度参数都提高一点";
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[] { typeof(EasyMod) };
+        public override Type[] ConflictMods => new[] { typeof(EasyMod) };
         /// <inheritdoc />
         public LegacyGameMod LegacyMod => LegacyGameMod.HardRock;
     }

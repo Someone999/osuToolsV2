@@ -21,7 +21,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override ModType ModType => ModType.Automation;
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[]
+        public override Type[] ConflictMods => new[]
         {
             typeof(AutoPilotMod), typeof(AutoPlayMod), typeof(CinemaMod), typeof(SuddenDeathMod),
             typeof(PerfectMod), typeof(NoFailMod)

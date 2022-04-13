@@ -2,7 +2,7 @@
 
 public enum LegacyRuleset
 {
-    None,
+    None = -1,
     Osu,
     Taiko,
     Catch,

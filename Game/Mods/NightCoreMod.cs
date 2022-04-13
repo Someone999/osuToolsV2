@@ -23,7 +23,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public double TimeRate => 1.5d;
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[] { typeof(DoubleTimeMod), typeof(HalfTimeMod) };
+        public override Type[] ConflictMods => new[] { typeof(DoubleTimeMod), typeof(HalfTimeMod) };
         /// <inheritdoc />
         public LegacyGameMod LegacyMod => LegacyGameMod.NightCore;
     }

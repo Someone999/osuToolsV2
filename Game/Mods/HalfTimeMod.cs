@@ -21,7 +21,7 @@ namespace osuToolsV2.Game.Mods
         /// <inheritdoc />
         public override string Description => "0.75倍速";
         /// <inheritdoc />
-        public override Type[] ConflictMods => new Type[] { typeof(DoubleTimeMod), typeof(NightCoreMod) };
+        public override Type[] ConflictMods => new[] { typeof(DoubleTimeMod), typeof(NightCoreMod) };
         /// <inheritdoc />
         public double TimeRate => 0.75d;
         /// <inheritdoc />
