@@ -146,15 +146,7 @@ namespace osuToolsV2.Database.Score
         /// </returns>
         public OsuBeatmap? GetOsuBeatmap()
         {
-            try
-            {
-                return _currentDb.Beatmaps?.FindByMd5(BeatmapMd5);
-            }
-            catch (BeatmapNotFoundException)
-            {
-                return null;
-            }
-
+            return _currentDb.Beatmaps?.FindByMd5(BeatmapMd5);
         }
 
         /// <summary>

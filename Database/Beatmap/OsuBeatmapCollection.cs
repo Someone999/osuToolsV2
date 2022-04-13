@@ -112,7 +112,6 @@ namespace osuToolsV2.Database.Beatmap
                 }
             }
 
-            if (b.Count == 0) throw new BeatmapNotFoundException("找不到指定的谱面");
             return b;
         }
 
@@ -125,15 +124,22 @@ namespace osuToolsV2.Database.Beatmap
         public List<OsuBeatmap> Find(int id, BeatmapIdType type = BeatmapIdType.BeatmapId)
         {
             var lst = new List<OsuBeatmap>();
-            if (id != -1)
-                if (type == BeatmapIdType.BeatmapId)
-                    foreach (var beatmap in Beatmaps)
-                        if (beatmap.BeatmapId == id)
-                            lst.Add(beatmap);
-            if (type == BeatmapIdType.BeatmapSetId)
-                foreach (var beatmap in Beatmaps)
-                    if (beatmap.BeatmapSetId == id)
-                        lst.Add(beatmap);
+            if (id == -1)
+            {
+                return new List<OsuBeatmap>();
+            }
+            switch (type)
+            {
+                case BeatmapIdType.BeatmapId:
+                    lst.AddRange(from beatmap in _beatmaps where beatmap.BeatmapId == id select beatmap);
+                    break;
+                case BeatmapIdType.BeatmapSetId:
+                    lst.AddRange(from beatmap in _beatmaps where beatmap.BeatmapSetId == id select beatmap);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+            
             return lst;
         }
 
@@ -142,12 +148,9 @@ namespace osuToolsV2.Database.Beatmap
         /// </summary>
         /// <param name="md5"></param>
         /// <returns></returns>
-        public OsuBeatmap FindByMd5(string md5)
+        public OsuBeatmap? FindByMd5(string md5)
         {
-            foreach (var beatmap in Beatmaps)
-                if (beatmap.Metadata.Md5Hash == md5)
-                    return beatmap;
-            throw new BeatmapNotFoundException($"找不到MD5为{md5}的谱面。");
+            return Beatmaps.FirstOrDefault(beatmap => beatmap.Metadata.Md5Hash == md5);
         }
 
         /// <summary>
@@ -162,14 +165,23 @@ namespace osuToolsV2.Database.Beatmap
             var bc = new OsuBeatmapCollection();
             foreach (var b in _beatmaps)
             {
-                if (option == BeatmapFindOption.Contains)
-                    if (b.Ruleset.LegacyRuleset == ruleset)
-                        if (!bc.Contains(b))
+                switch (option)
+                {
+                    case BeatmapFindOption.Contains:
+                        if (b.Ruleset.LegacyRuleset == ruleset && !bc.Contains(b))
+                        {
                             bc.Add(b);
-                if (option == BeatmapFindOption.NotContains)
-                    if (b.Ruleset.LegacyRuleset != ruleset)
-                        if (!bc.Contains(b))
+                        }
+                        break;
+                    case BeatmapFindOption.NotContains:
+                        if (b.Ruleset.LegacyRuleset != ruleset && !bc.Contains(b))
+                        {
                             bc.Add(b);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(option), option, null);
+                }
             }
 
             return bc;
