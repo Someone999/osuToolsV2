@@ -9,7 +9,6 @@
         <Authors>Someone999</Authors>
         <RepositoryUrl>https://github.com/Someone999/osuToolsV2</RepositoryUrl>
         <PackageVersion>1.0.10</PackageVersion>
-        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
