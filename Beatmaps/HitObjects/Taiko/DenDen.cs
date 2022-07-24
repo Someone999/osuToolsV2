@@ -16,4 +16,9 @@ public class DenDen : IHitObject
     {
         throw new NotSupportedException("You need to use GenericTaikoHitParser.Parse");
     }
+    public OriginalHitObjectType OriginalHitObjectType { get; internal set; }
+    public string ToFileFormat()
+    {
+        return $"{Position.X},{Position.Y},{StartTime},{(int)HitSound},{EndTime},{HitSample.ToFileFormat()}";
+    }
 }

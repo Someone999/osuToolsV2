@@ -8,4 +8,5 @@ public class DifficultyAttributes
     public double OverallDifficulty { get; set; }
     public double SliderMultiplier { get; set; } = 0;
     public double SliderTickRate { get; set; } = 0;
+    public double? Stars { get; set; }
 }

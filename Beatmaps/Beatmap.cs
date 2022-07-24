@@ -66,10 +66,11 @@ public class Beatmap : IBeatmap
             string[] commaSplit = line.Split(':');
             if (commaSplit.Length > 1)
             {
-                key = commaSplit[0];
-                value = commaSplit[1];
+                key = commaSplit[0].Trim();
+                value = commaSplit[1].Trim();
             }
-            
+            Metadata.BeatmapFileName = Path.GetFileName(beatmapFile);
+            Metadata.BeatmapFullPath = beatmapFile;
             switch (currentSection)
             {
                 case DataSection.Events:
@@ -195,10 +196,10 @@ public class Beatmap : IBeatmap
                             Metadata.Tags = value;
                             break;
                         case "BeatmapID":
-                            BeatmapId = int.Parse(value);
+                            Metadata.BeatmapId = int.Parse(value);
                             break;
                         case "BeatmapSetID":
-                            BeatmapSetId = int.Parse(value);
+                            Metadata.BeatmapSetId = int.Parse(value);
                             break;
                     }
                     break;
@@ -245,31 +246,58 @@ public class Beatmap : IBeatmap
     public StoryBoardCommandBase[]? InlineStoryBoardCommand { get; private set; }
     public BeatmapMetadata Metadata { get; set; } = new BeatmapMetadata();
     public DifficultyAttributes DifficultyAttributes { get; set; } = new DifficultyAttributes();
-    public int? BeatmapId { get; set; }
-    public int? BeatmapSetId { get; set; }
-    public double? Stars { get; set; }
     public List<IHitObject>? HitObjects { get; set; }
     public Ruleset Ruleset { get; set; } = new EmptyRuleset();
-    public double Bpm { get; set; }
+    private double GetMostCommonBpm()
+    {
+        Dictionary<double, int> timingPointsTimes = new Dictionary<double, int>();
+        var unInheritedTimingPoints = TimingPoints.Where(p => !p.Inherited).ToArray();
+        if (unInheritedTimingPoints.Length == 1)
+        {
+            return unInheritedTimingPoints[0].Bpm;
+        }
+        foreach (var timingPoint in unInheritedTimingPoints)
+        {
+            double roundedBpm = Math.Round(timingPoint.Bpm, 2);
+            if (!timingPointsTimes.ContainsKey(roundedBpm))
+            {
+                timingPointsTimes.Add(roundedBpm, 1);
+            }
+            else
+            {
+                timingPointsTimes[roundedBpm]++;
+            }
+        }
+        var orderedBpmList = from kv in timingPointsTimes orderby kv.Value descending select kv;
+        double mostCommonBpm = orderedBpmList.FirstOrDefault().Key;
+        return mostCommonBpm;
+    }
+
+    private double _internalBpm = 0;
+
+    public double Bpm
+    {
+        get => _internalBpm = GetMostCommonBpm();
+        set => _internalBpm = value;
+    }
     public CountdownType CountdownType { get; set; }
     public double StackLeniency { get; set; }
     public double AudioLeadIn { get; set; }
     public TimeSpan PreviewTime { get; set; }
     public SampleSet SampleSet { get; set; }
-    public bool LetterboxInBreaks { get; set; } = false;
+    public bool? LetterboxInBreaks { get; set; } = false;
     public SpecialStyle SpecialStyle { get; set; } = SpecialStyle.None;
-    public bool EpilepsyWarning { get; set; } = false;
-    public double CountdownOffset { get; set; } = 0;
-    public bool UseSkinSprites { get; set; }
+    public bool? EpilepsyWarning { get; set; } = false;
+    public double? CountdownOffset { get; set; }
+    public bool? UseSkinSprites { get; set; }
     public string? SkinPreference { get; set; }
-    public OverlayPosition OverlayPosition { get; set; }
+    public OverlayPosition? OverlayPosition { get; set; }
     public bool WidescreenStoryboard { get; set; }
-    public bool SamplesMatchPlaybackRate { get; set; }
+    public bool? SamplesMatchPlaybackRate { get; set; }
     public List<int> Bookmarks { get; set; } = new();
     public double DistanceSpacing { get; set; }
     public double BeatDivisor { get; set; } = 4;
     public double GridSize { get; set; } = 32;
     public double TimelineZoom { get; set; } = 1;
-    public bool HasVideo { get; internal set; }
-    
+
 }

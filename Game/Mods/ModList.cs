@@ -148,15 +148,15 @@ namespace osuToolsV2.Game.Mods
 
                     foreach (var modeAvailableMod in ruleset.AvailableMods)
                     {
-                        if (modeAvailableMod is ILegacyMod legacyMod)
+                        if (modeAvailableMod is not ILegacyMod legacyMod)
                         {
-                            if (legacyMod.LegacyMod == legacy)
-                            {
-                                list.Add(modeAvailableMod, throwWhenError);
-                            }
+                            continue;
+                        }
+                        if (legacyMod.LegacyMod == legacy)
+                        {
+                            list.Add(modeAvailableMod, throwWhenError);
                         }
                     }
-
                 }
             }
 
@@ -164,7 +164,19 @@ namespace osuToolsV2.Game.Mods
         }
 
         public Mod[] ToArray() => _mods.ToArray();
-
+        
+        public LegacyGameMod ToLegacyMod()
+        {
+            LegacyGameMod legacyGameMod = LegacyGameMod.None;
+            foreach (var mod in _mods)
+            {
+                if (mod is ILegacyMod legacyMod)
+                {
+                    legacyGameMod |= legacyMod.LegacyMod;
+                }
+            }
+            return legacyGameMod;
+        }
 
     }
 }

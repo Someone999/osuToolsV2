@@ -35,6 +35,8 @@
         /// </summary>
         Audio = 5,
         
+        Sample = Audio,
+        
         /// <summary>
         ///  动画
         /// </summary>

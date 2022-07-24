@@ -138,7 +138,11 @@ namespace osuToolsV2.StoryBoard
                 var nLine = line.TrimStart();
                 string[] parts = ArgumentParser(nLine);
                 string type = parts[0];
-                StoryBoardCommandBase currentCommand = CommandSelector(type, parts, parentCommand);
+                StoryBoardCommandBase? currentCommand = CommandSelector(type, parts, parentCommand);
+                if (currentCommand == null)
+                {
+                    continue;
+                }
                 if (space == 0)
                 {
                     parentCommand = currentCommand;
@@ -167,11 +171,11 @@ namespace osuToolsV2.StoryBoard
             return commands.ToArray();
         }
 
-        StoryBoardCommandBase CommandSelector(string cmd, string[] data, StoryBoardCommandBase? parent)
+        StoryBoardCommandBase? CommandSelector(string cmd, string[] data, StoryBoardCommandBase? parent)
         {
             StoryBoardCommandBase? command = ParseMainCommand(cmd, data);
             command ??= ParseSubStoryBoardCommand(cmd, data, parent);
-            return command ?? throw new InvalidOperationException();
+            return command;//?? throw new InvalidOperationException();
         }
 
         MainStoryBoardCommand? ParseMainCommand(string type, string[] data)
@@ -179,6 +183,9 @@ namespace osuToolsV2.StoryBoard
             var origin = (StoryBoardOrigin)Enum.Parse(typeof(StoryBoardOrigin),data[2]);
             switch (type)
             {
+                case "Colour":
+                case "3":
+                    return null;
                 case "Sprite":
                 case "4":
                     return new Sprite

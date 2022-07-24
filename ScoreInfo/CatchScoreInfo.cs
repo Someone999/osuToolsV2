@@ -1,5 +1,6 @@
 ﻿using osuToolsV2.Beatmaps;
 using osuToolsV2.Beatmaps.HitObjects;
+using osuToolsV2.Game.Mods;
 
 namespace osuToolsV2.ScoreInfo;
 
@@ -14,7 +15,16 @@ public class CatchScoreInfo : IScoreInfo
     public int CountMiss { get; set; }
     public int? Score { get; set; }
     public int MaxCombo { get; set; }
+    private bool? _perfect;
+
+    public bool Perfect
+    {
+        get => _perfect ??= CountKatu == 0 && CountMiss == 0;
+        set => _perfect = value;
+    }
+    public int Combo { get; set; }
     public IBeatmap? Beatmap { get; set; }
+    public ModList? Mods { get; set; }
     public double GetAccuracy()
     {
         int all = CountKatu + Count300 + Count100 + Count50 + CountMiss;
@@ -41,5 +51,20 @@ public class CatchScoreInfo : IScoreInfo
         int juiceStreamCount = (from i in hitObjs where i.HitObjectType == HitObjectType.JuiceStream select i).Count();
         int bananaCount = (from i in hitObjs where i.HitObjectType == HitObjectType.Banana select i).Count();
         return total + juiceStreamCount - bananaCount;
+    }
+    public void Clear()
+    {
+        CountGeki = 0;
+        Count300 = 0;
+        CountKatu = 0;
+        Count100 = 0;
+        Count50 = 0;
+        CountMiss = 0;
+        Combo = 0;
+        MaxCombo = 0;
+        if (Score != null)
+        {
+            Score = 0;
+        }
     }
 }

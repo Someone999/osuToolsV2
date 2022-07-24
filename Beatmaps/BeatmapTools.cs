@@ -33,14 +33,18 @@ public static class BeatmapTools
             switch (type)
             {
                 case StoryBoardEventType.Background:
-                    b.Metadata.BackgroundFileName = splitData[2].Trim('"');
+                    b.Metadata.BackgroundInfo.FileName = splitData[2].Trim('"');
+                    b.Metadata.BackgroundInfo.X = double.Parse(splitData[3]);
+                    b.Metadata.BackgroundInfo.Y = double.Parse(splitData[4]);
                     break;
                 case StoryBoardEventType.Video:
-                    b.Metadata.VideoFileName = splitData[2].Trim('"');
-                    b.HasVideo = true;
+                    b.Metadata.VideoInfo.StartTime = double.Parse(splitData[1]);
+                    b.Metadata.VideoInfo.FileName = splitData[2].Trim('"');
+                    b.Metadata.VideoInfo.X = double.Parse(splitData[3]);
+                    b.Metadata.VideoInfo.Y = double.Parse(splitData[4]);
                     break;
                 case StoryBoardEventType.BreakTime:
-                    b.BreakTimes.Add(new BreakTime(double.Parse(splitData[1]), double.Parse(splitData[1])));
+                    b.BreakTimes.Add(new BreakTime(double.Parse(splitData[1]), double.Parse(splitData[2])));
                     break;
                 default: realStoryCommand.Add(str);
                     break;

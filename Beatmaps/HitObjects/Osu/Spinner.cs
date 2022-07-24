@@ -22,11 +22,17 @@ public class Spinner : IHitObject
             HitSound = HitSound.Normal;
             throw new InvalidOperationException($"Can not process type {oriType}");
         }
+        OriginalHitObjectType = oriType;
         EndTime = double.Parse(data[5]);
         if (data.Length > 6)
         {
             HitSample = HitSample.Parse(data[6]);
         }
 
+    }
+    public OriginalHitObjectType OriginalHitObjectType { get; private set; }
+    public string ToFileFormat()
+    {
+        return $"{Position.X},{Position.Y},{StartTime},{(int)HitSound},{EndTime},{HitSample.ToFileFormat()}";
     }
 }

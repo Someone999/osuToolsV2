@@ -30,5 +30,11 @@ public class JuiceStream : IHitObject
         CurveType = slider.CurveType;
         Lenght = slider.Length;
         SlideTimes = slider.SlideTimes;
+        OriginalHitObjectType = slider.OriginalHitObjectType;
+    }
+    public OriginalHitObjectType OriginalHitObjectType { get; private set; }
+    public string ToFileFormat()
+    {
+        throw new NotSupportedException();
     }
 }

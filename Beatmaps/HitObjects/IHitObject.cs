@@ -11,4 +11,6 @@ public interface IHitObject
     HitSound HitSound { get; set;}
     HitSample HitSample { get; set;}
     void Parse(string[] data);
+    OriginalHitObjectType OriginalHitObjectType { get; }
+    string ToFileFormat();
 }

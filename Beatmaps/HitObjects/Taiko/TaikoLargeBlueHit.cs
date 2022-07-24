@@ -15,4 +15,9 @@ public class TaikoLargeBlueHit : ITaikoHit
     {
         throw new NotSupportedException();
     }
+    public OriginalHitObjectType OriginalHitObjectType { get; internal set; }
+    public string ToFileFormat()
+    {
+        return $"{Position.X},{Position.Y},{StartTime},{(int)OriginalHitObjectType},{(int)HitSound},{HitSample.ToFileFormat()}";
+    }
 }

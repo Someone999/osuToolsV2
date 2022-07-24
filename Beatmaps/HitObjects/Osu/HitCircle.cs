@@ -14,6 +14,7 @@ public class HitCircle : IHitObject
     public void Parse(string[] data)
     {
        HitObjectTools.GenericParse(this, data, out var oriType);
+       OriginalHitObjectType = oriType;
        if ((oriType & OriginalHitObjectType.HitCircle) == 0)
        {
            Position = OsuPixel.Empty;
@@ -21,12 +22,18 @@ public class HitCircle : IHitObject
            HitSound = HitSound.Normal;
            throw new InvalidOperationException($"Can not process type {oriType}");
        }
-       
+
        if (data.Length > 5)
        {
            HitSample = HitSample.Parse(data[5]);
        }
-       
     }
+    public OriginalHitObjectType OriginalHitObjectType { get; private set; }
+
+    public string ToFileFormat()
+    {
+        return $"{Position.X},{Position.Y},{StartTime},{(int)OriginalHitObjectType},{(int)HitSound},{HitSample.ToFileFormat()}";
+    }
+
 
 }

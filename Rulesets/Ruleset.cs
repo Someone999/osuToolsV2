@@ -109,19 +109,3 @@ public abstract class Ruleset
     public abstract IScoreInfo CreateScoreInfo();
     public abstract IHitObject CreateHitObject(IBeatmap beatmap, string[] data);
 }
-
-public class EmptyRuleset : Ruleset
-{
-
-    public override string Name => "None";
-    public override IScoreInfo CreateScoreInfo()
-    {
-        throw new NotSupportedException();
-    }
-    public override IHitObject CreateHitObject(IBeatmap beatmap, string[] data)
-    {
-        throw new NotSupportedException();
-    }
-    
-    public override Mod[] AvailableMods => new Mod[0];
-}

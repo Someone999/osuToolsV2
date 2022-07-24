@@ -16,4 +16,9 @@ public class Drumroll : IHitObject
     {
         throw new NotSupportedException("You need to use GenericTaikoHitParser.Parse");
     }
+    public OriginalHitObjectType OriginalHitObjectType { get; internal set; }
+    public string ToFileFormat()
+    {
+        throw new NotSupportedException();
+    }
 }

@@ -15,4 +15,9 @@ public class TaikoBlueHit : ITaikoHit
     {
         throw new NotSupportedException("You need to use GenericTaikoHitParser.Parse");
     }
+    public OriginalHitObjectType OriginalHitObjectType { get; internal set; }
+    public string ToFileFormat()
+    {
+        return $"{Position.X},{Position.Y},{StartTime},{(int)OriginalHitObjectType},{(int)HitSound},{HitSample.ToFileFormat()}";
+    }
 }

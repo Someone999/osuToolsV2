@@ -72,7 +72,9 @@ namespace osuToolsV2.GameInfo
                 throw new InvalidOperationException();
             }
             if (!File.Exists(file))
+            {
                 return new Dictionary<string, string>();
+            }
             Dictionary<string, string> tmpDictionary = new Dictionary<string, string>();
             string[] lines = File.ReadAllLines(file);
             int commentLines = 0;
@@ -102,13 +104,17 @@ namespace osuToolsV2.GameInfo
         }
         void SaveAsIni(string file = "OsuInfo.ini")
         {
-            if(!string.IsNullOrEmpty(ConfigFilePath))
+            if (!string.IsNullOrEmpty(ConfigFilePath))
+            {
                 File.WriteAllText(file,$"ConfigFilePath = {ConfigFilePath}");
+            }
         } 
         void ReadFromFile(string file = "OsuInfo.ini")
         {
             if (!File.Exists(file))
+            {
                 return;
+            }
             var tmp = ReadIniFile(file);
             if(tmp.ContainsKey("ConfigFilePath"))
             {
@@ -155,9 +161,13 @@ namespace osuToolsV2.GameInfo
         public void SetProperty(string propertyName, string value)
         {
             if (propertyName.StartsWith("#"))
+            {
                 throw new ArgumentException("属性名无效", nameof(propertyName));
+            }
             if (_dataDictionary.ContainsKey(propertyName))
+            {
                 _dataDictionary[propertyName] = value;
+            }
         }
         /// <summary>
         /// 获取所有的注释
@@ -180,10 +190,14 @@ namespace osuToolsV2.GameInfo
         public void Save(Stream stream)
         {
             if (stream is null)
+            {
                 throw new ArgumentNullException(nameof(stream), "Stream不能为null");
+            }
             StringBuilder builder = new StringBuilder();
             foreach (var data in _dataDictionary)
+            {
                 builder.AppendLine(data.Key.StartsWith("#Comment") ? data.Value : $"{data.Key} = {data.Value}");
+            }
             byte[] dataBytes = builder.ToString().ToBytes();
             stream.Write(dataBytes,0,dataBytes.Length);
         }

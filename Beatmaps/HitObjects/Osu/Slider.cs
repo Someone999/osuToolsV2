@@ -1,4 +1,5 @@
-﻿using osuToolsV2.Beatmaps.HitObjects.Sounds;
+﻿using System.Text.RegularExpressions;
+using osuToolsV2.Beatmaps.HitObjects.Sounds;
 using osuToolsV2.Graphic;
 
 namespace osuToolsV2.Beatmaps.HitObjects.Osu;
@@ -32,7 +33,7 @@ public class Slider : IHitObject
             HitSound = HitSound.Normal;
             throw new InvalidOperationException($"Can not process type {oriType}");
         }
-
+        OriginalHitObjectType = oriType;
         string[] sliderBasicInfo = data[5].Split('|');
         CurveType = sliderBasicInfo[0] switch
         {
@@ -55,19 +56,25 @@ public class Slider : IHitObject
             CurvePoints.Add(pixel);
         }
         SlideTimes = int.Parse(data[6]);
-        Length = int.Parse(data[7]);
+        Length = double.Parse(data[7]);
         
        // EdgeSounds are ignored.
        if (data.Length <= 8)
        {
            return;
        }
+       Regex hitSampleMatcher = new Regex(@"\d+:\d+:\d+:(?:.*?)?"); 
        foreach (var s in data)
        {
-           if (!s.Contains('|'))
+           if (hitSampleMatcher.IsMatch(s))
            {
                HitSample = HitSample.Parse(s);
            }
        }
+    }
+    public OriginalHitObjectType OriginalHitObjectType { get; private set; }
+    public string ToFileFormat()
+    {
+        throw new NotSupportedException();
     }
 }

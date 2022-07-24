@@ -22,5 +22,11 @@ public class Banana : IHitObject
         HitSound = spinner.HitSound;
         HitSample = spinner.HitSample;
         EndTime = spinner.EndTime;
+        OriginalHitObjectType = spinner.OriginalHitObjectType;
+    }
+    public OriginalHitObjectType OriginalHitObjectType { get; private set; }
+    public string ToFileFormat()
+    {
+        return $"{Position.X},{Position.Y},{StartTime},{(int)HitSound},{EndTime},{HitSample.ToFileFormat()}";
     }
 }

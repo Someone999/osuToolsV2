@@ -26,14 +26,14 @@ public static class GenericTaikoHitParser
         if (isWhistle || isClap)
         {
             taikoHit = isWFinish
-                ? new TaikoLargeBlueHit()
-                : new TaikoBlueHit();
+                ? new TaikoLargeBlueHit {OriginalHitObjectType = oriType}
+                : new TaikoBlueHit {OriginalHitObjectType = oriType};
         }
         else
         {
             taikoHit = isWFinish
-                ? new TaikoLargeRedHit()
-                : new TaikoRedHit();
+                ? new TaikoLargeRedHit(){OriginalHitObjectType = oriType}
+                : new TaikoRedHit(){OriginalHitObjectType = oriType};
         }
 
         taikoHit.Position = circle.Position;
@@ -59,7 +59,8 @@ public static class GenericTaikoHitParser
         return new Drumroll()
         {
             StartTime = slider.StartTime,
-            Length = slider.Length
+            Length = slider.Length,
+            OriginalHitObjectType = oriType
         };
     }
 
@@ -75,7 +76,8 @@ public static class GenericTaikoHitParser
         IHitObject denden = new DenDen()
         {
             StartTime = spinner.StartTime,
-            EndTime = spinner.EndTime
+            EndTime = spinner.EndTime,
+            OriginalHitObjectType = oriType
         };
         return denden;
     }

@@ -30,4 +30,9 @@ public class HitSample
         hitSample.FileName = data[4];
         return hitSample;
     }
+
+    public string ToFileFormat()
+    {
+        return $"{(int)NormalSet}:{(int)AdditionSet}:{Index}:{Volume}:{FileName ?? ""}";
+    }
 }

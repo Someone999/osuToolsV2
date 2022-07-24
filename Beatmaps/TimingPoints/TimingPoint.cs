@@ -113,10 +113,10 @@ namespace osuToolsV2.Beatmaps.TimingPoints
             return a.GetHashCode(a) == b.GetHashCode(b);
         }
         
-        public string ToOsuFormat()
+        public string ToFileFormat()
         {
             return
-                $"{Offset},{BeatLength},{Meter},{(int)SampleSet},{SampleIndex},{Volume},{(Inherited ? 1 : 0)},{_effect}";
+                $"{Offset},{BeatLength},{Meter},{(int)SampleSet},{SampleIndex},{Volume},{(Inherited ? 0 : 1)},{_effect}";
         }
 
         private void BitProcessor(int num)

@@ -1,5 +1,6 @@
 ﻿namespace osuToolsV2.Beatmaps.BreakTimes
 {
+
     public class BreakTime
     {
         public double StartTime { get; set; }
@@ -9,6 +10,11 @@
         {
             StartTime = startTime;
             EndTime = endTime;
+        }
+
+        public string ToFileFormat()
+        {
+            return $"2,{StartTime},{EndTime}";
         }
     }
 }

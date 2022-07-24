@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Text;
+using osuToolsV2.Beatmaps.HitObjects;
 using osuToolsV2.Game.Legacy;
 using osuToolsV2.Game.Mods;
 using osuToolsV2.GameInfo;
+using osuToolsV2.Writer;
 
 namespace osuToolsV2
 {
@@ -253,6 +255,21 @@ namespace osuToolsV2
         {
             encoding = encoding ?? Encoding.UTF8;
             return encoding.GetString(b);
+        }
+        
+        
+        public static void WriteKeyValuePairIfNotNull<T>(this IObjectWriter<T> objectWriter,string? key, object? val)
+        {
+            if (key == null || val == null)
+            {
+                return;
+            }
+            objectWriter.WriteKeyValuePair(key, val);
+        }
+
+       public static void WriteKeyValuePair<T>(this IObjectWriter<T> objectWriter, string key, object val)
+        {
+            objectWriter.Write($"{key}: {val}");
         }
     }
 }

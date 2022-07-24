@@ -21,6 +21,12 @@ public class ManiaHold : IManiaHitObject
         EndTime = double.Parse(endTimeStr);
         HitSample = HitSample.Parse(hitSampleStr);
         Column = (int) Math.Floor(Position.X * BeatmapColumn / 512d);
+        OriginalHitObjectType = oriType;
+    }
+    public OriginalHitObjectType OriginalHitObjectType { get; private set; }
+    public string ToFileFormat()
+    {
+        return $"{Position.X},{Position.Y},{StartTime},{(int)OriginalHitObjectType},{(int)HitSound},{EndTime}:{HitSample.ToFileFormat()}";
     }
     public int Column { get; set; }
     public int BeatmapColumn { get; set; }

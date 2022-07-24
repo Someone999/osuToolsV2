@@ -21,6 +21,12 @@ public class ManiaHit : IManiaHitObject
         HitSound = hitCircle.HitSound;
         HitSample = hitCircle.HitSample;
         Column = (int) Math.Floor(Position.X * BeatmapColumn / 512d);
+        OriginalHitObjectType = hitCircle.OriginalHitObjectType;
+    }
+    public OriginalHitObjectType OriginalHitObjectType { get; private set; }
+    public string ToFileFormat()
+    {
+        return $"{Position.X},{Position.Y},{StartTime},{(int)OriginalHitObjectType},{(int)HitSound},{HitSample.ToFileFormat()}";
     }
     public int Column { get; set; }
     public int BeatmapColumn { get; set; }

@@ -12,6 +12,6 @@ public class Animation : MainStoryBoardCommand
     public double FrameDelay { get; set; }
     public StoryBoardAnimationLoopType LoopType { get; set; }
 
-    /*public override string ToFileContent() =>
-        $"Animation,{Layer},{Origin},\"{FileName}\",{Position.X},{Position.Y},{FrameCount},{FrameDelay},{LoopType}";*/
+    public override string ToFileContent() =>
+        $"Animation,{Layer},{Origin},\"{FileName}\",{Position.X},{Position.Y},{FrameCount},{FrameDelay},{LoopType}";
 }
