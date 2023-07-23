@@ -1,15 +1,14 @@
-﻿using osuToolsV2.Beatmaps;
-using osuToolsV2.Beatmaps.HitObjects;
-using osuToolsV2.Beatmaps.HitObjects.Catch;
-using osuToolsV2.Game.Mods;
+﻿using osuToolsV2.Game.Mods;
 using osuToolsV2.Rulesets.Catch.Mods;
+using osuToolsV2.Rulesets.Catch.ScoreProcessor;
 using osuToolsV2.Rulesets.Legacy;
-using osuToolsV2.ScoreInfo;
+using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Rulesets.Catch;
 
 public class CatchRuleset : Ruleset
 {
+    private static readonly CatchScoreProcessor CatchScoreProcessor = new CatchScoreProcessor();
     public override string Name => "Catch";
     public override Mod[] AvailableMods => new Mod[]
     {
@@ -21,29 +20,10 @@ public class CatchRuleset : Ruleset
     };
     public override bool IsLegacyRuleset => true;
     public override LegacyRuleset? LegacyRuleset => Legacy.LegacyRuleset.Catch;
-    public override IScoreInfo CreateScoreInfo() => new CatchScoreInfo();
-    public override IHitObject CreateHitObject(IBeatmap beatmap, string[] data)
+    public override IScoreProcessor CreateScoreProcessor()
     {
-        OriginalHitObjectType type = (OriginalHitObjectType)int.Parse(data[3]);
-        IHitObject? hitObject = null;
-        if ((type & OriginalHitObjectType.HitCircle) != 0)
-        {
-            hitObject = new Fruit();
-        }
-        else if ((type & OriginalHitObjectType.Slider) != 0)
-        {
-            hitObject = new JuiceStream();
-        }
-        else if ((type & OriginalHitObjectType.Spinner) != 0)
-        {
-            hitObject = new Banana();
-        }
-
-        if (hitObject == null)
-        {
-            throw new InvalidOperationException($"Can not process type {type}.");
-        }
-        hitObject.Parse(data);
-        return hitObject;
+        return CatchScoreProcessor;
     }
+
+
 }

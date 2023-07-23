@@ -1,16 +1,14 @@
-﻿using osuToolsV2.Beatmaps;
-using osuToolsV2.Beatmaps.HitObjects;
-using osuToolsV2.Beatmaps.HitObjects.Mania;
-using osuToolsV2.Game.Mods;
+﻿using osuToolsV2.Game.Mods;
 using osuToolsV2.Rulesets.Legacy;
 using osuToolsV2.Rulesets.Mania.Mods;
-using osuToolsV2.ScoreInfo;
+using osuToolsV2.Rulesets.Mania.ScoreProcessor;
+using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Rulesets.Mania;
 
 public class ManiaRuleset : Ruleset
 {
-
+    private static readonly ManiaScoreProcessor ManiaScoreProcessor = new ManiaScoreProcessor();
     public override string Name => "Mania";
     public override Mod[] AvailableMods => new Mod[]
     { 
@@ -23,28 +21,9 @@ public class ManiaRuleset : Ruleset
     };
     public override bool IsLegacyRuleset => true;
     public override LegacyRuleset? LegacyRuleset => Legacy.LegacyRuleset.Mania;
-    public override IScoreInfo CreateScoreInfo() => new ManiaScoreInfo();
-    public override IHitObject CreateHitObject(IBeatmap beatmap, string[] data)
+    public override IScoreProcessor CreateScoreProcessor()
     {
-        OriginalHitObjectType type = (OriginalHitObjectType)int.Parse(data[3]);
-        IManiaHitObject? maniaNote = null;
-        if ((type & OriginalHitObjectType.HitCircle) != 0)
-        {
-            maniaNote = new ManiaHit();
-        }
-        else if ((type & OriginalHitObjectType.ManiaHold) != 0)
-        {
-            maniaNote = new ManiaHold();
-        }
-
-        if (maniaNote == null)
-        {
-            throw new InvalidOperationException($"Can not process type {type}.");
-        }
-        maniaNote.BeatmapColumn = (int)beatmap.DifficultyAttributes.CircleSize;
-        maniaNote.Column = (int) Math.Floor(maniaNote.Position.X * maniaNote.BeatmapColumn / 512d);
-        maniaNote.Parse(data);
-        return maniaNote;
+        return ManiaScoreProcessor;
     }
 
 }

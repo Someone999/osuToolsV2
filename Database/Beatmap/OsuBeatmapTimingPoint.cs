@@ -9,7 +9,7 @@
         {
             Bpm = 1 / bpm * 1000 * 60;
             Offset = offset;
-            Inherit = inherit;
+            Inherit = !inherit;
         }
 
         /// <summary>

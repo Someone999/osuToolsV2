@@ -12,7 +12,7 @@ public class osuToolsExceptionBase : Exception
     {
     }
     
-    public osuToolsExceptionBase(string msg, Exception innerException) : base(msg, innerException)
+    public osuToolsExceptionBase(string msg, Exception? innerException) : base(msg, innerException)
     {
     }
 }

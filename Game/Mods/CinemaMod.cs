@@ -13,7 +13,7 @@ namespace osuToolsV2.Game.Mods
         public override string Name => "Cinema";
 
         /// <inheritdoc />
-        public override string ShortName => "CM";
+        public override string ShortName => "CN";
 
         /// <inheritdoc />
         public override double ScoreMultiplier => 1.0d;

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using osuToolsV2.Graphic;
-using osuToolsV2.StoryBoard.Colors;
+﻿using osuToolsV2.Graphic;
 using osuToolsV2.StoryBoard.Commands;
 using osuToolsV2.StoryBoard.Commands.Resources;
 using osuToolsV2.StoryBoard.Enums;
-using osuToolsV2.StoryBoard.Math;
 using osuToolsV2.StoryBoard.Transitions;
 using osuToolsV2.StoryBoard.Transitions.Initialization;
 
@@ -150,7 +146,7 @@ namespace osuToolsV2.StoryBoard
                 }
                 else if (space > lastSpace)
                 {
-                    ((SubStoryBoardCommand)currentCommand).Parent = lastCommand;
+                    currentCommand.AsSubStoryBoardCommand().Parent = lastCommand;
                     lastCommand?.SubCommands.Add(currentCommand.AsSubStoryBoardCommand());
                 }
                 else if (space < lastSpace)
@@ -361,7 +357,5 @@ namespace osuToolsV2.StoryBoard
                 default: return null;
             }
         }
-
-        
     }
 }

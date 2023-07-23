@@ -6,6 +6,12 @@
         public double StartTime { get; set; }
         public double EndTime { get; set; }
         public double Duration => EndTime - StartTime;
+
+        public bool InRange(double time)
+        {
+            return time >= StartTime && time <= EndTime;
+        }
+        
         public BreakTime(double startTime, double endTime)
         {
             StartTime = startTime;

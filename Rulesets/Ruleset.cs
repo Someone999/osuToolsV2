@@ -1,12 +1,9 @@
 ﻿
 using System.Reflection;
-using osuToolsV2.Beatmaps;
-using osuToolsV2.Beatmaps.HitObjects;
 using osuToolsV2.Logger;
 using osuToolsV2.Rulesets.Legacy;
-using osuToolsV2.ScoreInfo;
 using osuToolsV2.Game.Mods;
-using System;
+using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Rulesets;
 
@@ -14,7 +11,7 @@ public abstract class Ruleset
 {
     
     private static Dictionary<string, Ruleset>? _rulesets;
-    public static readonly object StaticLock = new object();
+    private static readonly object StaticLock = new object();
     private static void InitRulesets()
     {
         lock (StaticLock)
@@ -61,6 +58,9 @@ public abstract class Ruleset
     public abstract Mod[] AvailableMods {get;}
     public virtual LegacyRuleset? LegacyRuleset => null;
     public virtual bool IsLegacyRuleset => false;
+
+    
+
     public static bool operator == (Ruleset? a, Ruleset? b)
     {
         if (a is null && b is null)
@@ -106,6 +106,20 @@ public abstract class Ruleset
         return Name.GetHashCode();
     }
 
-    public abstract IScoreInfo CreateScoreInfo();
-    public abstract IHitObject CreateHitObject(IBeatmap beatmap, string[] data);
+    public abstract IScoreProcessor CreateScoreProcessor();
+
+    public static bool LegacyEquals(LegacyRuleset legacyRuleset, Ruleset ruleset)
+    {
+        if (!ruleset.IsLegacyRuleset)
+        {
+            return false;
+        }
+
+        return legacyRuleset == ruleset.LegacyRuleset;
+    }
+
+    public static bool LegacyEquals(Ruleset ruleset, LegacyRuleset legacyRuleset)
+    {
+        return LegacyEquals(legacyRuleset, ruleset);
+    }
 }

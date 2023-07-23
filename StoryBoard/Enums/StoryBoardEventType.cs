@@ -5,6 +5,7 @@
     /// </summary>
     public enum StoryBoardEventType
     {
+        Unknown = -1,
         /// <summary>
         ///  背景图
         /// </summary>
@@ -29,7 +30,7 @@
         ///  精灵
         /// </summary>
         Sprite = 4,
-        
+
         /// <summary>
         ///  音频
         /// </summary>
@@ -41,5 +42,7 @@
         ///  动画
         /// </summary>
         Animation = 6
+        
+        
     }
 }

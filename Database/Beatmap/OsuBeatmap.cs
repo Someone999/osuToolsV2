@@ -1,11 +1,12 @@
-﻿using osuToolsV2.Beatmaps.HitObjects;
-using osuToolsV2.Database.Score;
+﻿using osuToolsV2.Beatmaps.BeatmapReader;
+using osuToolsV2.Beatmaps.HitObjects;
 using osuToolsV2.GameInfo;
 using osuToolsV2.Rulesets;
-using osuToolsV2.Rulesets.Legacy;
+using osuToolsV2.Score;
 using BeatmapMetadata = osuToolsV2.Beatmaps.BeatmapMetadata;
 using DifficultyAttributes = osuToolsV2.Beatmaps.DifficultyAttributes;
 using IBeatmap = osuToolsV2.Beatmaps.IBeatmap;
+using OsuScoreInfo = osuToolsV2.Database.Score.OsuScoreInfo;
 
 namespace osuToolsV2.Database.Beatmap
 {
@@ -124,8 +125,8 @@ namespace osuToolsV2.Database.Beatmap
         public osuToolsV2.Beatmaps.Beatmap ToBeatmap()
         {
             OsuInfo info = new OsuInfo();
-            return new Beatmaps.Beatmap(Path.Combine(info.BeatmapDirectory, FolderName,
-                Metadata?.BeatmapFileName ?? ""));
+            return new DefaultBeatmapDecoder(Path.Combine(info.BeatmapDirectory, FolderName,
+                Metadata.BeatmapFileName ?? "")).Decode();
         }
 
         /// <summary>
@@ -165,44 +166,73 @@ namespace osuToolsV2.Database.Beatmap
         {
             get
             {
-                if (_bpm == 0)
+                if (_bpm != 0)
                 {
-                    Dictionary<double, double> bpmTime = new Dictionary<double, double>();
-                    var tmPts = TimePoints;
-                    OsuBeatmapTimingPoint cur = tmPts[0];
-                    for (int i = 1; i < tmPts.Count; i++)
+                    return _bpm;
+                }
+                Dictionary<double, double> bpmTime = new Dictionary<double, double>();
+                var tmPts = TimePoints.Where(t => t.Bpm > 0 && !t.Inherit);
+                OsuBeatmapTimingPoint? cur, nxt;
+                OsuBeatmapTimingPoint? lastCur = null;
+                for (var i = 0; i < TimingPoints.Count; i++)
+                {
+                    cur = TimePoints[i];
+                    nxt = i < TimingPoints.Count - 1
+                        ? TimingPoints[i + 1]
+                        : null;
+
+                    if (!cur.Inherit)
                     {
-                        
-                        //cur = tmPts[i];
-                        var nxt = tmPts[i];
-                        if (nxt.Inherit)
-                        {
-                            double offset = nxt.Offset - cur.Offset;
-                            if (!bpmTime.ContainsKey(Math.Round(cur.Bpm, 2)))
-                                bpmTime.Add(Math.Round(cur.Bpm, 2), offset);
-                            else
-                                bpmTime[Math.Round(cur.Bpm, 2)] += offset;
-                            cur = nxt;
-                        }
-                        if (i >= tmPts.Count - 1 && bpmTime.Count == 0)
-                            bpmTime.Add(Math.Round(cur.Bpm, 2), (DrainTime - TimeSpan.FromMilliseconds(cur.Offset)).TotalMilliseconds);
+                        lastCur = cur;
                     }
 
-                    var most = from bpm in bpmTime where bpm.Key > 0 orderby bpm.Value descending select bpm;
-                    _bpm = most.First().Key;
+                    if (nxt is not {Inherit: false} || lastCur == null)
+                    {
+                        continue;
+                    }
+                    
+                    double roundedBpm = Math.Round(lastCur.Bpm, 2);
+                    double duration = nxt.Offset - lastCur.Offset;
+                    if (bpmTime.ContainsKey(roundedBpm))
+                    {
+                        bpmTime[roundedBpm] += duration;
+                    }
+                    else
+                    {
+                        bpmTime.Add(roundedBpm, duration);
+                    }
                 }
+                if (bpmTime.Count == 0)
+                {
+                    bpmTime.Add(lastCur?.Bpm ?? 0, 1);
+                }
+                var most = from bpm in bpmTime where bpm.Key > 0 orderby bpm.Value descending select bpm;
+                _bpm = most.First().Key;
 
                 return _bpm;
             }
             set => _bpm = value;
         }
+
+        public int GetHitObjectCount(ScoreInfo scoreInfo)
+        {
+            return 0;
+        }
+
+        public int GetMaxCombo(ScoreInfo scoreInfo)
+        {
+            return 0;
+        }
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         public override bool Equals(object? obj)
         {
             if (obj is OsuBeatmap b)
-                return b.Metadata.Md5Hash == b.Metadata.Md5Hash;
+            {
+                return b.Metadata.Md5Hash == Metadata.Md5Hash;
+            }
             return false;
         }
         /// <summary>

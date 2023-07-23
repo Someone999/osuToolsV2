@@ -5,7 +5,7 @@ namespace osuToolsV2.Beatmaps;
 
 public class BeatmapMetadata
 {
-    private OsuInfo _gameInfo = new();
+    private static readonly OsuInfo GameInfo = new();
     public string Artist { get; set; } = "";
     public string ArtistUnicode { get; set; } = "";
     public string Title { get; set; } = "";
@@ -18,10 +18,10 @@ public class BeatmapMetadata
     public BackgroundInfo BackgroundInfo { get; set; } = new BackgroundInfo();
 
     public string? BackgroundFullPath => BackgroundInfo.FileName != null
-        ? Path.Combine(_gameInfo.BeatmapDirectory, BackgroundInfo.FileName)
+        ? Path.Combine(GameInfo.BeatmapDirectory, BackgroundInfo.FileName)
         : null;
     public string AudioFileName { get; set; } = "";
-    public string AudioFileFullPath => Path.Combine(_gameInfo.BeatmapDirectory, AudioFileName);
+    public string AudioFileFullPath => Path.Combine(GameInfo.BeatmapDirectory, AudioFileName);
     public VideoInfo VideoInfo { get; set; } = new VideoInfo();
     public string? VideoFileFullPath => VideoInfo.FileName != null
         ? Path.Combine(Path.GetDirectoryName(BeatmapFullPath) ?? "", VideoInfo.FileName)

@@ -1,7 +1,5 @@
-﻿using osuToolsV2.Beatmaps;
-using osuToolsV2.Beatmaps.HitObjects;
-using osuToolsV2.Game.Mods;
-using osuToolsV2.ScoreInfo;
+﻿using osuToolsV2.Game.Mods;
+using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Rulesets;
 
@@ -9,14 +7,11 @@ public class EmptyRuleset : Ruleset
 {
 
     public override string Name => "None";
-    public override IScoreInfo CreateScoreInfo()
+    public override IScoreProcessor CreateScoreProcessor()
     {
-        throw new NotSupportedException();
+        return EmptyScoreProcessor.Instance;
     }
-    public override IHitObject CreateHitObject(IBeatmap beatmap, string[] data)
-    {
-        throw new NotSupportedException();
-    }
-    
-    public override Mod[] AvailableMods => new Mod[0];
+
+    public override Mod[] AvailableMods => Array.Empty<Mod>();
+    public static EmptyRuleset Instance { get; } = new EmptyRuleset();
 }

@@ -1,12 +1,15 @@
-﻿using osuToolsV2.Exceptions;
+﻿using System.Collections;
+using System.Text;
+using osuToolsV2.Exceptions;
 using osuToolsV2.Game.Legacy;
 using osuToolsV2.Rulesets;
 using osuToolsV2.Rulesets.Legacy;
 
 namespace osuToolsV2.Game.Mods
 {
-    public class ModList
+    public class ModList : IEnumerable<Mod>
     {
+        private int _version;
         List<Mod> _mods = new List<Mod>();
         public double ScoreMultiplier { get; private set; } = 1.0;
         public double TimeRate { get; private set; } = 1.0;
@@ -89,11 +92,28 @@ namespace osuToolsV2.Game.Mods
             CalcTimeRate();
             GetAllowsFail();
             IsModsRanked();
+            Interlocked.Increment(ref _version);
         }
 
+        public void SetForSpecifiedRuleset(Ruleset ruleset)
+        {
+            var originalMods = _mods;
+            _mods = new List<Mod>();
+            Dictionary<string, Mod> avaMods =
+                ruleset.AvailableMods.ToDictionary(key => key.ShortName, _ => _);
+            var matched = 
+                from originalMod in originalMods 
+                where avaMods.ContainsKey(originalMod.Name) 
+                select originalMod;
+            
+            foreach (var mod in matched)
+            {
+                Add(mod, false);
+            }
+        }
+        
         public void Add(Mod m, bool throwWhenError)
         {
-           
             foreach (var mod in _mods)
             {
                 foreach (var conflictMod in mod.ConflictMods)
@@ -142,20 +162,21 @@ namespace osuToolsV2.Game.Mods
             string bits = new string(Convert.ToString(mods, 2).ToArray());
             for (int i = 0; i < bits.Length; i++)
             {
-                if (bits[i] == '1')
+                if (bits[i] != '1')
                 {
-                    LegacyGameMod legacy = (LegacyGameMod) (1 << (bits.Length - 1 - i));
+                    continue;
+                }
+                LegacyGameMod legacy = (LegacyGameMod) (1 << (bits.Length - 1 - i));
 
-                    foreach (var modeAvailableMod in ruleset.AvailableMods)
+                foreach (var modeAvailableMod in ruleset.AvailableMods)
+                {
+                    if (modeAvailableMod is not ILegacyMod legacyMod)
                     {
-                        if (modeAvailableMod is not ILegacyMod legacyMod)
-                        {
-                            continue;
-                        }
-                        if (legacyMod.LegacyMod == legacy)
-                        {
-                            list.Add(modeAvailableMod, throwWhenError);
-                        }
+                        continue;
+                    }
+                    if (legacyMod.LegacyMod == legacy)
+                    {
+                        list.Add(modeAvailableMod, throwWhenError);
                     }
                 }
             }
@@ -177,6 +198,66 @@ namespace osuToolsV2.Game.Mods
             }
             return legacyGameMod;
         }
+        
 
+        private string _cachedShortNames = "", _cachedNames = "";
+        private int _shortNameLastVersion = -1, _nameLastVersion = -1;
+        public string ShortNames
+        {
+            get
+            {
+                if (_shortNameLastVersion == _version)
+                {
+                    return _cachedShortNames;
+                }
+                
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < _mods.Count; i++)
+                {
+                    builder.Append(_mods[i].ShortName);
+                    if (i < _mods.Count - 1)
+                    {
+                        builder.Append(',');
+                    }
+                }
+
+                _shortNameLastVersion = _version;
+                return _cachedShortNames = builder.ToString();
+            }
+        }
+        
+        public string Names
+        {
+            get
+            {
+                if (_nameLastVersion == _version)
+                {
+                    return _cachedNames;
+                }
+                
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < _mods.Count; i++)
+                {
+                    builder.Append(_mods[i].Name);
+                    if (i < _mods.Count - 1)
+                    {
+                        builder.Append(',');
+                    }
+                }
+
+                _nameLastVersion = _version;
+                return _cachedNames = builder.ToString();
+            }
+        }
+
+        public IEnumerator<Mod> GetEnumerator()
+        {
+            return _mods.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

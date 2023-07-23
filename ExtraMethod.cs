@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using osuToolsV2.Beatmaps.HitObjects;
 using osuToolsV2.Game.Legacy;
 using osuToolsV2.Game.Mods;
 using osuToolsV2.GameInfo;
@@ -271,5 +270,16 @@ namespace osuToolsV2
         {
             objectWriter.Write($"{key}: {val}");
         }
+
+       public static string GetMd5String(this byte[] bytes)
+       {
+           StringBuilder builder = new StringBuilder();
+           foreach (var b in bytes)
+           {
+               builder.Append(b.ToString("x2"));
+           }
+
+           return builder.ToString();
+       }
     }
 }

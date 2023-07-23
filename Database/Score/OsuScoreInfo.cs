@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics;
 using osuToolsV2.Database.Beatmap;
-using osuToolsV2.Exceptions;
 using osuToolsV2.Game.Legacy;
 using osuToolsV2.Game.Mods;
-using osuToolsV2.Rulesets;
 using osuToolsV2.Rulesets.Legacy;
-using osuToolsV2.ScoreInfo;
+using osuToolsV2.Score;
+using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Database.Score
 {
@@ -45,7 +44,8 @@ namespace osuToolsV2.Database.Score
         {
             Ruleset = ruleset;
             //System.Windows.Forms.MessageBox.Show(Mode.ToString());
-            ScoreInfo = Rulesets.Ruleset.FromLegacyRuleset(ruleset).CreateScoreInfo();
+            ScoreProcessor = Rulesets.Ruleset.FromLegacyRuleset(ruleset).CreateScoreProcessor();
+            ScoreInfo = new ScoreInfo();
             GameVersion = ver;
             BeatmapMd5 = bmd5;
             ReplayMd5 = rmd5;
@@ -69,6 +69,9 @@ namespace osuToolsV2.Database.Score
             Debug.Assert(count300 + count100 + count50 + cmiss != 0);
             
         }
+
+        public IScoreProcessor ScoreProcessor { get; set; }
+        
         /// <summary>
         ///     游戏版本
         /// </summary>
@@ -94,7 +97,7 @@ namespace osuToolsV2.Database.Score
         /// </summary>
         public string ReplayMd5 { get; }
 
-        public IScoreInfo ScoreInfo { get; private set; }
+        public ScoreInfo ScoreInfo { get; private set; }
         /// <summary>
         ///     是否达成Perfect判定
         /// </summary>

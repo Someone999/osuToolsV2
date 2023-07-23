@@ -9,5 +9,10 @@ public interface IBeatmap
     DifficultyAttributes DifficultyAttributes { get; set; }
     List<IHitObject>? HitObjects { get; set; }
     Ruleset Ruleset { get; set; }
-    public double Bpm { get; set; }
+    double Bpm { get; set; }
+}
+
+public interface IBeatmap<THitObject> : IBeatmap where THitObject: IHitObject
+{
+    new List<THitObject>? HitObjects { get; set; }
 }
