@@ -3,7 +3,7 @@ using System.Text;
 
 namespace osuToolsV2.Tools
 {
-    public class MD5String
+    public class Md5String
     {
         public static string GetMd5String(byte[] bts)
         {
@@ -18,8 +18,8 @@ namespace osuToolsV2.Tools
         public string CalcMd5(byte[] bts)
         {
             var md5Calc = MD5.Create();
-            var rslt = md5Calc.ComputeHash(bts);
-            return GetMd5String(bts);
+            var result = md5Calc.ComputeHash(bts);
+            return GetMd5String(result);
         }
     }
 }

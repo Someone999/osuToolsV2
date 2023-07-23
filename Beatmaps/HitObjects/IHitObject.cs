@@ -10,7 +10,6 @@ public interface IHitObject
     HitObjectType HitObjectType { get; }
     HitSound HitSound { get; set;}
     HitSample HitSample { get; set;}
-    void Parse(string[] data);
     OriginalHitObjectType OriginalHitObjectType { get; }
     string ToFileFormat();
 }

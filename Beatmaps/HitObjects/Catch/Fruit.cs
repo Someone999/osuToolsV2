@@ -1,30 +1,17 @@
-﻿using osuToolsV2.Beatmaps.HitObjects.Osu;
-using osuToolsV2.Beatmaps.HitObjects.Sounds;
-using osuToolsV2.Graphic;
+﻿namespace osuToolsV2.Beatmaps.HitObjects.Catch;
 
-namespace osuToolsV2.Beatmaps.HitObjects.Catch;
-
-public class Fruit : IHitObject
+public class Fruit : HitObject
 {
+    
+    public override HitObjectType HitObjectType => HitObjectType.Fruit;
+    
 
-    public OsuPixel Position { get; set; }
-    public double StartTime { get; set; }
-    public HitObjectType HitObjectType => HitObjectType.Fruit;
-    public HitSound HitSound { get; set; }
-    public HitSample HitSample { get; set; } = HitSample.Empty;
-    public void Parse(string[] data)
+    public override string ToFileFormat()
     {
-        HitCircle hitCircle = new HitCircle();
-        hitCircle.Parse(data);
-        Position = hitCircle.Position;
-        StartTime = hitCircle.StartTime;
-        HitSound = hitCircle.HitSound;
-        HitSample = hitCircle.HitSample;
-        OriginalHitObjectType = hitCircle.OriginalHitObjectType;
+        return string.Join(",", Position.X, Position.Y, StartTime, (int)OriginalHitObjectType, (int)HitSound, HitSample.ToFileFormat());;
     }
-    public OriginalHitObjectType OriginalHitObjectType { get; private set; }
-    public string ToFileFormat()
+
+    public Fruit(OriginalHitObjectType originalHitObjectType) : base(originalHitObjectType)
     {
-        return $"{Position.X},{Position.Y},{StartTime},{(int)OriginalHitObjectType},{(int)HitSound},{HitSample.ToFileFormat()}";
     }
 }

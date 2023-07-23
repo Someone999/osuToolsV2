@@ -1,24 +1,17 @@
-﻿using osuToolsV2.Beatmaps.HitObjects.Sounds;
-using osuToolsV2.Graphic;
+﻿namespace osuToolsV2.Beatmaps.HitObjects.Taiko;
 
-namespace osuToolsV2.Beatmaps.HitObjects.Taiko;
-
-public class DenDen : IHitObject
+public class DenDen : HitObject
 {
-
-    public OsuPixel Position { get; set; }
-    public double StartTime { get; set; }
-    public HitObjectType HitObjectType => HitObjectType.DenDen;
-    public HitSound HitSound { get; set; }
-    public HitSample HitSample { get; set; } = HitSample.Empty;
+    public override HitObjectType HitObjectType => HitObjectType.DenDen;
+   
     public double EndTime { get; set; }
-    public void Parse(string[] data)
-    {
-        throw new NotSupportedException("You need to use GenericTaikoHitParser.Parse");
-    }
-    public OriginalHitObjectType OriginalHitObjectType { get; internal set; }
-    public string ToFileFormat()
+
+    public override string ToFileFormat()
     {
         return $"{Position.X},{Position.Y},{StartTime},{(int)HitSound},{EndTime},{HitSample.ToFileFormat()}";
+    }
+
+    public DenDen(OriginalHitObjectType originalHitObjectType) : base(originalHitObjectType)
+    {
     }
 }

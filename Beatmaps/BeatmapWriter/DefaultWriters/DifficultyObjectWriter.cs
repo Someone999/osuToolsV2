@@ -10,6 +10,7 @@ public class DifficultyObjectWriter<TWriterType> :
     {
         ObjectWriter = objectWriter;
     }
+    
     public IObjectWriter<TWriterType> ObjectWriter { get; }
     
     void WriteKeyValuePairIfNotNull(string? key, object? val)
@@ -52,5 +53,17 @@ public class DifficultyObjectWriter<TWriterType> :
         {
             ObjectWriter.Close();
         }
+    }
+
+    private bool _disposed;
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        
+        ObjectWriter.Dispose();
+        _disposed = true;
     }
 }

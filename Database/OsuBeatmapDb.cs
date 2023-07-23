@@ -89,7 +89,7 @@ namespace osuToolsV2.Database
         private string GetMd5()
         {
             var data = File.ReadAllBytes(_dbFilePath);
-            return new MD5String().CalcMd5(data);
+            return new Md5String().CalcMd5(data);
         }
         #region Wrapped methods of BinaryReader
 #if SHOWMSG

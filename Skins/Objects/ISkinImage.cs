@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using System.Runtime.Serialization;
-using System.Runtime.Versioning;
 
 namespace osuToolsV2.Skins.Objects;
 

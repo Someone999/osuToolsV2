@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using osuToolsV2.Beatmaps;
+﻿using osuToolsV2.Beatmaps;
 
 namespace osuToolsV2.Game.Mods
 {

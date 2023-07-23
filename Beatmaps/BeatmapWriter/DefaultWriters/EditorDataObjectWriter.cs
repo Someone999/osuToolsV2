@@ -9,6 +9,7 @@ public class EditorDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjec
     {
         ObjectWriter = objectWriter;
     }
+    
     public IObjectWriter<TWriterType> ObjectWriter { get; }
     void WriteKeyValuePair(string key, object val)
     {
@@ -48,5 +49,17 @@ public class EditorDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjec
         {
             ObjectWriter.Close();
         }
+    }
+    
+    private bool _disposed;
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        
+        ObjectWriter.Dispose();
+        _disposed = true;
     }
 }

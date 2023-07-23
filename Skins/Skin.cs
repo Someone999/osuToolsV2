@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using osuToolsV2.Game.Config.Parser;
 using osuToolsV2.Skins.Config;
 using osuToolsV2.Skins.Objects;
 

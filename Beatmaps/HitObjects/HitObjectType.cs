@@ -2,6 +2,7 @@
 [Flags]
 public enum HitObjectType
 {
+    None = 0,
     HitCircle = 1 << 0,
     Slider = 1 << 1,
     Spinner = 1 << 2,

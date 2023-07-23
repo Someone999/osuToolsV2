@@ -8,6 +8,7 @@ public class StringObjectStringBuilderWriter : IObjectWriter<string, StringBuild
     {
         ObjectWriter = objectWriter;
     }
+    
     public StringBuilder ObjectWriter { get; }
     public void Write(string obj)
     {
@@ -19,6 +20,10 @@ public class StringObjectStringBuilderWriter : IObjectWriter<string, StringBuild
     }
     public bool NeedClose => false;
     public void Close()
+    {
+    }
+
+    public void Dispose()
     {
     }
 }

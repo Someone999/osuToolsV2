@@ -1,5 +1,4 @@
-﻿using System.Text;
-using osuToolsV2.Beatmaps.Misc;
+﻿using osuToolsV2.Beatmaps.Misc;
 using osuToolsV2.Writer;
 
 namespace osuToolsV2.Beatmaps.BeatmapWriter.DefaultWriters;
@@ -11,6 +10,7 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
     {
         ObjectWriter = objectWriter;
     }
+    
     public IObjectWriter<TWriterType> ObjectWriter { get; }
     public void Write(object obj)
     {
@@ -100,5 +100,17 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
         WriteKeyValuePairIfNotNull("SkinPreference", obj.SkinPreference);
         
         ObjectWriter.Write(Environment.NewLine);
+    }
+    
+    private bool _disposed;
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        
+        ObjectWriter.Dispose();
+        _disposed = true;
     }
 }

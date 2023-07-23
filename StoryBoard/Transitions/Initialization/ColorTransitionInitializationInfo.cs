@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using osuToolsV2.StoryBoard.Colors;
-using osuToolsV2.StoryBoard.Commands;
+﻿using osuToolsV2.StoryBoard.Colors;
 
 namespace osuToolsV2.StoryBoard.Transitions.Initialization
 {

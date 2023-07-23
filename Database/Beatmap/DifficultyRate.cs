@@ -1,6 +1,4 @@
-﻿
-using osuToolsV2.Rulesets;
-using osuToolsV2.Rulesets.Legacy;
+﻿using osuToolsV2.Rulesets.Legacy;
 
 namespace osuToolsV2.Database.Beatmap
 {

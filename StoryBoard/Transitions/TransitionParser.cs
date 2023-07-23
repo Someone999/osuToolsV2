@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace osuToolsV2.StoryBoard.Transitions
+﻿namespace osuToolsV2.StoryBoard.Transitions
 {
     public interface ITypeInitializationInfo<out T>
     {

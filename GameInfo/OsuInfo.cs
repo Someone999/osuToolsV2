@@ -116,9 +116,9 @@ namespace osuToolsV2.GameInfo
                 return;
             }
             var tmp = ReadIniFile(file);
-            if(tmp.ContainsKey("ConfigFilePath"))
+            if(tmp.TryGetValue("ConfigFilePath", out var value))
             {
-                ConfigFilePath = tmp["ConfigFilePath"];
+                ConfigFilePath = value;
             }
         }
         /// <summary>

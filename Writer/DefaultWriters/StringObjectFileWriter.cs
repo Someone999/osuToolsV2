@@ -17,7 +17,7 @@ public class StringObjectFileWriter : IObjectWriter<string, FileStream>
     public FileStream ObjectWriter { get; }
     public void Write(object obj)
     {
-        Write(obj.ToString() ?? "null");
+        Write(obj.ToString() ?? "");
     }
     public void Write(string obj)
     {
@@ -32,7 +32,20 @@ public class StringObjectFileWriter : IObjectWriter<string, FileStream>
         {
             return;
         }
-        ObjectWriter.Dispose();
+        
+        ObjectWriter.Close();
         NeedClose = false;
+    }
+
+    private bool _disposed;
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        
+        ObjectWriter.Dispose();
+        _disposed = true;
     }
 }

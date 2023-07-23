@@ -1,7 +1,6 @@
 ﻿
 
 using osuToolsV2.Game.Legacy;
-using osuToolsV2.Game.Mods;
 
 namespace osuToolsV2.Rulesets.Mania.Mods
 {

@@ -18,7 +18,7 @@ public class BeatmapObjectWriter<TWriterType> : IBeatmapObjectWriter<IObjectWrit
         EventsObjectWriter = new EventsObjectWriter<TWriterType>(ObjectWriter);
     }
 
-
+    
     public IObjectWriter<TWriterType> ObjectWriter { get; }
     public void Write(object obj)
     {
@@ -84,5 +84,24 @@ public class BeatmapObjectWriter<TWriterType> : IBeatmapObjectWriter<IObjectWrit
         {
             ObjectWriter.Close();
         }
+    }
+
+    private bool _disposed;
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        
+        ObjectWriter.Dispose();
+        GeneralDataObjectWriter.Dispose();
+        EditorDataObjectWriter.Dispose();
+        MetadataObjectWriter.Dispose();
+        DifficultyObjectWriter.Dispose();
+        EventsObjectWriter.Dispose();
+        TimingPointObjectWriter.Dispose();
+        HitObjectsObjectWriter.Dispose();
+        _disposed = true;
     }
 }

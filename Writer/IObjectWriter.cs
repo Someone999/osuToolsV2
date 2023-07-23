@@ -1,15 +1,16 @@
-﻿using osuToolsV2.Beatmaps.BeatmapWriter.DefaultWriters;
-
-namespace osuToolsV2.Writer;
+﻿namespace osuToolsV2.Writer;
 
 
-
-public interface IObjectWriter<out TWriter>
+public interface IObjectWriter
 {
-    TWriter ObjectWriter { get; }
     void Write(object obj);
     bool NeedClose { get; }
     void Close();
+}
+
+public interface IObjectWriter<out TWriter> : IDisposable, IObjectWriter
+{
+    TWriter ObjectWriter { get; }
 }
 
 public interface IObjectWriter<in TWriteObject, out TWriter> : IObjectWriter<TWriter>

@@ -10,6 +10,7 @@ public class TimingPointsObjectWriter<TWriterType> : IObjectWriter<List<TimingPo
     {
         ObjectWriter = objectWriter;
     }
+    
     public IObjectWriter<TWriterType> ObjectWriter { get; }
     public void Write(object obj)
     {
@@ -36,5 +37,17 @@ public class TimingPointsObjectWriter<TWriterType> : IObjectWriter<List<TimingPo
         {
             ObjectWriter.Close();
         }
+    }
+    
+    private bool _disposed;
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        
+        ObjectWriter.Dispose();
+        _disposed = true;
     }
 }

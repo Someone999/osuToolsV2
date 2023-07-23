@@ -20,14 +20,25 @@ public class HitSample
         HitSample hitSample = new HitSample();
         string normalSampleStr = data[0];
         string additionSampleStr = data[1];
-        string idxStr = data[2], volumeStr = data[3];
+        string idxStr = data[2];
+        string volumeStr = "0";
+        string fileName = "";
+        if (data.Length > 3)
+        {
+            volumeStr = data[3];
+        }
+
+        if (data.Length == 4)
+        {
+            fileName = data[4];
+        }
         
         hitSample.NormalSet = string.IsNullOrEmpty(normalSampleStr)? SampleSet.None : (SampleSet)Enum.Parse(typeof(SampleSet),normalSampleStr);
         hitSample.AdditionSet = string.IsNullOrEmpty(additionSampleStr)? SampleSet.None :(SampleSet)Enum.Parse(typeof(SampleSet),additionSampleStr);
         
         hitSample.Index = string.IsNullOrEmpty(idxStr) ? 0 : int.Parse(idxStr);
         hitSample.Volume =string.IsNullOrEmpty(volumeStr) ? 100 : int.Parse(volumeStr);
-        hitSample.FileName = data[4];
+        hitSample.FileName = fileName;
         return hitSample;
     }
 

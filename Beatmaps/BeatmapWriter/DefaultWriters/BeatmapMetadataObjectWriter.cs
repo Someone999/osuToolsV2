@@ -9,6 +9,7 @@ public class BeatmapMetadataObjectWriter<TWriterType> :
     {
         ObjectWriter = objectWriter;
     }
+    
     public IObjectWriter<TWriterType> ObjectWriter { get; }
     public void Write(BeatmapMetadata obj)
     {
@@ -45,6 +46,19 @@ public class BeatmapMetadataObjectWriter<TWriterType> :
         {
             ObjectWriter.Close();
         }
+    }
+
+    private bool _disposed;
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        
+        ObjectWriter.Dispose();
+        _disposed = true;
     }
 
 
