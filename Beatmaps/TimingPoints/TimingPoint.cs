@@ -30,7 +30,11 @@ namespace osuToolsV2.Beatmaps.TimingPoints
                 SliderVelocity *= speed * -1 > 0 ? Math.Abs(speed) : 0;
             }
 
-            _effect = int.Parse(data[7]);
+            if (data.Length > 7)
+            {
+                _effect = int.Parse(data[7]);
+            }
+            
             Bpm = Math.Round((1 / BeatLength * 1000 * 60), 2);
             BitProcessor(_effect);
         }

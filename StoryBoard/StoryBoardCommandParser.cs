@@ -202,6 +202,14 @@ namespace osuToolsV2.StoryBoard
                     };
                 case "Animation":
                 case "6":
+
+                    StoryBoardAnimationLoopType loopType = StoryBoardAnimationLoopType.LoopOnce;
+                    if (data.Length > 8)
+                    {
+                        loopType = (StoryBoardAnimationLoopType)Enum.Parse(typeof(StoryBoardAnimationLoopType),
+                            data[8]);
+                    }
+                    
                     return new Animation
                     {
                         Layer = (StoryBoardLayer)Enum.Parse(typeof(StoryBoardLayer),data[1]),
@@ -210,7 +218,7 @@ namespace osuToolsV2.StoryBoard
                         Position = new OsuPixel(double.Parse(data[4]), double.Parse(data[5])),
                         FrameCount = int.Parse(data[6]),
                         FrameDelay = double.Parse(data[7]),
-                        LoopType = (StoryBoardAnimationLoopType)Enum.Parse(typeof(StoryBoardAnimationLoopType),data[8])
+                        LoopType = loopType
                     };
                 default: return null;
             }

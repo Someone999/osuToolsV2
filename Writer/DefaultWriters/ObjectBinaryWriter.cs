@@ -26,6 +26,7 @@ public class ObjectBinaryWriter : IObjectWriter<BinaryWriter>
             throw new NotSupportedException("Unsupported type.");
         }
 
+
         MethodInfo writeMethod = _writeMethods[obj.GetType()];
         writeMethod.Invoke(ObjectWriter, new[] {obj});
     }

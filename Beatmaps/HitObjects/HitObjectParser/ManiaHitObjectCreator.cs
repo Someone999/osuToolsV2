@@ -44,6 +44,12 @@ public class ManiaHitObjectCreator : IHitObjectCreator
         };
             
         int colonIdx = data[5].IndexOf(':');
+        if (colonIdx == -1)
+        {
+            maniaHold.EndTime = double.Parse(data[5]);
+            return maniaHold;
+        }
+        
         string endTimeStr = data[5].Substring(0, colonIdx);
         string hitSampleStr = data[5].Substring(colonIdx + 1);
         maniaHold.EndTime = double.Parse(endTimeStr);

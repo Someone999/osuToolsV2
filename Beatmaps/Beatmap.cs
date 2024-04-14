@@ -10,40 +10,33 @@ using osuToolsV2.StoryBoard.Commands;
 
 namespace osuToolsV2.Beatmaps;
 
-
-enum DataSection
-{
-    None,
-    General,
-    Editor,
-    Metadata,
-    Difficulty,
-    Events,
-    TimingPoints,
-    Colours,
-    HitObjects
-}
 public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitObject
 {
-    public Beatmap()
+    public IEnumerable<THitObject> GetAs()
     {
-        Metadata = new BeatmapMetadata();
-        TimingPoints = new List<TimingPoint>();
+        if (HitObjects == null)
+        {
+            yield break;
+        }
+        
+        foreach (var hitObject in HitObjects)
+        {
+            yield return (THitObject) hitObject;
+        }
     }
-    
+
     public override string ToString()
     {
         return $"{Metadata.Artist} - {Metadata.Title} [{Metadata.Version}]";
     }
-    public List<TimingPoint> TimingPoints { get; set; }
+    public List<TimingPoint> TimingPoints { get; set; } = new();
     public List<BreakTime> BreakTimes { get; internal set; } = new();
     public StoryBoardCommandBase[]? InlineStoryBoardCommand { get; internal set; }
-    public BeatmapMetadata Metadata { get; set; }
+    public BeatmapMetadata Metadata { get; set; } = new();
     public DifficultyAttributes DifficultyAttributes { get; set; } = new DifficultyAttributes();
 
-    List<IHitObject>? IBeatmap.HitObjects { get; set; }
-
-    public List<THitObject>? HitObjects { get; set; }
+    public List<IHitObject>? HitObjects { get; set; }
+    
     public Ruleset Ruleset { get; set; } = new EmptyRuleset();
     private double GetMostCommonBpm()
     {
@@ -56,11 +49,7 @@ public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitOb
         foreach (var timingPoint in unInheritedTimingPoints)
         {
             double roundedBpm = Math.Round(timingPoint.Bpm, 2);
-            if (!timingPointsTimes.ContainsKey(roundedBpm))
-            {
-                timingPointsTimes.Add(roundedBpm, 1);
-            }
-            else
+            if (!timingPointsTimes.TryAdd(roundedBpm, 1))
             {
                 timingPointsTimes[roundedBpm]++;
             }
@@ -70,11 +59,15 @@ public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitOb
         return mostCommonBpm;
     }
 
-    private double _internalBpm = 0;
+    private double? _internalBpm;
 
     public double Bpm
     {
-        get => _internalBpm = GetMostCommonBpm();
+        get
+        {
+            _internalBpm ??= GetMostCommonBpm();
+            return _internalBpm.Value;
+        }
         set => _internalBpm = value;
     }
 

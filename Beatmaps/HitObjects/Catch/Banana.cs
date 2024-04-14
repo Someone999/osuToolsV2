@@ -1,6 +1,6 @@
 ﻿namespace osuToolsV2.Beatmaps.HitObjects.Catch;
 
-public class Banana : HitObject
+public class Banana : HitObject, IHasEndTime
 {
 
    

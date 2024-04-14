@@ -26,7 +26,8 @@ public abstract class BeatmapConverter<THitObject> where THitObject: IHitObject
         converted.EpilepsyWarning = beatmap.EpilepsyWarning;
         converted.GridSize = beatmap.GridSize;
         converted.HitObjects = 
-            new List<THitObject>(beatmap.HitObjects?.Select(ConvertHitObject) ?? Array.Empty<THitObject>());
+            new List<IHitObject>(beatmap.HitObjects?.Select(ConvertHitObject).Cast<IHitObject>()
+                                 ?? Array.Empty<IHitObject>());
         converted.OverlayPosition = beatmap.OverlayPosition;
         converted.PreviewTime = converted.PreviewTime;
         converted.SampleSet = beatmap.SampleSet;

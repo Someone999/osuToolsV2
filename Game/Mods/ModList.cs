@@ -65,8 +65,15 @@ namespace osuToolsV2.Game.Mods
                     }
                 }
 
-            if (multiplier > 1.3) multiplier += 0.03;
-            else if (multiplier > 1.15) multiplier += 0.01;
+            switch (multiplier)
+            {
+                case > 1.3:
+                    multiplier += 0.03;
+                    break;
+                case > 1.15:
+                    multiplier += 0.01;
+                    break;
+            }
             //if (multiplier >= 1.39) multiplier += 0.02;
             multiplier += bonus;
             ScoreMultiplier = Math.Round(multiplier, 2);

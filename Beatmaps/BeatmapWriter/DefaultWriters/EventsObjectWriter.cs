@@ -31,22 +31,25 @@ public class EventsObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjectWri
             }
         }
 
-        if (obj.Metadata.BackgroundInfo.HasBackground)
+        if (obj.Metadata.BackgroundInfo is { HasBackground: true })
         {
             var bgInfo = obj.Metadata.BackgroundInfo;
             ObjectWriter.Write($"0,0,\"{bgInfo.FileName}\",{bgInfo.X},{bgInfo.Y}{Environment.NewLine}");
         }
-        if (obj.Metadata.VideoInfo.HasVideo)
+        if (obj.Metadata.VideoInfo is { HasVideo: true })
         {
             var viInfo = obj.Metadata.VideoInfo;
             ObjectWriter.Write($"1,0,\"{viInfo.FileName},{viInfo.X},{viInfo.Y}\"{Environment.NewLine}");
         }
-        if(obj.InlineStoryBoardCommand != null)
+
+        if (obj.InlineStoryBoardCommand == null)
         {
-            foreach (var command in obj.InlineStoryBoardCommand)
-            {
-                ObjectWriter.Write(command.ToFileContent() + Environment.NewLine);
-            }
+            return;
+        }
+        
+        foreach (var command in obj.InlineStoryBoardCommand)
+        {
+            ObjectWriter.Write(command.ToFileContent() + Environment.NewLine);
         }
     }
     

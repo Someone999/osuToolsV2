@@ -12,30 +12,30 @@ namespace osuToolsV2
     /// </summary>
     public static class ExtraMethod
     {
-        static string RemoveComment(string orignal)
+        static string RemoveComment(string original)
         {
-            if (orignal.Contains("//"))
+            if (original.Contains("//"))
             {
                 int index = 0;
-                for (int i = 0; i < orignal.Length; i++)
+                for (int i = 0; i < original.Length; i++)
                 {
-                    if (orignal[i] == '/' && orignal[i + 1] == '/')
+                    if (original[i] == '/' && original[i + 1] == '/')
                         index = i;
                 }
 
-                return orignal.Remove(index).Trim();
+                return original.Remove(index).Trim();
             }
 
-            return orignal;
+            return original;
         }
         /// <summary>
         ///     将Mod数组转换成ModList
         /// </summary>
-        /// <param name="modarr"></param>
+        /// <param name="modArr"></param>
         /// <returns></returns>
-        public static ModList ToModList(this Mod[] modarr)
+        public static ModList ToModList(this Mod[] modArr)
         {
-            return ModList.FromModArray(modarr);
+            return ModList.FromModArray(modArr);
         }
         /// <summary>
         /// 将字符串转换成<seealso cref="Nullable{DateTime}"/>

@@ -22,8 +22,18 @@ public class DifficultyObjectWriter<TWriterType> :
         WriteKeyValuePair(key, val);
     }
 
-    void WriteKeyValuePair(string key, object val)
+    void WriteKeyValuePair(string key, object? val)
     {
+        ObjectWriter.Write($"{key}:{val ?? default}{Environment.NewLine}");
+    }
+    
+    void WriteKeyValuePairNonNull(string key, object? val)
+    {
+        if (val == null)
+        {
+            return;
+        }
+        
         ObjectWriter.Write($"{key}:{val}{Environment.NewLine}");
     }
     public void Write(object obj)

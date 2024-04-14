@@ -25,7 +25,7 @@ namespace osuToolsV2.Game.Mods
                 return true;
             }
 
-            if (obj is Mod mod)
+            if (obj is Mod)
             {
                 return GetType() == obj.GetType();
             }

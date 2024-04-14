@@ -1,6 +1,6 @@
 ﻿namespace osuToolsV2.Beatmaps.HitObjects.Taiko;
 
-public class DenDen : HitObject
+public class DenDen : HitObject, IHasEndTime
 {
     public override HitObjectType HitObjectType => HitObjectType.DenDen;
    

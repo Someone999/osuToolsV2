@@ -195,9 +195,4 @@ namespace osuToolsV2.Database.Beatmap
             return _beatmaps.GetEnumerator();
         }
     }
-
-    public enum BeatmapFindOption
-    {
-        Contains,NotContains
-    }
 }

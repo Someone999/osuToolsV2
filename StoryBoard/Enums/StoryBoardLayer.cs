@@ -24,7 +24,11 @@
         ///     前景
         /// </summary>
         Foreground,
-
+        
+        /// <summary>
+        ///  覆盖层
+        /// </summary>
+        Overlay,
         /// <summary>
         ///     未指定时的初始值
         /// </summary>

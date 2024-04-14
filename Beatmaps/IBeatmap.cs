@@ -14,5 +14,5 @@ public interface IBeatmap
 
 public interface IBeatmap<THitObject> : IBeatmap where THitObject: IHitObject
 {
-    new List<THitObject>? HitObjects { get; set; }
+    IEnumerable<THitObject> GetAs();
 }

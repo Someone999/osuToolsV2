@@ -39,9 +39,9 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
         WriteKeyValuePair(key, val);
     }
 
-    void WriteKeyValuePair(string key, object val)
+    void WriteKeyValuePair(string key, object? val)
     {
-        ObjectWriter.Write($"{key}:{val}{Environment.NewLine}");
+        ObjectWriter.Write($"{key}:{val ?? default}{Environment.NewLine}");
     }
     
     public void Write(Beatmap obj)

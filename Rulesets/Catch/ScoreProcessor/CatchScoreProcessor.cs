@@ -14,7 +14,7 @@ public class CatchScoreProcessor : IScoreProcessor
          return ratio / all;
     }
 
-    public int GetPassedHitObject(ScoreInfo scoreInfo)
+    public int GetPassedHitObjectCount(ScoreInfo scoreInfo)
     {
         return scoreInfo.Count300;
     }
@@ -39,20 +39,20 @@ public class CatchScoreProcessor : IScoreProcessor
     public double GetCountGekiRate(ScoreInfo scoreInfo) => 0;
     
 
-    public GameRanking GetRanking(ScoreInfo scoreInfo)
+    public GameGrade GetGrade(ScoreInfo scoreInfo)
     {
         var acc = GetAccuracy(scoreInfo);
         if (Math.Abs(acc - 1) < 1e-5)
         {
-            return scoreInfo.Mods?.IsHiddenMods ?? false? GameRanking.XH : GameRanking.X;
+            return scoreInfo.Mods?.IsHiddenMods ?? false ? GameGrade.XH : GameGrade.X;
         }
 
         return acc switch
         {
-            > 0.98 => scoreInfo.Mods?.IsHiddenMods ?? false ? GameRanking.SH : GameRanking.S,
-            > 0.94 => GameRanking.A,
-            > 0.9 => GameRanking.B,
-            _ => acc > 0.85 ? GameRanking.C : GameRanking.D
+            > 0.98 => scoreInfo.Mods?.IsHiddenMods ?? false ? GameGrade.SH : GameGrade.S,
+            > 0.94 => GameGrade.A,
+            > 0.9 => GameGrade.B,
+            _ => acc > 0.85 ? GameGrade.C : GameGrade.D
         };
     }
 

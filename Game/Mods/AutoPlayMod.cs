@@ -26,8 +26,8 @@ namespace osuToolsV2.Game.Mods
 
         public override Type[] ConflictMods => new[]
         {
-            typeof( RelaxMod), typeof( AutoPilotMod), typeof( SpunOutMod), typeof( CinemaMod), typeof( SuddenDeathMod),
-            typeof( PerfectMod)
+            typeof(RelaxMod), typeof(AutoPilotMod), typeof(SpunOutMod), typeof(CinemaMod), typeof(SuddenDeathMod),
+            typeof(PerfectMod)
         };
         /// <inheritdoc />
 

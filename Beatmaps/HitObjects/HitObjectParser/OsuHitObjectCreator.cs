@@ -58,10 +58,10 @@ public class OsuHitObjectCreator : IHitObjectCreator
                 slider.CurvePoints.Add(pixel);
             }
             
-            if (slider.CurvePoints.Count == 0)
+            /*if (slider.CurvePoints.Count == 0)
             {
                 throw new InvalidBeatmapException("Slider must have at least one curve point.");
-            }
+            }*/
             slider.SlideTimes = int.Parse(data[6]);
             slider.Length = double.Parse(data[7]);
                     

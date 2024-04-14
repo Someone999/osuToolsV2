@@ -1,6 +1,6 @@
 ﻿namespace osuToolsV2.Beatmaps.HitObjects.Mania;
 
-public class ManiaHold : HitObject, IManiaHitObject
+public class ManiaHold : HitObject, IManiaHitObject, IHasEndTime
 {
     
     public override HitObjectType HitObjectType => HitObjectType.ManiaHold;

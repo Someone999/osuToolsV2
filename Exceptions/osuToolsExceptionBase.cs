@@ -1,6 +1,4 @@
-﻿using osuToolsV2.Game.Mods;
-
-namespace osuToolsV2.Exceptions;
+﻿namespace osuToolsV2.Exceptions;
 
 public class osuToolsExceptionBase : Exception
 {
@@ -13,13 +11,6 @@ public class osuToolsExceptionBase : Exception
     }
     
     public osuToolsExceptionBase(string msg, Exception? innerException) : base(msg, innerException)
-    {
-    }
-}
-
-public class ModConflictedException : Exception
-{
-    public ModConflictedException(Type modType, Mod mod):base($"Mod {modType} conflicted with mod {mod.GetType()} ")
     {
     }
 }

@@ -16,21 +16,23 @@ public class ManiaScoreProcessor : IScoreProcessor
         return ratio / all;
     }
 
-    public int GetPassedHitObject(ScoreInfo scoreInfo)
+    public int GetPassedHitObjectCount(ScoreInfo scoreInfo)
     {
         return scoreInfo.CountGeki + scoreInfo.Count300 + scoreInfo.CountKatu + scoreInfo.Count100 + scoreInfo.Count50 + scoreInfo.CountMiss;
     }
 
     public int GetHitObjectCount(ScoreInfo scoreInfo)
     {
-        var tmpHitObjectCount = scoreInfo.Beatmap?.HitObjects?.Count ?? 0;
+        var hitObjects = scoreInfo.Beatmap?.HitObjects;
+        var tmpHitObjectCount = hitObjects?.Count ?? 0;
         var modList = scoreInfo.Mods;
         if (modList == null)
         {
             return tmpHitObjectCount;
         }
-
-        return modList.Contains(new ManiaScoreV2Mod()) ? tmpHitObjectCount * 2 : tmpHitObjectCount;
+        
+        var hasScoreV2Mod = modList.Any(m => m is ManiaScoreV2Mod);
+        return hasScoreV2Mod ? tmpHitObjectCount * 2 : tmpHitObjectCount;
     }
 
     public double GetCount300Rate(ScoreInfo scoreInfo)
@@ -46,20 +48,20 @@ public class ManiaScoreProcessor : IScoreProcessor
         return scoreInfo.CountGeki / all;
     }
 
-    public GameRanking GetRanking(ScoreInfo scoreInfo)
+    public GameGrade GetGrade(ScoreInfo scoreInfo)
     {
         var acc = GetAccuracy(scoreInfo);
         if (Math.Abs(acc - 1) < 1e-5)
         {
-            return scoreInfo.Mods?.IsHiddenMods ?? false ? GameRanking.XH : GameRanking.X;
+            return scoreInfo.Mods?.IsHiddenMods ?? false ? GameGrade.XH : GameGrade.X;
         }
 
         return acc switch
         {
-            > 0.95 => scoreInfo.Mods?.IsHiddenMods ?? false ? GameRanking.SH : GameRanking.S,
-            > 0.9 => GameRanking.A,
-            > 0.8 => GameRanking.B,
-            _ => GetAccuracy(scoreInfo) > 0.7 ? GameRanking.C : GameRanking.D
+            > 0.95 => scoreInfo.Mods?.IsHiddenMods ?? false ? GameGrade.SH : GameGrade.S,
+            > 0.9 => GameGrade.A,
+            > 0.8 => GameGrade.B,
+            _ => GetAccuracy(scoreInfo) > 0.7 ? GameGrade.C : GameGrade.D
         };
     }
 

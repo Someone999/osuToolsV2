@@ -53,6 +53,7 @@ public class DefaultBeatmapDecoder : IBeatmapDecoder
             switch (type)
             {
                 case StoryBoardEventType.Background:
+                    b.Metadata.BackgroundInfo ??= new BackgroundInfo();
                     b.Metadata.BackgroundInfo.FileName = splitData[2].Trim('"');
                     if (splitData.Length < 4)
                     {
@@ -67,6 +68,7 @@ public class DefaultBeatmapDecoder : IBeatmapDecoder
                     b.Metadata.BackgroundInfo.Y = double.Parse(splitData[4]);
                     break;
                 case StoryBoardEventType.Video:
+                    b.Metadata.VideoInfo ??= new VideoInfo();
                     b.Metadata.VideoInfo.StartTime = double.Parse(splitData[1]);
                     b.Metadata.VideoInfo.FileName = splitData[2].Trim('"');
                     if (splitData.Length < 4)

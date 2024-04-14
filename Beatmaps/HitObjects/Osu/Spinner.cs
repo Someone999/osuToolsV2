@@ -1,9 +1,7 @@
 ﻿namespace osuToolsV2.Beatmaps.HitObjects.Osu;
 
-public class Spinner : HitObject
+public class Spinner : HitObject, IHasEndTime
 {
-
-   
     public override HitObjectType HitObjectType => HitObjectType.Spinner;
   
     public double EndTime { get; set; }
