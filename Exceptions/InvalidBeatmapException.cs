@@ -1,6 +1,6 @@
 ﻿namespace osuToolsV2.Exceptions;
 
-public class InvalidBeatmapException : osuToolsExceptionBase
+public class InvalidBeatmapException : osuToolsException
 {
     public InvalidBeatmapException()
     {

@@ -1,4 +1,5 @@
 ﻿using osuToolsV2.Online.OsuApi.Responses;
+using osuToolsV2.Online.OsuApi.Version2.Authenticating;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Requests;
 

@@ -1,4 +1,4 @@
-﻿namespace osuToolsV2.Online.OsuApi.Version2.Beatmap;
+﻿namespace osuToolsV2.Online.OsuApi.Version2.Users;
 
 public class CurrentUserAttributes
 {

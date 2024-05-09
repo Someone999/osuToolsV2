@@ -29,53 +29,13 @@ namespace osuToolsV2.Game.Mods
                 ScoreMultiplier = 1;
                 return;
             }
-
-            _mods.Sort((x, y) =>
-                Math.Abs(x.ScoreMultiplier - y.ScoreMultiplier) < double.Epsilon ? 0 : x.ScoreMultiplier > y.ScoreMultiplier ? -1 : 1);
-            var multiplier = _mods[0].ScoreMultiplier;
-            double bonus = 0;
-            if (_mods.Count > 1)
-                for (var i = 1; i < _mods.Count; i++)
-                {
-                    var initVal = _mods[i].ScoreMultiplier;
-                    switch (initVal)
-                    {
-                        case > 1:
-                        {
-                            if (multiplier > 1)
-                            {
-                                multiplier += initVal - 1;
-                            }
-                            else
-                            {
-                                multiplier += (initVal - 1) / 2;
-                            }
-
-                            bonus = multiplier switch
-                            {
-                                > 1.3 => 0.02,
-                                > 1.2 => 0.01,
-                                _ => 0
-                            };
-                            break;
-                        }
-                        case < 1:
-                            multiplier *= initVal;
-                            break;
-                    }
-                }
-
-            switch (multiplier)
+            
+            double multiplier = 1;
+            foreach (var mod in _mods)
             {
-                case > 1.3:
-                    multiplier += 0.03;
-                    break;
-                case > 1.15:
-                    multiplier += 0.01;
-                    break;
+                multiplier *= mod.ScoreMultiplier;
             }
-            //if (multiplier >= 1.39) multiplier += 0.02;
-            multiplier += bonus;
+            
             ScoreMultiplier = Math.Round(multiplier, 2);
         }
 

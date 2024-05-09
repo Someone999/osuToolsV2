@@ -2,8 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using osuToolsV2.Online.OsuApi.Responses;
+using osuToolsV2.Online.OsuApi.Version2.Requests;
 
-namespace osuToolsV2.Online.OsuApi.Version2.Requests;
+namespace osuToolsV2.Online.OsuApi.Version2.Authenticating;
 
 public class OsuApiOAuthAuthenticator
 {
@@ -12,7 +13,7 @@ public class OsuApiOAuthAuthenticator
     private readonly HttpClient _httpClient = new HttpClient();
 
     public async Task<HttpApiResponse<OsuApiV2ErrorInfo, OsuOAuthToken>> RequireTokenAsync
-        (OsuApiOAuthAuthenticateParameters parameters, string grantType, string scope)
+        (OsuApiOAuthAuthenticateParameters parameters)
     {
         UriBuilder uriBuilder = new UriBuilder
         {
@@ -21,10 +22,10 @@ public class OsuApiOAuthAuthenticator
             Path = _tokenAllocUri.LocalPath
         };
         Dictionary<string, string> args = new Dictionary<string, string>();
-        args.Add("client_id", parameters.ClientId);
-        args.Add("client_secret", parameters.ClientSecret);
-        args.Add("grant_type", grantType);
-        args.Add("scope", scope);
+        args.Add("client_id", parameters.ClientCredentials.ClientId);
+        args.Add("client_secret", parameters.ClientCredentials.ClientSecret);
+        args.Add("grant_type", parameters.GrantParameters.GrantType);
+        args.Add("scope", string.Join(" ", parameters.GrantParameters.Scopes));
 
         HttpRequestMessage requestMessage = new HttpRequestMessage();
         requestMessage.RequestUri = uriBuilder.Uri;

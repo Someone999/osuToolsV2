@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using osuToolsV2.Database.Beatmap;
+using osuToolsV2.Exceptions;
 using osuToolsV2.Game.Legacy;
 using osuToolsV2.Game.Mods;
 using osuToolsV2.Rulesets.Legacy;
@@ -38,9 +39,10 @@ namespace osuToolsV2.Database.Score
         /// <param name="playtime">游玩的时间，以Tick为单位</param>
         /// <param name="verify">一个值必须为-1的整数</param>
         /// <param name="scoreId">ScoreId</param>
+        /// <param name="targetPracticeTotalAccuracy">开启TargetPractice Mod后的额外Accuracy</param>
         public OsuScoreInfo(LegacyRuleset ruleset, int ver, string bmd5, string name, string rmd5, short count300, short count100,
             short count50, short countGeki, short count200, short cmiss, int score, short maxcombo, bool per, int mods,
-            string empty, long playtime, int verify, long scoreId)
+            string empty, long playtime, int verify, long scoreId, double? targetPracticeTotalAccuracy = null)
         {
             Ruleset = ruleset;
             //System.Windows.Forms.MessageBox.Show(Mode.ToString());
@@ -61,13 +63,12 @@ namespace osuToolsV2.Database.Score
             Perfect = per;
             InternalMods = 
                 ModList.FromLegacyMods((LegacyGameMod)Enum.Parse(typeof(LegacyGameMod), mods.ToString()),
-                    Rulesets.Ruleset.FromLegacyRuleset(ruleset));
+                    Rulesets.Ruleset.FromLegacyRuleset(ruleset), false);
             PlayTime = new DateTime(playtime);
             if (verify != -1 || !string.IsNullOrEmpty(empty)) 
-                throw new ArgumentException("验证失败");
+                throw new InvalidScoreDbFileException("Failed to verify score.");
             ScoreId = scoreId;
-            Debug.Assert(count300 + count100 + count50 + cmiss != 0);
-            
+            TargetPracticeTotalAccuracy = targetPracticeTotalAccuracy;
         }
 
         public IScoreProcessor ScoreProcessor { get; set; }
@@ -117,6 +118,8 @@ namespace osuToolsV2.Database.Score
         ///     分数ID
         /// </summary>
         public long ScoreId { get; }
+        
+        public double? TargetPracticeTotalAccuracy { get; private set; }
         
         /// <summary>
         ///     确定指定的对象是否等于当前对象。

@@ -1,4 +1,6 @@
 ﻿using osuToolsV2.Database.Score;
+using osuToolsV2.Exceptions;
+using osuToolsV2.Game.Legacy;
 using osuToolsV2.GameInfo;
 using osuToolsV2.Rulesets.Legacy;
 
@@ -16,9 +18,10 @@ namespace osuToolsV2.Database
         /// <summary>
         /// 从score.db中获取数据
         /// </summary>
-        public OsuScoreDb()
+        /// <param name="throwWhenError">是否在读取出现错误时抛出异常</param>
+        public OsuScoreDb(bool throwWhenError = true)
         {
-            var info = new OsuInfo();
+            var info = OsuInfo.GetInstance();
             var dbfile = info.OsuDirectory + "scores.db";
             var stream = File.OpenRead(dbfile);
             _reader = new BinaryReader(stream);
@@ -30,30 +33,39 @@ namespace osuToolsV2.Database
             }
             catch (Exception e)
             {
-                Console.WriteLine($"读取时发生错误，请检查文件格式是否正确: {e.Message}");
+                if (throwWhenError)
+                {
+                    throw new InvalidScoreDbFileException("读取时发生错误，请检查文件格式是否正确", e);
+                }
+                
             }
         }
+
         /// <summary>
         /// 从指定的文件中读取数据
         /// </summary>
         /// <param name="dbPath">文件的绝对路径或相对于osu!游戏文件夹的路径</param>
-        public OsuScoreDb(string dbPath)
+        /// <param name="throwWhenError">是否在读取出现错误时抛出异常</param>
+        public OsuScoreDb(string dbPath, bool throwWhenError = true)
         {
             if (!File.Exists(dbPath))
-                dbPath = Path.Combine(new OsuInfo().OsuDirectory , dbPath);
+                dbPath = Path.Combine(OsuInfo.GetInstance().OsuDirectory , dbPath);
             var stream = File.OpenRead(dbPath);
             _reader = new BinaryReader(stream);
             Manifest.Version = _reader.ReadInt32();
             _beatmapnum = _reader.ReadInt32();
+            
             try
             {
                 Read();
             }
             catch (Exception e)
             {
-                Console.WriteLine($"读取时发生错误，请检查文件格式是否正确: {e.Message}");
+                if (throwWhenError)
+                {
+                    throw new InvalidScoreDbFileException("读取时发生错误，请检查文件格式是否正确", e);
+                }
             }
-
         }
 
         /// <summary>
@@ -96,19 +108,22 @@ namespace osuToolsV2.Database
                     var timestamp = GetInt64();
                     var veri = GetInt32();
                     var onlineid = GetInt64();
-                    if (c300 + c100 + c50 + cmiss != 0)
+                    double? targetPracticeAcc = null;
+                    if (mode == LegacyRuleset.Osu && ((LegacyGameMod)mods).HasFlag(LegacyGameMod.Target))
                     {
-                        var newscore = new OsuScoreInfo(mode, ver, beatmapmd5, playername, replaymd5, c300, c100, c50,
-                            c300G, c200, cmiss, score, maxcombo, per, mods, "", timestamp, veri, onlineid);
-                        if (_score.Count > 0)
-                        {
-                            if (newscore.PlayTime != _score.Last().PlayTime)
-                                _score.Add(newscore);
-                        }
-                        else
-                        {
+                        targetPracticeAcc = _reader.ReadDouble();
+                    }
+                    
+                    var newscore = new OsuScoreInfo(mode, ver, beatmapmd5, playername, replaymd5, c300, c100, c50,
+                        c300G, c200, cmiss, score, maxcombo, per, mods, "", timestamp, veri, onlineid, targetPracticeAcc);
+                    if (_score.Count > 0)
+                    {
+                        if (newscore.PlayTime != _score.Last().PlayTime)
                             _score.Add(newscore);
-                        }
+                    }
+                    else
+                    {
+                        _score.Add(newscore);
                     }
                 }
             }

@@ -89,7 +89,7 @@ public class ApiV2BeatmapExtended
     public string? Checksum { get; set; }
     
     [JsonProperty("beatmapset")]
-    public ApiV2BeatmapSetExtened? BeatmapSet { get; internal set; } 
+    public ApiV2BeatmapSetExtended? BeatmapSet { get; internal set; } 
     
     [JsonProperty("failtimes")]
     public FailTimes FailTimes { get; internal set; } = new FailTimes();

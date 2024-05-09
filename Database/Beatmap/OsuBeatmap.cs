@@ -124,7 +124,7 @@ namespace osuToolsV2.Database.Beatmap
         /// <returns></returns>
         public osuToolsV2.Beatmaps.Beatmap ToBeatmap()
         {
-            OsuInfo info = new OsuInfo();
+            OsuInfo info = OsuInfo.GetInstance();
             return new DefaultBeatmapDecoder(Path.Combine(info.BeatmapDirectory, FolderName,
                 Metadata.BeatmapFileName ?? "")).Decode();
         }

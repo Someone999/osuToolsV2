@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using osuToolsV2.Online.OsuApi.Responses;
+using osuToolsV2.Online.OsuApi.Version2.Authenticating;
 using osuToolsV2.Online.OsuApi.Version2.Beatmap;
 using osuToolsV2.Rulesets.Taiko.Mods;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Requests;
 
-public class BeatmapQueryRequest : IApiV2Request<ApiV2BeatmapExtended, int>
+public class ApiV2BeatmapQueryRequest : IApiV2Request<ApiV2BeatmapExtended, int>
 {
     public async Task<OsuApiV2Response<ApiV2BeatmapExtended>> QueryAsync(OsuOAuthToken token, OsuApiQueryContext<int> context)
     {

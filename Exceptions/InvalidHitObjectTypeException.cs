@@ -3,7 +3,7 @@ using osuToolsV2.Rulesets;
 
 namespace osuToolsV2.Exceptions;
 
-public class InvalidHitObjectTypeException : osuToolsExceptionBase
+public class InvalidHitObjectTypeException : osuToolsException
 {
     protected InvalidHitObjectTypeException()
     {

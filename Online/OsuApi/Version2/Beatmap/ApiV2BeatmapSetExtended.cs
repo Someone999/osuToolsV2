@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Beatmap;
 
-public class ApiV2BeatmapSetExtened
+public class ApiV2BeatmapSetExtended
 {
     [JsonProperty("artist")]
     public string Artist { get; set; }= "";
@@ -113,9 +113,4 @@ public class ApiV2BeatmapSetExtened
     
     [JsonProperty]
     public List<ApiV2Event<BeatmapSetEventData>>? Events { get; internal set; }
-}
-
-public class ApiV2Event<TData>
-{
-    
 }

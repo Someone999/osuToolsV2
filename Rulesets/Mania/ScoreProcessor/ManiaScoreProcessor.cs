@@ -1,4 +1,5 @@
 ﻿using osuToolsV2.Game;
+using osuToolsV2.Game.Mods;
 using osuToolsV2.Rulesets.Mania.Mods;
 using osuToolsV2.Score;
 using osuToolsV2.Score.ScoreProcessor;
@@ -11,9 +12,31 @@ public class ManiaScoreProcessor : IScoreProcessor
     {
         int all = scoreInfo.CountGeki + scoreInfo.CountKatu + scoreInfo.Count300 + 
                   scoreInfo.Count100 + scoreInfo.Count50 + scoreInfo.CountMiss;
-        double ratio = scoreInfo.CountGeki + scoreInfo.Count300 + scoreInfo.CountKatu * (2 / 3.0) + 
-                       scoreInfo.Count100 * (1 / 3.0) + scoreInfo.Count50 * (1 / 6.0);
-        return ratio / all;
+
+        double decay;
+        if (scoreInfo.Mods == null)
+        {
+            decay = 1.0;
+        }
+        else
+        {
+            decay = scoreInfo.Mods.Any(m => m is ScoreV2Mod) ? 0.9836 : 1.0;
+        }
+
+        const double countGekiRatio = 1.0;
+        double count300Ratio = 1.0 * decay;
+        double countKatuRatio = 2.0 / 3 * decay;
+        double count100Ratio = 1.0 / 3 * decay;
+        double count50Ratio = 1.0 / 6 * decay;
+
+        double countGekiFactor = scoreInfo.CountGeki * countGekiRatio;
+        double count300Factor = scoreInfo.Count300 * count300Ratio;
+        double countKatuFactor = scoreInfo.CountKatu * countKatuRatio;
+        double count100Factor = scoreInfo.Count100 * count100Ratio;
+        double count50Factor = scoreInfo.Count50 * count50Ratio;
+        double totalFactor = countGekiFactor + count300Factor + countKatuFactor + count100Factor + count50Factor;
+        
+        return totalFactor / all;
     }
 
     public int GetPassedHitObjectCount(ScoreInfo scoreInfo)

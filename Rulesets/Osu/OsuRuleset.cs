@@ -22,7 +22,7 @@ public class OsuRuleset : Ruleset
             new OsuDoubleTimeMod(),new OsuNightCoreMod(),new OsuHiddenMod(),
             new OsuFlashlightMod(),new OsuRelaxMod(),new OsuAutoPilotMod(),
             new OsuSpunOutMod(),new OsuAutoPlayMod(),new OsuCinemaMod(),
-            new OsuScoreV2Mod()
+            new OsuScoreV2Mod(), new OsuTargetPracticeMod()
         };
 
 }

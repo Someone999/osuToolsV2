@@ -10,21 +10,3 @@ public class BeatmapSetEventData
     [JsonProperty]
     public string Url { get; internal set; } = "";
 }
-
-public class ApiV2Genre
-{
-    [JsonProperty]
-    public int Id { get; internal set; }
-    
-    [JsonProperty]
-    public string Name { get; internal set; } = "";
-}
-
-public class ApiV2Language
-{
-    [JsonProperty]
-    public int Id { get; internal set; }
-    
-    [JsonProperty]
-    public string Name { get; internal set; } = "";
-}

@@ -1,4 +1,4 @@
-﻿namespace osuToolsV2.Online.OsuApi.Version2.Requests;
+﻿namespace osuToolsV2.Online.OsuApi.Version2.Authenticating;
 
 public static class OsuApiScope
 {

@@ -18,3 +18,4 @@ public class ApiV2ConvertBeatmap : IBeatmap
     public Ruleset Ruleset { get; set; } = Ruleset.FromLegacyRuleset(LegacyRuleset.Osu);
     public double Bpm { get; set; }
 }
+

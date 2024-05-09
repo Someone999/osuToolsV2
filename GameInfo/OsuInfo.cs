@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using osuToolsV2.Utils;
 
 namespace osuToolsV2.GameInfo
 {
@@ -22,9 +23,26 @@ namespace osuToolsV2.GameInfo
             var processes = Process.GetProcessesByName("osu!");
             foreach (var process in processes)
             {
+                try
+                {
+                    if (process.HasExited)
+                    {
+                        continue;
+                    }
+                }
+                catch (Exception)
+                {
+                    continue;
+                    // An invalid process.
+                }
+                
+                
                 bool isWow64 = true;
                 if (Environment.Is64BitOperatingSystem)
-                    IsWow64Process(process.Handle, ref isWow64);
+                {
+                    isWow64 = ProcessUtil.IsWow64Process(process);
+                }
+                
                 if (process.ProcessName == "osu!" && isWow64)
                 {
                     CurrentProcess = process;
@@ -124,7 +142,7 @@ namespace osuToolsV2.GameInfo
         /// <summary>
         /// 初始化新的OsuInfo对象
         /// </summary>
-        public OsuInfo()
+        private OsuInfo()
         {
             if (FindOsuProcess() != null)
             {
@@ -135,7 +153,10 @@ namespace osuToolsV2.GameInfo
                     throw new FileNotFoundException();
                 SaveAsIni();
             }
-            else ReadFromFile();
+            else
+            {
+                ReadFromFile();
+            }
             var tmp = ReadIniFile(ConfigFilePath);
             foreach (var pair in tmp)
                 _dataDictionary.Add(pair.Key, pair.Value);
@@ -200,6 +221,29 @@ namespace osuToolsV2.GameInfo
             }
             byte[] dataBytes = builder.ToString().ToBytes();
             stream.Write(dataBytes,0,dataBytes.Length);
+        }
+
+        private static readonly object StaticLocker = new object();
+        private static volatile OsuInfo? _ins;
+
+        public static OsuInfo GetInstance()
+        {
+            if (_ins != null)
+            {
+                return _ins;
+            }
+
+            lock (StaticLocker)
+            {
+                if (_ins != null)
+                {
+                    return _ins;
+                }
+
+                _ins = new OsuInfo();
+            }
+
+            return _ins;
         }
     }
 }

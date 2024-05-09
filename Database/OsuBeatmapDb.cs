@@ -22,7 +22,7 @@ namespace osuToolsV2.Database
         /// </summary>
         public OsuBeatmapDb()
         {
-            var info = new OsuInfo();
+            var info = OsuInfo.GetInstance();
             var file = info.OsuDirectory + "osu!.db";
             var stream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             _binReader = new BinaryReader(stream);
@@ -46,7 +46,7 @@ namespace osuToolsV2.Database
         public OsuBeatmapDb(string dbPath)
         {
             if (!File.Exists(dbPath))
-                dbPath = Path.Combine(new OsuInfo().OsuDirectory, dbPath);
+                dbPath = Path.Combine(OsuInfo.GetInstance().OsuDirectory, dbPath);
             var stream = File.Open(dbPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             _binReader = new BinaryReader(stream);
             _dbFilePath = dbPath;

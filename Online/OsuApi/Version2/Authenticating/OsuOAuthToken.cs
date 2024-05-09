@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace osuToolsV2.Online.OsuApi.Version2.Requests;
+namespace osuToolsV2.Online.OsuApi.Version2.Authenticating;
 
 public class OsuOAuthToken
 {

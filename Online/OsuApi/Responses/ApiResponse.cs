@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace osuToolsV2.Online.OsuApi.Responses;
+﻿namespace osuToolsV2.Online.OsuApi.Responses;
 
 public class ApiResponse<TError, TData, TResponseObject>
 {
