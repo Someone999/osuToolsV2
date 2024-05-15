@@ -7,13 +7,26 @@ public class EditorDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjec
 
     public EditorDataObjectWriter(IObjectWriter<TWriterType> objectWriter)
     {
-        ObjectWriter = objectWriter;
+        _writer = objectWriter;
     }
     
-    public IObjectWriter<TWriterType> ObjectWriter { get; }
+    public IObjectWriter<TWriterType> Writer{
+        get => _writer;
+        set
+        {
+            if (IsWriting)
+            {
+                return;
+            }
+
+            _writer = value;
+        }
+    }
+    
+    public bool IsWriting { get; private set; }
     void WriteKeyValuePair(string key, object val)
     {
-        ObjectWriter.Write($"{key}:{val}{Environment.NewLine}");
+        Writer.Write($"{key}:{val}{Environment.NewLine}");
     }
 
     public void Write(object obj)
@@ -27,31 +40,35 @@ public class EditorDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjec
     
     public void Write(Beatmap obj)
     {
-        ObjectWriter.Write($"[Editor]{Environment.NewLine}");
+        IsWriting = true;
+        Writer.Write($"[Editor]{Environment.NewLine}");
         if (obj.Bookmarks.Count != 0)
         {
-            ObjectWriter.Write("Bookmarks: ");
-            ObjectWriter.Write(string.Join(",", obj.Bookmarks.Select(i => i.ToString())));
-            ObjectWriter.Write(Environment.NewLine);
+            Writer.Write("Bookmarks: ");
+            Writer.Write(string.Join(",", obj.Bookmarks.Select(i => i.ToString())));
+            Writer.Write(Environment.NewLine);
         }
 
         WriteKeyValuePair("DistanceSpacing", obj.DistanceSpacing);
         WriteKeyValuePair("BeatDivisor", obj.BeatDivisor);
         WriteKeyValuePair("GridSize", obj.GridSize);
         WriteKeyValuePair("TimelineZoom", obj.TimelineZoom);
-        ObjectWriter.Write(Environment.NewLine);
+        Writer.Write(Environment.NewLine);
+        IsWriting = false;
     }
     
-    public bool NeedClose => ObjectWriter.NeedClose;
+    public bool NeedClose => Writer.NeedClose;
     public void Close()
     {
         if (NeedClose)
         {
-            ObjectWriter.Close();
+            Writer.Close();
         }
     }
     
     private bool _disposed;
+    private IObjectWriter<TWriterType> _writer;
+
     public void Dispose()
     {
         if (_disposed)
@@ -59,7 +76,7 @@ public class EditorDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjec
             return;
         }
         
-        ObjectWriter.Dispose();
+        Writer.Dispose();
         _disposed = true;
     }
 }

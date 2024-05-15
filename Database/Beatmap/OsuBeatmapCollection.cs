@@ -23,7 +23,17 @@ namespace osuToolsV2.Database.Beatmap
             BeatmapSetId
         }
 
-        private readonly List<OsuBeatmap> _beatmaps = new List<OsuBeatmap>();
+        public OsuBeatmapCollection(IEnumerable<OsuBeatmap> osuBeatmaps)
+        {
+            _beatmaps = new List<OsuBeatmap>(osuBeatmaps);
+        }
+        
+        public OsuBeatmapCollection()
+        {
+            _beatmaps = new List<OsuBeatmap>();
+        }
+
+        private readonly List<OsuBeatmap> _beatmaps;
 
         /// <summary>
         ///     存储的<seealso cref="OsuBeatmap" />

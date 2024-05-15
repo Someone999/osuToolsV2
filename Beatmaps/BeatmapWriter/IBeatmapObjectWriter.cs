@@ -4,7 +4,7 @@ using osuToolsV2.Writer;
 
 namespace osuToolsV2.Beatmaps.BeatmapWriter;
 
-public interface IBeatmapObjectWriter<out TWriterType> : IObjectWriter<Beatmap, TWriterType>
+public interface IBeatmapObjectWriter<TWriterType> : IObjectWriter<Beatmap, TWriterType>
 {
     IObjectWriter<Beatmap, TWriterType>? GeneralDataObjectWriter { get; }
     IObjectWriter<Beatmap, TWriterType>? EditorDataObjectWriter { get; }

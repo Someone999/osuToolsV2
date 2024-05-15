@@ -8,10 +8,23 @@ public class HitObjectsObjectWriter<TWriterType> : IObjectWriter<List<IHitObject
 
     public HitObjectsObjectWriter(IObjectWriter<TWriterType> objectWriter)
     {
-        ObjectWriter = objectWriter;
+        _writer = objectWriter;
     }
     
-    public IObjectWriter<TWriterType> ObjectWriter { get; }
+    public IObjectWriter<TWriterType> Writer {
+        get => _writer;
+        set
+        {
+            if (IsWriting)
+            {
+                return;
+            }
+
+            _writer = value;
+        }
+    }
+    
+    public bool IsWriting { get; private set; }
     public void Write(object obj)
     {
         if (obj is not List<IHitObject> hitObjects)
@@ -22,24 +35,28 @@ public class HitObjectsObjectWriter<TWriterType> : IObjectWriter<List<IHitObject
     }
     public void Write(List<IHitObject> obj)
     {
-        ObjectWriter.Write($"[HitObjects]{Environment.NewLine}");
+        IsWriting = true;
+        Writer.Write($"[HitObjects]{Environment.NewLine}");
         foreach (var hitObject in obj)
         {
-            ObjectWriter.Write(hitObject.ToFileFormat() + Environment.NewLine);
+            Writer.Write(hitObject.ToFileFormat() + Environment.NewLine);
         }
-        ObjectWriter.Write(Environment.NewLine);
+        Writer.Write(Environment.NewLine);
+        IsWriting = false;
     }
     
-    public bool NeedClose => ObjectWriter.NeedClose;
+    public bool NeedClose => Writer.NeedClose;
     public void Close()
     {
         if (NeedClose)
         {
-            ObjectWriter.Close();
+            Writer.Close();
         }
     }
     
     private bool _disposed;
+    private IObjectWriter<TWriterType> _writer;
+
     public void Dispose()
     {
         if (_disposed)
@@ -47,7 +64,7 @@ public class HitObjectsObjectWriter<TWriterType> : IObjectWriter<List<IHitObject
             return;
         }
         
-        ObjectWriter.Dispose();
+        Writer.Dispose();
         _disposed = true;
     }
 }

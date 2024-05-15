@@ -2,14 +2,17 @@
 
 public static class BinaryReaderExtendMethods
 {
-    public static string? ReadOsuString(this BinaryReader reader)
+    public static string ReadOsuString(this BinaryReader reader)
     {
-        if (reader.ReadByte() == 0x0B)
+        var indicator = reader.ReadByte();
+        switch (indicator)
         {
-            return reader.ReadString();
+            case 0x00:
+                return string.Empty;
+            case 0x0B:
+                return reader.ReadString();
+            default: 
+                throw new FormatException("Not a valid string format");
         }
-        
-        reader.BaseStream.Position--;
-        return null;
     }
 }

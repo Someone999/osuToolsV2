@@ -5,8 +5,6 @@
     /// </summary>
     public class OsuManifest
     {
-       
-
         /// <summary>
         ///     当前游戏的版本。
         /// </summary>
@@ -35,7 +33,7 @@
         /// <summary>
         ///     谱面的数目。
         /// </summary>
-        public int NumberOfBeatmap { get; internal set; }
+        public int BeatmapCount { get; internal set; }
 
         /// <summary>
         ///     当前登录用户所拥有的权限

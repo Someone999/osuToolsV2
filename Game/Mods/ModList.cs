@@ -67,7 +67,7 @@ namespace osuToolsV2.Game.Mods
             var originalMods = _mods;
             _mods = new List<Mod>();
             Dictionary<string, Mod> avaMods =
-                ruleset.AvailableMods.ToDictionary(key => key.ShortName, _ => _);
+                ruleset.AvailableMods.ToDictionary(key => key.ShortName, m => m);
             var matched = 
                 from originalMod in originalMods 
                 where avaMods.ContainsKey(originalMod.Name) 
@@ -78,29 +78,71 @@ namespace osuToolsV2.Game.Mods
                 Add(mod, false);
             }
         }
+
+
+        private Dictionary<Mod, HashSet<Type>>
+            _modConflictCache = new Dictionary<Mod, HashSet<Type>>();
+
+        private void AddConflictCache(Mod mod)
+        {
+            _modConflictCache.TryAdd(mod, mod.ConflictMods.ToHashSet());
+        }
+
+        private bool IsConflict(Mod mod, Type modType)
+        {
+            AddConflictCache(mod);
+            var modSet = _modConflictCache[mod];
+            var isEmpty = modSet.Count == 0;
+            var isConflict = isEmpty || modSet.Contains(modType);
+            return isConflict;
+        }
         
         public void Add(Mod m, bool throwWhenError)
         {
+            List<Mod> removeMods = new List<Mod>();
             foreach (var mod in _mods)
             {
-                foreach (var conflictMod in mod.ConflictMods)
+                bool isConflict = IsConflict(mod, m.GetType());
+                
+                if (!isConflict)
                 {
-                    if (!conflictMod.IsInstanceOfType(m)) 
-                        continue;
-                    if (throwWhenError)
-                    {
-                        throw new ModConflictedException(mod.GetType(), m);
-                    }
-                    return;
+                    continue;
+                }
+
+                if (throwWhenError)
+                {
+                    throw new ModConflictedException(m.GetType(), mod);
+                }
+                
+                removeMods.Add(mod);
+            }
+
+            if (removeMods.Count > 0)
+            {
+                foreach (var removeMod in removeMods)
+                {
+                    _mods.Remove(removeMod);
                 }
             }
+            
             _mods.Add(m);
             RecalculateProperties();
+        }
+
+        public void Add<TMod>(bool throwWhenError = false) where TMod: Mod, new()
+        {
+            Add(new TMod(), throwWhenError);
         }
 
         public void Remove(Mod m)
         {
             _mods.Remove(m);
+            RecalculateProperties();
+        }
+        
+        public void Remove<TMod>() where TMod: Mod
+        {
+            _mods.RemoveAll(m => m is TMod);
             RecalculateProperties();
         }
 
@@ -110,11 +152,11 @@ namespace osuToolsV2.Game.Mods
             RecalculateProperties();
         }
 
-        public static ModList FromModArray(Mod[] modarr)
+        public static ModList FromModArray(Mod[] modArr)
         {
             ModList list = new ModList
             {
-                _mods = new List<Mod>(modarr)
+                _mods = new List<Mod>(modArr)
             };
             list.RecalculateProperties();
             return list;

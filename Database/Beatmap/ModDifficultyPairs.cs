@@ -5,9 +5,9 @@ namespace osuToolsV2.Database.Beatmap
     /// <summary>
     ///     包含指定模式的指定Mods与Star的键值对。
     /// </summary>
-    public class DifficultyRate
+    public class ModDifficultyPairs
     {
-        internal Dictionary<LegacyRuleset, Dictionary<int, double>> Difficuties =
+        private readonly Dictionary<LegacyRuleset, Dictionary<int, double>> _difficulties =
             new Dictionary<LegacyRuleset, Dictionary<int, double>>();
 
         /// <summary>
@@ -17,22 +17,16 @@ namespace osuToolsV2.Database.Beatmap
         /// <returns></returns>
         public Dictionary<int, double> this[LegacyRuleset mode]
         {
-            get
-            {
-                try
-                {
-                    return Difficuties[mode];
-                }
-                catch
-                {
-                    return new Dictionary<int, double> { { 0, 0 } };
-                }
-            }
+            get => _difficulties.TryGetValue(mode, out var diff)
+                    ? diff
+                    : new Dictionary<int, double> { { 0, 0 } };
+
+            internal set => _difficulties[mode] = value;
         }
 
         internal void Add(LegacyRuleset mode, int modCombine, double stars)
         {
-            Difficuties[mode].Add(modCombine, stars);
+            _difficulties[mode].Add(modCombine, stars);
         }
 
         /// <summary>
@@ -43,14 +37,12 @@ namespace osuToolsV2.Database.Beatmap
         /// <returns></returns>
         public double GetStars(LegacyRuleset mode, int modCombine)
         {
-            try
-            {
-                return Difficuties[mode][modCombine];
-            }
-            catch
+            if (!_difficulties.TryGetValue(mode, out var modDifficultyPair))
             {
                 return 0;
             }
+
+            return modDifficultyPair.GetValueOrDefault(modCombine, 0);
         }
 
         /// <summary>
@@ -62,14 +54,12 @@ namespace osuToolsV2.Database.Beatmap
         /// <returns></returns>
         public void SetStar(LegacyRuleset mode, int modCombine, double stars)
         {
-            try
+            if (!_difficulties.TryGetValue(mode, out var modDifficultyPair))
             {
-                Difficuties[mode][modCombine] = stars;
+                return;
             }
-            catch
-            {
-                // ignored
-            }
+
+            modDifficultyPair[modCombine] = stars;
         }
 
         /// <summary>
@@ -79,7 +69,7 @@ namespace osuToolsV2.Database.Beatmap
         /// <param name="dict"></param>
         public void SetModeDict(LegacyRuleset mode, Dictionary<int, double> dict)
         {
-            Difficuties[mode] = dict;
+            _difficulties[mode] = dict;
         }
     }
 }

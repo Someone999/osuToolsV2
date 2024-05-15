@@ -7,10 +7,23 @@ public class EventsObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjectWri
 
     public EventsObjectWriter(IObjectWriter<TWriterType> objectWriter)
     {
-        ObjectWriter = objectWriter;
+        _writer = objectWriter;
     }
     
-    public IObjectWriter<TWriterType> ObjectWriter { get; }
+    public IObjectWriter<TWriterType> Writer{
+        get => _writer;
+        set
+        {
+            if (IsWriting)
+            {
+                return;
+            }
+
+            _writer = value;
+        }
+    }
+    
+    public bool IsWriting { get; private set; }
     public void Write(object obj)
     {
         if (obj is not Beatmap beatmap)
@@ -22,24 +35,25 @@ public class EventsObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjectWri
     }
     public void Write(Beatmap obj)
     {
-        ObjectWriter.Write($"[Events]{Environment.NewLine}");
+        IsWriting = true;
+        Writer.Write($"[Events]{Environment.NewLine}");
         if (obj.BreakTimes.Count > 0)
         {
             foreach (var breakTime in obj.BreakTimes)
             {
-                ObjectWriter.Write(breakTime.ToFileFormat() + Environment.NewLine);
+                Writer.Write(breakTime.ToFileFormat() + Environment.NewLine);
             }
         }
 
         if (obj.Metadata.BackgroundInfo is { HasBackground: true })
         {
             var bgInfo = obj.Metadata.BackgroundInfo;
-            ObjectWriter.Write($"0,0,\"{bgInfo.FileName}\",{bgInfo.X},{bgInfo.Y}{Environment.NewLine}");
+            Writer.Write($"0,0,\"{bgInfo.FileName}\",{bgInfo.X},{bgInfo.Y}{Environment.NewLine}");
         }
         if (obj.Metadata.VideoInfo is { HasVideo: true })
         {
             var viInfo = obj.Metadata.VideoInfo;
-            ObjectWriter.Write($"1,0,\"{viInfo.FileName},{viInfo.X},{viInfo.Y}\"{Environment.NewLine}");
+            Writer.Write($"1,0,\"{viInfo.FileName},{viInfo.X},{viInfo.Y}\"{Environment.NewLine}");
         }
 
         if (obj.InlineStoryBoardCommand == null)
@@ -49,20 +63,24 @@ public class EventsObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjectWri
         
         foreach (var command in obj.InlineStoryBoardCommand)
         {
-            ObjectWriter.Write(command.ToFileContent() + Environment.NewLine);
+            Writer.Write(command.ToFileContent() + Environment.NewLine);
         }
+
+        IsWriting = false;
     }
     
-    public bool NeedClose => ObjectWriter.NeedClose;
+    public bool NeedClose => Writer.NeedClose;
     public void Close()
     {
         if (NeedClose)
         {
-            ObjectWriter.Close();
+            Writer.Close();
         }
     }
     
     private bool _disposed;
+    private IObjectWriter<TWriterType> _writer;
+
     public void Dispose()
     {
         if (_disposed)
@@ -70,7 +88,7 @@ public class EventsObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjectWri
             return;
         }
         
-        ObjectWriter.Dispose();
+        Writer.Dispose();
         _disposed = true;
     }
 }

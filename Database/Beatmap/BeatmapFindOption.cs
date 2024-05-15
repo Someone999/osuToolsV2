@@ -2,5 +2,6 @@
 
 public enum BeatmapFindOption
 {
-    Contains,NotContains
+    Contains,
+    NotContains
 }

@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using HsManCommonLibrary.NestedValues.NestedValueAdapters;
 using HsManCommonLibrary.NestedValues.Utils;
+using HsManCommonLibrary.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using osuToolsV2.Beatmaps;
@@ -12,12 +14,16 @@ using osuToolsV2.Beatmaps.HitObjects;
 using osuToolsV2.Database;
 using osuToolsV2.Database.Score;
 using osuToolsV2.Game.Legacy;
+using osuToolsV2.Game.Mods;
 using osuToolsV2.GameInfo;
 using osuToolsV2.Online.OsuApi.Version1;
 using osuToolsV2.Online.OsuApi.Version2.Authenticating;
 using osuToolsV2.Online.OsuApi.Version2.Beatmap.Difficulties;
 using osuToolsV2.Online.OsuApi.Version2.Requests;
+using osuToolsV2.Reader;
 using osuToolsV2.Replays;
+using osuToolsV2.Rulesets;
+using osuToolsV2.Rulesets.Legacy;
 using osuToolsV2.Rulesets.Mania.Mods;
 using osuToolsV2.Rulesets.Osu.Mods;
 using osuToolsV2.Score;
@@ -69,7 +75,7 @@ public class Class1
             throw;
         }*/
 
-        OsuApiOAuthAuthenticator apiOAuthAuthenticator = new OsuApiOAuthAuthenticator();
+        /*OsuApiOAuthAuthenticator apiOAuthAuthenticator = new OsuApiOAuthAuthenticator();
         OsuApiOAuthAuthenticateParameters authAuthenticateParameters = new OsuApiOAuthAuthenticateParameters();
         authAuthenticateParameters.ClientCredentials.ClientId = "2208";
         authAuthenticateParameters.ClientCredentials.ClientSecret = "c388i4oeP8e8PxHZogS0faXkmhbuWmCvvRVLWnOl";
@@ -80,9 +86,29 @@ public class Class1
         ApiV2BeatmapDifficultyAttributesQueryRequest<ManiaBeatmapDifficultyAttribute> request =
             new ApiV2BeatmapDifficultyAttributesQueryRequest<ManiaBeatmapDifficultyAttribute>();
         var r = request.QueryAsync(token.Result.Data,
-            OsuApiQueryContext<ApiV2BeatmapDifficultyAttributesQueryParameter>.Create(parameter)).Result.Data;
+            OsuApiQueryContext<ApiV2BeatmapDifficultyAttributesQueryParameter>.Create(parameter)).Result.Data;*/
 
 
+        /*var replyDir = @"D:\a\s\osu\osu!\Replays\";
+        var fileName = "2668585799 - Feint - Tower Of Heaven (You Are Slaves) [Another] (2024-05-13) Osu.osr";
+        var targetFileName =
+            "2668585799 - Feint - Tower Of Heaven (You Are Slaves) [Another] (2024-05-13) NoHD Osu.osr";
+        var dir = Path.Combine(replyDir, fileName);
+        var tDir = Path.Combine(replyDir, targetFileName);
+        Replay replay = Replay.ReadFromFile(dir);
+        //replay.ScoreInfo.Mods?.Add<OsuDoubleTimeMod>();
+        replay.ScoreInfo.Mods?.Remove<HiddenMod>();
+        //replay.ScoreInfo.Mods?.Add<OsuFlashlightMod>();
+        replay.ReplayMd5 = StringUtils.GenerateRandomString(16);
+        var f = ReplayFrames.ReadFromCompressedData(replay.AdditionalData);
+        f.ApplyMods(replay.ScoreInfo.Mods);
 
+        replay.AdditionalData = f.Compress();
+        replay.WriteToFile(tDir);*/
+
+        OsuScoreDbObjectReader scoreDbObjectReader = new OsuScoreDbObjectReader();
+        OsuBeatmapDbObjectReader beatmapDbObjectReader = new OsuBeatmapDbObjectReader();
+        var obj = scoreDbObjectReader.Read();
+        var b = obj!.Scores[0].GetOsuBeatmap(beatmapDbObjectReader.Read());
     }
 }

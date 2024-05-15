@@ -3,6 +3,7 @@ using osuToolsV2.Database.Beatmap;
 using osuToolsV2.Exceptions;
 using osuToolsV2.Game.Legacy;
 using osuToolsV2.Game.Mods;
+using osuToolsV2.Reader;
 using osuToolsV2.Rulesets.Legacy;
 using osuToolsV2.Score;
 using osuToolsV2.Score.ScoreProcessor;
@@ -14,61 +15,22 @@ namespace osuToolsV2.Database.Score
     /// </summary>
     public class OsuScoreInfo
     {
-        private static OsuBeatmapDb _currentDb = new OsuBeatmapDb();
-        internal ModList InternalMods;
-
-        /// <summary>
-        ///     使用特定的数据来构造一个ScoreDBData对象
-        /// </summary>
-        /// <param name="ruleset">游戏模式</param>
-        /// <param name="ver">游戏版本</param>
-        /// <param name="bmd5">谱面的MD5</param>
-        /// <param name="name">玩家名</param>
-        /// <param name="rmd5">回放的MD5</param>
-        /// <param name="count300">300的数量</param>
-        /// <param name="count100">100的数量</param>
-        /// <param name="count50">50的数量</param>
-        /// <param name="countGeki">激或彩300的数量</param>
-        /// <param name="count200">喝或200的数量</param>
-        /// <param name="cmiss">Miss的数量</param>
-        /// <param name="score">分数</param>
-        /// <param name="maxcombo">最大连击</param>
-        /// <param name="per">是否为Perfect</param>
-        /// <param name="mods">使用了的Mod的整数形式</param>
-        /// <param name="empty">一个必须为空的字符串</param>
-        /// <param name="playtime">游玩的时间，以Tick为单位</param>
-        /// <param name="verify">一个值必须为-1的整数</param>
-        /// <param name="scoreId">ScoreId</param>
-        /// <param name="targetPracticeTotalAccuracy">开启TargetPractice Mod后的额外Accuracy</param>
-        public OsuScoreInfo(LegacyRuleset ruleset, int ver, string bmd5, string name, string rmd5, short count300, short count100,
-            short count50, short countGeki, short count200, short cmiss, int score, short maxcombo, bool per, int mods,
-            string empty, long playtime, int verify, long scoreId, double? targetPracticeTotalAccuracy = null)
+        public OsuScoreInfo(ScoreInfo scoreInfo, int gameVersion, string beatmapMd5, string replayMd5)
         {
-            Ruleset = ruleset;
-            //System.Windows.Forms.MessageBox.Show(Mode.ToString());
-            ScoreProcessor = Rulesets.Ruleset.FromLegacyRuleset(ruleset).CreateScoreProcessor();
-            ScoreInfo = new ScoreInfo();
-            GameVersion = ver;
-            BeatmapMd5 = bmd5;
-            ReplayMd5 = rmd5;
-            PlayerName = name;
-            ScoreInfo.CountGeki = countGeki;
-            ScoreInfo.Count300 = count300;
-            ScoreInfo.CountKatu = count200;
-            ScoreInfo.Count100 = count100;
-            ScoreInfo.Count50 = count50;
-            ScoreInfo.CountMiss = cmiss;
-            ScoreInfo.Score = score;
-            ScoreInfo.MaxCombo = maxcombo;
-            Perfect = per;
-            InternalMods = 
-                ModList.FromLegacyMods((LegacyGameMod)Enum.Parse(typeof(LegacyGameMod), mods.ToString()),
-                    Rulesets.Ruleset.FromLegacyRuleset(ruleset), false);
-            PlayTime = new DateTime(playtime);
-            if (verify != -1 || !string.IsNullOrEmpty(empty)) 
-                throw new InvalidScoreDbFileException("Failed to verify score.");
-            ScoreId = scoreId;
-            TargetPracticeTotalAccuracy = targetPracticeTotalAccuracy;
+            ScoreInfo = scoreInfo;
+            var legacyRuleset = scoreInfo.Ruleset?.LegacyRuleset;
+            if (legacyRuleset == null)
+            {
+                throw new InvalidOperationException("Unknown ruleset");
+            }
+                
+            Ruleset = legacyRuleset.Value;
+            ScoreProcessor = Rulesets.Ruleset.FromLegacyRuleset(Ruleset).CreateScoreProcessor();
+            PlayerName = scoreInfo.PlayerName ?? "";
+            PlayTime = scoreInfo.PlayTime;
+            GameVersion = gameVersion;
+            BeatmapMd5 = beatmapMd5;
+            ReplayMd5 = replayMd5;
         }
 
         public IScoreProcessor ScoreProcessor { get; set; }
@@ -99,15 +61,16 @@ namespace osuToolsV2.Database.Score
         public string ReplayMd5 { get; }
 
         public ScoreInfo ScoreInfo { get; private set; }
+
         /// <summary>
         ///     是否达成Perfect判定
         /// </summary>
-        public bool Perfect { get; }
+        public bool Perfect => ScoreInfo.Perfect;
 
         /// <summary>
         ///     本次游戏使用的Mod
         /// </summary>
-        public Mod[] Mods => InternalMods.ToArray();
+        public Mod[] Mods => ScoreInfo.Mods?.ToArray() ?? Array.Empty<Mod>();
 
         /// <summary>
         ///     游玩时间
@@ -117,9 +80,9 @@ namespace osuToolsV2.Database.Score
         /// <summary>
         ///     分数ID
         /// </summary>
-        public long ScoreId { get; }
+        public long ScoreId { get; internal set; }
         
-        public double? TargetPracticeTotalAccuracy { get; private set; }
+        public double? TargetPracticeTotalAccuracy { get; internal set; }
         
         /// <summary>
         ///     确定指定的对象是否等于当前对象。
@@ -150,9 +113,9 @@ namespace osuToolsV2.Database.Score
         /// <returns>
         /// 成功返回相应谱面，失败返回null
         /// </returns>
-        public OsuBeatmap? GetOsuBeatmap()
+        public OsuBeatmap? GetOsuBeatmap(OsuBeatmapDb beatmapDb)
         {
-            return _currentDb.Beatmaps?.FindByMd5(BeatmapMd5);
+            return beatmapDb.Beatmaps.FindByMd5(BeatmapMd5);
         }
 
         /// <summary>

@@ -6,14 +6,15 @@ public interface IObjectWriter
     void Write(object obj);
     bool NeedClose { get; }
     void Close();
+    bool IsWriting { get; }
 }
 
-public interface IObjectWriter<out TWriter> : IDisposable, IObjectWriter
+public interface IObjectWriter<TWriter> : IDisposable, IObjectWriter
 {
-    TWriter ObjectWriter { get; }
+    TWriter Writer { get; set; }
 }
 
-public interface IObjectWriter<in TWriteObject, out TWriter> : IObjectWriter<TWriter>
+public interface IObjectWriter<in TWriteObject, TWriter> : IObjectWriter<TWriter>
 {
     void Write(TWriteObject obj);
 }

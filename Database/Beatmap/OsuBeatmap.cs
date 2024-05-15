@@ -15,7 +15,7 @@ namespace osuToolsV2.Database.Beatmap
     /// </summary>
     public class OsuBeatmap : IBeatmap
     {
-        internal List<OsuBeatmapTimingPoint> TimingPoints = new List<OsuBeatmapTimingPoint>();
+        internal List<OsuBeatmapTimingPoint> TimingPointsInternal = new List<OsuBeatmapTimingPoint>();
 
         /// <summary>
         ///     谱面的难度星级
@@ -88,7 +88,7 @@ namespace osuToolsV2.Database.Beatmap
         /// <summary>
         ///     谱面的时间点
         /// </summary>
-        public IReadOnlyList<OsuBeatmapTimingPoint> TimePoints => TimingPoints.AsReadOnly();
+        public IReadOnlyList<OsuBeatmapTimingPoint> TimingPoints => TimingPointsInternal.AsReadOnly();
 
         /// <summary>
         ///     谱面ID
@@ -103,7 +103,7 @@ namespace osuToolsV2.Database.Beatmap
         /// <summary>
         ///     包含部分Mod与难度星级的字典
         /// </summary>
-        public DifficultyRate ModStarPair { get; internal set; } = new DifficultyRate();
+        public ModDifficultyPairs ModStarPair { get; internal set; } = new ModDifficultyPairs();
 
         /// <summary>
         /// </summary>
@@ -125,8 +125,8 @@ namespace osuToolsV2.Database.Beatmap
         public osuToolsV2.Beatmaps.Beatmap ToBeatmap()
         {
             OsuInfo info = OsuInfo.GetInstance();
-            return new DefaultBeatmapDecoder(Path.Combine(info.BeatmapDirectory, FolderName,
-                Metadata.BeatmapFileName ?? "")).Decode();
+            return new DefaultFileBeatmapReader(Path.Combine(info.BeatmapDirectory, FolderName,
+                Metadata.BeatmapFileName ?? "")).Read();
         }
 
         /// <summary>
@@ -171,14 +171,14 @@ namespace osuToolsV2.Database.Beatmap
                     return _bpm;
                 }
                 Dictionary<double, double> bpmTime = new Dictionary<double, double>();
-                var tmPts = TimePoints.Where(t => t.Bpm > 0 && !t.Inherit);
+                var tmPts = TimingPoints.Where(t => t.Bpm > 0 && !t.Inherit);
                 OsuBeatmapTimingPoint? cur, nxt;
                 OsuBeatmapTimingPoint? lastCur = null;
-                for (var i = 0; i < TimingPoints.Count; i++)
+                for (var i = 0; i < TimingPointsInternal.Count; i++)
                 {
-                    cur = TimePoints[i];
-                    nxt = i < TimingPoints.Count - 1
-                        ? TimingPoints[i + 1]
+                    cur = TimingPoints[i];
+                    nxt = i < TimingPointsInternal.Count - 1
+                        ? TimingPointsInternal[i + 1]
                         : null;
 
                     if (!cur.Inherit)

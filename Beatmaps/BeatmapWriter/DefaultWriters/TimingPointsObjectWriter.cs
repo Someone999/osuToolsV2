@@ -8,10 +8,23 @@ public class TimingPointsObjectWriter<TWriterType> : IObjectWriter<List<TimingPo
 
     public TimingPointsObjectWriter(IObjectWriter<TWriterType> objectWriter)
     {
-        ObjectWriter = objectWriter;
+        _writer = objectWriter;
     }
     
-    public IObjectWriter<TWriterType> ObjectWriter { get; }
+    public IObjectWriter<TWriterType> Writer {
+        get => _writer;
+        set
+        {
+            if (IsWriting)
+            {
+                return;
+            }
+
+            _writer = value;
+        }
+    }
+    
+    public bool IsWriting { get; private set; }
     public void Write(object obj)
     {
         if (obj is not List<TimingPoint> timingPoints)
@@ -22,24 +35,28 @@ public class TimingPointsObjectWriter<TWriterType> : IObjectWriter<List<TimingPo
     }
     public void Write(List<TimingPoint> obj)
     {
-        ObjectWriter.Write($"[TimingPoints]{Environment.NewLine}");
+        IsWriting = true;
+        Writer.Write($"[TimingPoints]{Environment.NewLine}");
         foreach (var timingPoint in obj)
         {
-            ObjectWriter.Write(timingPoint.ToFileFormat() + Environment.NewLine);
+            Writer.Write(timingPoint.ToFileFormat() + Environment.NewLine);
         }
-        ObjectWriter.Write(Environment.NewLine);
+        Writer.Write(Environment.NewLine);
+        IsWriting = false;
     }
     
-    public bool NeedClose => ObjectWriter.NeedClose;
+    public bool NeedClose => Writer.NeedClose;
     public void Close()
     {
         if (NeedClose)
         {
-            ObjectWriter.Close();
+            Writer.Close();
         }
     }
     
     private bool _disposed;
+    private IObjectWriter<TWriterType> _writer;
+
     public void Dispose()
     {
         if (_disposed)
@@ -47,7 +64,7 @@ public class TimingPointsObjectWriter<TWriterType> : IObjectWriter<List<TimingPo
             return;
         }
         
-        ObjectWriter.Dispose();
+        Writer.Dispose();
         _disposed = true;
     }
 }

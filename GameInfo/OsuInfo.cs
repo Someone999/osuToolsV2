@@ -226,6 +226,11 @@ namespace osuToolsV2.GameInfo
         private static readonly object StaticLocker = new object();
         private static volatile OsuInfo? _ins;
 
+        public static void RecreateInstance()
+        {
+            _ins = new OsuInfo();
+        }
+        
         public static OsuInfo GetInstance()
         {
             if (_ins != null)

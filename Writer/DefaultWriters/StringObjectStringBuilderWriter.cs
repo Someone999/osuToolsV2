@@ -4,15 +4,34 @@ namespace osuToolsV2.Writer.DefaultWriters;
 
 public class StringObjectStringBuilderWriter : IObjectWriter<string, StringBuilder>
 {
-    public StringObjectStringBuilderWriter(StringBuilder objectWriter)
+    private StringBuilder _writer;
+
+    public StringObjectStringBuilderWriter(StringBuilder writer)
     {
-        ObjectWriter = objectWriter;
+        _writer = writer;
+    }
+
+    public StringBuilder Writer
+    {
+        get => _writer;
+        set
+        {
+            if (IsWriting)
+            {
+                return;
+            }
+
+            _writer = value;
+        }
     }
     
-    public StringBuilder ObjectWriter { get; }
+    public bool IsWriting { get; private set; }
+
     public void Write(string obj)
     {
-        ObjectWriter.Append(obj);
+        IsWriting = true;
+        Writer.Append(obj);
+        IsWriting = false;
     }
     public void Write(object obj)
     {
@@ -22,6 +41,8 @@ public class StringObjectStringBuilderWriter : IObjectWriter<string, StringBuild
     public void Close()
     {
     }
+
+    
 
     public void Dispose()
     {

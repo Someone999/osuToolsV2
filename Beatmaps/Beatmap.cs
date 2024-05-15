@@ -104,5 +104,5 @@ public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitOb
 
 public class Beatmap : Beatmap<IHitObject>
 {
-    public static Beatmap FromFile(string path) => new DefaultBeatmapDecoder(path).Decode();
+    public static Beatmap FromFile(string path) => new DefaultFileBeatmapReader(path).Read();
 }

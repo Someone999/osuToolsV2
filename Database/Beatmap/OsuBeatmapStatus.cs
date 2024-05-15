@@ -19,11 +19,12 @@
         ///     未过审
         /// </summary>
         Pending,
+        Unused,
 
         /// <summary>
         ///     已上架并计算分数，pp
         /// </summary>
-        Ranked = 4,
+        Ranked,
 
         /// <summary>
         ///     已上架并计算分数，pp

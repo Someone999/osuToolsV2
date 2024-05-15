@@ -1,5 +1,6 @@
 ﻿using osuToolsV2.Beatmaps;
 using osuToolsV2.Game.Mods;
+using osuToolsV2.Rulesets;
 
 namespace osuToolsV2.Score;
 
@@ -21,6 +22,12 @@ public class ScoreInfo
     public double? UnstableRate { get; set; }
     public int? SliderBreaks { get; set; }
     public int? PlayerMaxCombo { get; set; }
+    
+    public DateTime PlayTime { get; set; }
+    
+    public string? PlayerName { get; set; }
+    
+    public Ruleset? Ruleset { get; set; }
 
     public void Clear()
     {
@@ -40,5 +47,7 @@ public class ScoreInfo
         UnstableRate = null;
         SliderBreaks = null;
         PlayerMaxCombo = null;
+        PlayerName = null;
+        PlayTime = new DateTime();
     }
 }

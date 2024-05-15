@@ -8,10 +8,23 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
 
     public GeneralDataObjectWriter(IObjectWriter<TWriterType> objectWriter)
     {
-        ObjectWriter = objectWriter;
+        _writer = objectWriter;
     }
     
-    public IObjectWriter<TWriterType> ObjectWriter { get; }
+    public IObjectWriter<TWriterType> Writer {
+        get => _writer;
+        set
+        {
+            if (IsWriting)
+            {
+                return;
+            }
+
+            _writer = value;
+        }
+    }
+    
+    public bool IsWriting { get; private set; }
     public void Write(object obj)
     {
         if (obj is not Beatmap beatmap)
@@ -22,12 +35,12 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
         Write(beatmap);
         
     }
-    public bool NeedClose => ObjectWriter.NeedClose;
+    public bool NeedClose => Writer.NeedClose;
     public void Close()
     {
         if (NeedClose)
         {
-            ObjectWriter.Close();
+            Writer.Close();
         }
     }
     void WriteKeyValuePairIfNotNull(string? key, object? val)
@@ -41,12 +54,13 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
 
     void WriteKeyValuePair(string key, object? val)
     {
-        ObjectWriter.Write($"{key}:{val ?? default}{Environment.NewLine}");
+        Writer.Write($"{key}:{val ?? default}{Environment.NewLine}");
     }
     
     public void Write(Beatmap obj)
     {
-        ObjectWriter.Write($"[General]{Environment.NewLine}");
+        IsWriting = true;
+        Writer.Write($"[General]{Environment.NewLine}");
         WriteKeyValuePair("AudioFilename", obj.Metadata.AudioFileName);
         WriteKeyValuePair("AudioLeadIn", obj.AudioLeadIn);
         WriteKeyValuePair("PreviewTime", obj.PreviewTime.TotalMilliseconds);
@@ -71,8 +85,8 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
         if (obj.EpilepsyWarning != null)
         {
             bool epilepsyWarning = obj.EpilepsyWarning.Value;
-            ObjectWriter.Write($"EpilepsyWarning: {(epilepsyWarning ? 1 : 0)}");
-            ObjectWriter.Write(Environment.NewLine);
+            Writer.Write($"EpilepsyWarning: {(epilepsyWarning ? 1 : 0)}");
+            Writer.Write(Environment.NewLine);
         }
         
         
@@ -80,29 +94,32 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
         {
             bool letterboxInBreaks = obj.LetterboxInBreaks.Value;
             WriteKeyValuePair("LetterboxInBreaks", obj.LetterboxInBreaks.Value ? 1 : 0);
-            ObjectWriter.Write(Environment.NewLine);
+            Writer.Write(Environment.NewLine);
         }
         
         if (obj.UseSkinSprites != null)
         {
             bool useSkinSprites = obj.UseSkinSprites.Value;
             WriteKeyValuePair("UseSkinSprites", useSkinSprites ? 1 : 0);
-            ObjectWriter.Write(Environment.NewLine);
+            Writer.Write(Environment.NewLine);
         }
         
         if (obj.SamplesMatchPlaybackRate != null)
         {
             bool samplesMatchPlaybackRate = obj.SamplesMatchPlaybackRate.Value;
             WriteKeyValuePair("UseSkinSprites", samplesMatchPlaybackRate ? 1 : 0);
-            ObjectWriter.Write(Environment.NewLine);
+            Writer.Write(Environment.NewLine);
         }
         WriteKeyValuePairIfNotNull("OverlayPosition", obj.OverlayPosition);
         WriteKeyValuePairIfNotNull("SkinPreference", obj.SkinPreference);
         
-        ObjectWriter.Write(Environment.NewLine);
+        Writer.Write(Environment.NewLine);
+        IsWriting = false;
     }
     
     private bool _disposed;
+    private IObjectWriter<TWriterType> _writer;
+
     public void Dispose()
     {
         if (_disposed)
@@ -110,7 +127,7 @@ public class GeneralDataObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObje
             return;
         }
         
-        ObjectWriter.Dispose();
+        Writer.Dispose();
         _disposed = true;
     }
 }

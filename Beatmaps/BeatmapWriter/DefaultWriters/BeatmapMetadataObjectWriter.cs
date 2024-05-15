@@ -7,31 +7,47 @@ public class BeatmapMetadataObjectWriter<TWriterType> :
 {
     public BeatmapMetadataObjectWriter(IObjectWriter<TWriterType> objectWriter)
     {
-        ObjectWriter = objectWriter;
+        _writer = objectWriter;
     }
     
-    public IObjectWriter<TWriterType> ObjectWriter { get; }
+    public IObjectWriter<TWriterType> Writer 
+    {
+        get => _writer;
+        set
+        {
+            if (IsWriting)
+            {
+                return;
+            }
+
+            _writer = value;
+        }
+    }
+    
+    public bool IsWriting { get; private set; }
     public void Write(BeatmapMetadata obj)
     {
-        ObjectWriter.Write($"[Metadata]{Environment.NewLine}");
-        ObjectWriter.Write($"Title:{obj.Title}{Environment.NewLine}");
-        ObjectWriter.Write($"TitleUnicode:{obj.TitleUnicode}{Environment.NewLine}");
-        ObjectWriter.Write($"Artist:{obj.Artist}{Environment.NewLine}");
-        ObjectWriter.Write($"ArtistUnicode:{obj.ArtistUnicode}{Environment.NewLine}");
-        ObjectWriter.Write($"Creator:{obj.Creator}{Environment.NewLine}");
-        ObjectWriter.Write($"Version:{obj.Version}{Environment.NewLine}");
-        ObjectWriter.Write($"Source:{obj.Source}{Environment.NewLine}");
-        ObjectWriter.Write($"Tags:{obj.Tags}{Environment.NewLine}");
+        IsWriting = true;
+        Writer.Write($"[Metadata]{Environment.NewLine}");
+        Writer.Write($"Title:{obj.Title}{Environment.NewLine}");
+        Writer.Write($"TitleUnicode:{obj.TitleUnicode}{Environment.NewLine}");
+        Writer.Write($"Artist:{obj.Artist}{Environment.NewLine}");
+        Writer.Write($"ArtistUnicode:{obj.ArtistUnicode}{Environment.NewLine}");
+        Writer.Write($"Creator:{obj.Creator}{Environment.NewLine}");
+        Writer.Write($"Version:{obj.Version}{Environment.NewLine}");
+        Writer.Write($"Source:{obj.Source}{Environment.NewLine}");
+        Writer.Write($"Tags:{obj.Tags}{Environment.NewLine}");
         if (obj.BeatmapId != null)
         {
-            ObjectWriter.Write($"BeatmapID:{obj.BeatmapId}{Environment.NewLine}");
+            Writer.Write($"BeatmapID:{obj.BeatmapId}{Environment.NewLine}");
         }
         
         if (obj.BeatmapSetId != null)
         {
-            ObjectWriter.Write($"BeatmapSetID:{obj.BeatmapSetId}{Environment.NewLine}");
+            Writer.Write($"BeatmapSetID:{obj.BeatmapSetId}{Environment.NewLine}");
         }
-        ObjectWriter.Write(Environment.NewLine);
+        Writer.Write(Environment.NewLine);
+        IsWriting = false;
     }
 
     
@@ -39,16 +55,17 @@ public class BeatmapMetadataObjectWriter<TWriterType> :
     {
         Write((BeatmapMetadata)obj);
     }
-    public bool NeedClose => ObjectWriter.NeedClose;
+    public bool NeedClose => Writer.NeedClose;
     public void Close()
     {
         if (NeedClose)
         {
-            ObjectWriter.Close();
+            Writer.Close();
         }
     }
 
     private bool _disposed;
+    private IObjectWriter<TWriterType> _writer;
 
     public void Dispose()
     {
@@ -57,7 +74,7 @@ public class BeatmapMetadataObjectWriter<TWriterType> :
             return;
         }
         
-        ObjectWriter.Dispose();
+        Writer.Dispose();
         _disposed = true;
     }
 
