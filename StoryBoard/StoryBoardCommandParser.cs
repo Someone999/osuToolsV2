@@ -4,7 +4,7 @@ using osuToolsV2.StoryBoard.Commands;
 using osuToolsV2.StoryBoard.Commands.Resources;
 using osuToolsV2.StoryBoard.Enums;
 using osuToolsV2.StoryBoard.Transitions;
-using osuToolsV2.StoryBoard.Transitions.Initialization;
+using osuToolsV2.StoryBoard.Transitions.TransitionCreators;
 
 namespace osuToolsV2.StoryBoard
 {
@@ -209,7 +209,7 @@ namespace osuToolsV2.StoryBoard
         {
             StoryBoardCommandBase? command = ParseMainCommand(cmd, data);
             command ??= ParseSubStoryBoardCommand(cmd, data, parent);
-            return command;//?? throw new InvalidOperationException();
+            return command;
         }
 
         MainStoryBoardCommand? ParseMainCommand(string type, string[] data)
@@ -283,7 +283,6 @@ namespace osuToolsV2.StoryBoard
             {
                 var easing = (StoryBoardEasing)Enum.Parse(typeof(StoryBoardEasing),data[1]);
                 double startTime = double.Parse(data[2]), endTime = string.IsNullOrEmpty(data[3]) ? startTime : double.Parse(data[3]);
-                var additionData = data.Skip(4).ToArray();
                 switch (type)
                 {
                     case "C":
@@ -293,12 +292,9 @@ namespace osuToolsV2.StoryBoard
                             EndTime = endTime,
                             StartTime = startTime,
                             Parent = parent,
-                            Transitions = TransitionParser.GenericTransitionsParser(startTime, endTime, additionData, 3, new ColorTransitionInitializationInfo())
-                            
+                            Transitions = ColorTransitionGenerator.Instance.Create(startTime, endTime, data)
                         };
                         
-                        
-
                         return color;
                     case "F":
                         Fade fade = new Fade
@@ -307,7 +303,7 @@ namespace osuToolsV2.StoryBoard
                             StartTime = startTime,
                             EndTime = endTime,
                             Parent = parent,
-                            Transitions = TransitionParser.GenericTransitionsParser(startTime, endTime, additionData, 1, new FadeTransitionInitializationInfo())
+                            Transitions = FadeTransitionGenerator.Instance.Create(startTime, endTime, data)
                         };
                         
                         return fade;
@@ -318,7 +314,7 @@ namespace osuToolsV2.StoryBoard
                             StartTime = startTime,
                             EndTime = endTime,
                             Parent = parent,
-                            Transitions = TransitionParser.GenericTransitionsParser(startTime, endTime, additionData, 2, new MoveTransitionInitializationInfo())
+                            Transitions = MoveTransitionGenerator.Instance.Create(startTime, endTime, data)
                         };
                        
 
@@ -330,7 +326,7 @@ namespace osuToolsV2.StoryBoard
                             StartTime = startTime,
                             EndTime = endTime,
                             Parent = parent,
-                            Transitions = TransitionParser.GenericTransitionsParser(startTime, endTime, additionData, 1, new MoveXTransitionInitializationInfo())
+                            Transitions = MoveXTransitionGenerator.Instance.Create(startTime, endTime, data)
                         };
                         return moveX;
                     case "MY":
@@ -340,7 +336,7 @@ namespace osuToolsV2.StoryBoard
                             StartTime = startTime,
                             EndTime = endTime,
                             Parent = parent,
-                            Transitions = TransitionParser.GenericTransitionsParser(startTime, endTime, additionData, 1, new MoveYTransitionInitializationInfo())
+                            Transitions = MoveYTransitionGenerator.Instance.Create(startTime, endTime, data)
                         };
                         
                         return moveY;
@@ -351,7 +347,7 @@ namespace osuToolsV2.StoryBoard
                             StartTime = startTime,
                             EndTime = endTime,
                             Parent = parent,
-                            ParameterOperation = additionData[0] switch
+                            ParameterOperation = data[4] switch
                             {
                                 "H" => ParameterOperation.HorizentalFlip,
                                 "V" => ParameterOperation.VerticalFlip,
@@ -367,7 +363,7 @@ namespace osuToolsV2.StoryBoard
                             StartTime = startTime,
                             EndTime = endTime,
                             Parent = parent,
-                            Transitions = TransitionParser.GenericTransitionsParser(startTime, endTime, additionData, 1, new RotateTransitionInitializationInfo())
+                            Transitions = RotateTransitionGenerator.Instance.Create(startTime, endTime, data)
                         };
                        
                         return rotate;
@@ -378,7 +374,7 @@ namespace osuToolsV2.StoryBoard
                             StartTime = startTime,
                             EndTime = endTime,
                             Parent = parent,
-                            Transitions = TransitionParser.GenericTransitionsParser(startTime, endTime, additionData, 1, new ScaleTransitionInitializationInfo())
+                            Transitions = ScaleTransitionGenerator.Instance.Create(startTime, endTime, data)
                         };
                         return scale;
                     case "V":
@@ -388,7 +384,7 @@ namespace osuToolsV2.StoryBoard
                             StartTime = startTime,
                             EndTime = endTime,
                             Parent = parent,
-                            Transitions = TransitionParser.GenericTransitionsParser(startTime, endTime, additionData, 2, new VectorScaleTransitionInitializationInfo())
+                            Transitions = VectorScaleTransitionGenerator.Instance.Create(startTime, endTime, data)
                         };
                         return vectorScale;
                     default: return null;

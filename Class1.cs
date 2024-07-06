@@ -40,9 +40,5 @@ public class Class1
         
             Console.WriteLine($"{i} : {stopwatch.ElapsedMilliseconds / 1000.0}");
         }
-        
-       
-        
-        
     }
 }
