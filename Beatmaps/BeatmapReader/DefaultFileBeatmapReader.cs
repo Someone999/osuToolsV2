@@ -7,145 +7,118 @@ using osuToolsV2.Beatmaps.HitObjects.Sounds;
 using osuToolsV2.Beatmaps.Misc;
 using osuToolsV2.Beatmaps.TimingPoints;
 using osuToolsV2.Exceptions;
+using osuToolsV2.Graphic;
+using osuToolsV2.LazyLoaders;
 using osuToolsV2.Reader;
 using osuToolsV2.Rulesets;
 using osuToolsV2.Rulesets.Legacy;
 using osuToolsV2.StoryBoard;
 using osuToolsV2.StoryBoard.Commands;
+using osuToolsV2.StoryBoard.Commands.Resources;
 using osuToolsV2.StoryBoard.Enums;
 
 namespace osuToolsV2.Beatmaps.BeatmapReader;
 
 public class DefaultFileBeatmapReader : IFileBeatmapReader
 {
+    private enum FindState
+    {
+        None,
+        Found,
+        NotFound,
+        OffsetTooLate,
+        Skipped
+    }
     private static MD5 _md5Clac = MD5.Create();
     static readonly Regex VersionMatcher = new Regex("osu file format v(\\d*)");
     private Beatmap _beatmap = new Beatmap();
     private string _beatmapFile;
-    private StringReader _reader;
+    private StringReader? _reader;
 
     public DefaultFileBeatmapReader(string filePath)
     {
         _beatmapFile = filePath;
-        _reader = new StringReader(File.ReadAllText(_beatmapFile));
     }
-
-    static StoryBoardCommandBase[] StoryBoardCommandProcessor(List<string> lines, Beatmap b)
+    
+    private static readonly Regex InvalidPathCharsRegex = 
+        new Regex("[" + new string(Path.GetInvalidPathChars()
+            .Concat(Path.GetInvalidFileNameChars()).ToArray()) + "]");
+    StoryBoardCommandLazyLoader CreateStoryBoardCommandLazyLoader(Beatmap b)
     {
-        List<string> realStoryCommand = new List<string>();
-        foreach (var str in lines)
+        var lines = new List<string>();
+        var beatmapFolder = Path.GetDirectoryName(_beatmapFile) ?? throw new InvalidOperationException();
+        var metadata = _beatmap.Metadata;
+        var beatmapStoryBoardFile =
+            $"{metadata.Artist} - {metadata.Title}[{metadata.Version}] ({metadata.Creator}).osb";
+
+        beatmapStoryBoardFile = InvalidPathCharsRegex.Replace(beatmapStoryBoardFile, "");
+        
+        beatmapStoryBoardFile = Path.Combine(beatmapFolder, beatmapStoryBoardFile);
+        if (File.Exists(beatmapStoryBoardFile))
         {
-            if (string.IsNullOrEmpty(str))
-            {
-                continue;
-            }
-
-            string[] splitData = str.Split(',');
-            if (splitData.Length == 0)
-            {
-                continue;
-            }
-
-            if (string.IsNullOrEmpty(str) || str.StartsWith("//"))
-            {
-                continue;
-            }
-
-            var parseSuccess = Enum.TryParse<StoryBoardEventType>(splitData[0], out var val);
-
-
-            StoryBoardEventType type = parseSuccess ? val : StoryBoardEventType.Unknown;
-            switch (type)
-            {
-                case StoryBoardEventType.Background:
-                    b.Metadata.BackgroundInfo ??= new BackgroundInfo();
-                    b.Metadata.BackgroundInfo.FileName = splitData[2].Trim('"');
-                    if (splitData.Length < 4)
-                    {
-                        break;
-                    }
-
-                    b.Metadata.BackgroundInfo.X = double.Parse(splitData[3]);
-
-                    if (splitData.Length < 5)
-                    {
-                        break;
-                    }
-
-                    b.Metadata.BackgroundInfo.Y = double.Parse(splitData[4]);
-                    break;
-                case StoryBoardEventType.Video:
-                    b.Metadata.VideoInfo ??= new VideoInfo();
-                    b.Metadata.VideoInfo.StartTime = double.Parse(splitData[1]);
-                    b.Metadata.VideoInfo.FileName = splitData[2].Trim('"');
-                    if (splitData.Length < 4)
-                    {
-                        break;
-                    }
-
-                    b.Metadata.VideoInfo.X = double.Parse(splitData[3]);
-
-                    if (splitData.Length < 5)
-                    {
-                        break;
-                    }
-
-                    b.Metadata.VideoInfo.Y = double.Parse(splitData[4]);
-                    break;
-                case StoryBoardEventType.BreakTime:
-                    b.BreakTimes.Add(new BreakTime(double.Parse(splitData[1]), double.Parse(splitData[2])));
-                    break;
-                default:
-                    realStoryCommand.Add(str);
-                    break;
-            }
+            lines.AddRange(File.ReadAllLines(beatmapStoryBoardFile));
+        }
+        
+        var beatmapSetStoryBoardFile =
+            $"{metadata.Artist} - {metadata.Title} ({metadata.Creator}).osb";
+        
+        beatmapSetStoryBoardFile = InvalidPathCharsRegex.Replace(beatmapSetStoryBoardFile, "");
+        
+        beatmapSetStoryBoardFile = Path.Combine(beatmapFolder, beatmapSetStoryBoardFile);
+        
+        if (File.Exists(beatmapSetStoryBoardFile))
+        {
+            lines.AddRange(File.ReadAllLines(beatmapSetStoryBoardFile));
         }
 
-        StoryBoardCommandParser parser = new StoryBoardCommandParser(realStoryCommand.ToArray());
-        return parser.Parse();
-    }
-
-    static List<IHitObject> HitObjectProcessor(List<string> lines, IBeatmap b)
-    {
-        List<IHitObject> hitObjects = new List<IHitObject>();
-        foreach (var line in lines)
+        
+        _ = lines.FirstOrDefault(f =>
         {
-            IHitObjectCreator hitObjectCreator = b.Ruleset.LegacyRuleset switch
-            {
-                LegacyRuleset.Osu => new OsuHitObjectCreator(),
-                LegacyRuleset.Taiko => new TaikoHitObjectCreator(),
-                LegacyRuleset.Catch => new CatchHitObjectCreator(),
-                LegacyRuleset.Mania => new ManiaHitObjectCreator(),
-                LegacyRuleset.None => throw new InvalidBeatmapException(),
-                _ => throw new InvalidBeatmapException()
-            };
-
-            if (hitObjectCreator == null)
-            {
-                throw new InvalidBeatmapException();
-            }
-
-            hitObjects.Add(hitObjectCreator.CreateHitObject(line.Split(','), b));
-        }
-
-        return hitObjects;
-    }
-
-    static List<TimingPoint> TimingPointProcessor(List<string> lines, IBeatmap beatmap)
-    {
-        List<TimingPoint> timingPoints = new List<TimingPoint>();
-        foreach (var line in lines)
+            var state = FindVideo(f);
+            return state is FindState.Found or FindState.OffsetTooLate;
+        });
+        
+        _ = lines.FirstOrDefault(f =>
         {
-            if (string.IsNullOrEmpty(line))
-            {
-                continue;
-            }
-
-            timingPoints.Add(new TimingPoint(line));
-        }
-
-        return timingPoints;
+            var state = FindBackground(f);
+            return state is FindState.Found or FindState.OffsetTooLate;
+        });
+        
+        return new StoryBoardCommandLazyLoader(lines, b);
     }
+    
+    StoryBoardCommandLazyLoader CreateInlineStoryBoardCommandLazyLoader(List<string> lines, Beatmap b)
+    {
+        _ = lines.FirstOrDefault(f =>
+        {
+            var state = FindVideo(f);
+            return state is FindState.Found or FindState.OffsetTooLate;
+        });
+        
+        _ = lines.FirstOrDefault(f =>
+        {
+            var state = FindBackground(f);
+            return state is FindState.Found or FindState.OffsetTooLate;
+        });
+        
+        return new StoryBoardCommandLazyLoader(lines, b);
+    }
+
+    HitObjectLazyLoader CreateHitObjectLazyLoader(List<string> lines, Beatmap b)
+    {
+        return new HitObjectLazyLoader(lines, b);
+    }
+
+    TimingPointLazyLoader CreateTimingPointLazyLoader(List<string> lines)
+    {
+        return new TimingPointLazyLoader(lines);
+    }
+
+    BreakTimeLazyLoader CreateBreakTimeLazyLoader(List<string> lines, Beatmap b)
+    {
+        return new BreakTimeLazyLoader(lines, b);
+    }
+    
 
     void ReadGeneralData(string key, string value)
     {
@@ -297,9 +270,119 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         }
     }
 
-
-    public Beatmap Read()
+    
+    FindState ParseVideo(string[] splitData)
     {
+        if (_beatmap.Metadata.VideoHolder.IsInitialized())
+        {
+            return FindState.Found;
+        }
+        
+        if (splitData.Length < 3 || !double.TryParse(splitData[1], out var startTime))
+        {
+            return FindState.Skipped;
+        }
+
+        if (startTime > 0)
+        {
+            return FindState.OffsetTooLate;
+        }
+        
+        if (splitData[0] != "Video" && splitData[0] != "1")
+        {
+            return FindState.Skipped;
+        }
+
+        var video = new Video
+        {
+            StartTime = startTime,
+            FileName = splitData[2].Trim('"')
+        };
+
+        _beatmap.Metadata.VideoHolder.BindValue(video);
+        return FindState.Found;
+    }
+    
+    FindState ParseBackground(string[] splitData)
+    {
+        if (_beatmap.Metadata.BackgroundHolder.IsInitialized())
+        {
+            return FindState.Found;
+        }
+        
+        if (splitData.Length < 5 || !int.TryParse(splitData[1], out var layer))
+        {
+            return FindState.Skipped;
+        }
+
+        if (layer != 0)
+        {
+            return FindState.NotFound;
+        }
+        
+        if (splitData[0] != "Background" && splitData[0] != "0")
+        {
+            return FindState.Skipped;
+        }
+        
+        var background =  new Background
+        {
+            Layer = (StoryBoardLayer) layer,
+            FileName = splitData[2].Trim('"')
+        };
+        var x = double.Parse(splitData[3]);
+        var y = double.Parse(splitData[4]);
+        background.Position = new OsuPixel(x, y);
+        
+        _beatmap.Metadata.BackgroundHolder.BindValue(background);
+        
+        return FindState.Found;
+    }
+    
+    private FindState _videoFindState;
+    private FindState _backgroundFindState;
+    private FindState FindVideo(string line)
+    {
+        if (_videoFindState == FindState.Found)
+        {
+            return FindState.Found;
+        }
+        
+        if (line.StartsWith("//") || string.IsNullOrEmpty(line))
+        {
+            return _videoFindState = FindState.Skipped;
+        }
+                        
+        var parts = line.Split(',');
+        _videoFindState = ParseVideo(parts);
+        return _videoFindState;
+    }
+    
+    private FindState FindBackground(string line)
+    {
+        if (_backgroundFindState == FindState.Found)
+        {
+            return FindState.Found;
+        }
+        
+        if (line.StartsWith("//") || string.IsNullOrEmpty(line))
+        {
+            return _backgroundFindState = FindState.Skipped;
+        }
+                        
+        var parts = line.Split(',');
+        _backgroundFindState = ParseBackground(parts);
+        return _backgroundFindState;
+    }
+
+    public Beatmap? Read()
+    {
+        if (!File.Exists(_beatmapFile))
+        {
+            return null;
+        }
+        
+        _reader = new StringReader(File.ReadAllText(_beatmapFile));
         IsReading = true;
         DataSection currentSection = DataSection.None;
         string? line = Reader.ReadLine();
@@ -384,19 +467,19 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
                 default: break;
             }
         }
-
-        _beatmap.HitObjects = new List<IHitObject>();
-        _beatmap.HitObjects.AddRange(HitObjectProcessor(hitObjects, _beatmap));
-        _beatmap.TimingPoints = TimingPointProcessor(timingPoints, _beatmap);
-        _beatmap.InlineStoryBoardCommand = StoryBoardCommandProcessor(storyboardCommand, _beatmap);
-
+        
+        _beatmap.HitObjectLazyLoader = CreateHitObjectLazyLoader(hitObjects, _beatmap);
+        _beatmap.TimingPointLazyLoader = CreateTimingPointLazyLoader(timingPoints);
+        _beatmap.InlineStoryBoardCommandLazyLoader = CreateInlineStoryBoardCommandLazyLoader(storyboardCommand, _beatmap);
+        _beatmap.StoryBoardCommandLazyLoader = CreateStoryBoardCommandLazyLoader(_beatmap);
+        _beatmap.BreakTimeLazyLoader = CreateBreakTimeLazyLoader(storyboardCommand, _beatmap);
         IsReading = false;
         return _beatmap;
     }
 
     public StringReader Reader
     {
-        get => _reader;
+        get => _reader ?? throw new InvalidOperationException("StringReader not initialized.");
         set
         {
             if (IsReading)
@@ -410,7 +493,7 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
 
     public bool IsReading { get; private set; }
 
-    object IObjectReader<StringReader>.Read()
+    object? IObjectReader<StringReader>.Read()
     {
         return Read();
     }

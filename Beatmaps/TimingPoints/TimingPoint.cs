@@ -35,7 +35,7 @@ namespace osuToolsV2.Beatmaps.TimingPoints
                 _effect = int.Parse(data[7]);
             }
             
-            Bpm = Math.Round((1 / BeatLength * 1000 * 60), 2);
+            Bpm = Math.Round(1 / BeatLength * 1000 * 60, 2);
             BitProcessor(_effect);
         }
 

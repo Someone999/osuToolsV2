@@ -1,6 +1,5 @@
 ﻿using osuToolsV2.Database;
 using osuToolsV2.Database.Score;
-using osuToolsV2.Game.Legacy;
 using osuToolsV2.Game.Mods;
 using osuToolsV2.GameInfo;
 using osuToolsV2.Replays;
@@ -107,7 +106,7 @@ public class OsuScoreDbObjectReader : IObjectReader<BinaryReader, OsuScoreDb>
         int score = Reader.ReadInt32();
         short maxCombo = Reader.ReadInt16();
         bool perfect = Reader.ReadBoolean();
-        var mods = ModList.FromInteger(Reader.ReadInt32(), ruleset, false);
+        var mods = ModManager.FromInteger(Reader.ReadInt32(), ruleset, false);
         var verifyString = Reader.ReadOsuString();
         if (verifyString != string.Empty)
         {

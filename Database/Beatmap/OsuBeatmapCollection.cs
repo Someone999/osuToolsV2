@@ -1,4 +1,5 @@
-﻿using osuToolsV2.Rulesets.Legacy;
+﻿using osuToolsV2.Database.Beatmap.BeatmapSearching;
+using osuToolsV2.Rulesets.Legacy;
 
 namespace osuToolsV2.Database.Beatmap
 {
@@ -73,55 +74,70 @@ namespace osuToolsV2.Database.Beatmap
         /// <param name="keyWord">关键词</param>
         /// <param name="option">是否包含关键词</param>
         /// <returns>包含搜索结果的谱面集合</returns>
-        public OsuBeatmapCollection Find(string keyWord,
+        public OsuBeatmapCollection SearchByKeyword(string keyWord,
             BeatmapFindOption option = BeatmapFindOption.Contains)
         {
-            var b = new OsuBeatmapCollection();
+            var beatmaps = new HashSet<OsuBeatmap>();
+           
             var keyword = keyWord.ToUpper();
             foreach (var beatmap in Beatmaps)
             {
-                var allinfo = beatmap.ToString().ToUpper() + " " + beatmap.Metadata.Source.ToUpper() + " " +
-                              beatmap.Metadata.Tags.ToUpper() + " " + beatmap.Metadata.Creator.ToUpper();
-                if (option == BeatmapFindOption.Contains)
+                SearchTextList searchTextList = new SearchTextList();
+                searchTextList.AddString(beatmap.ToString().ToUpper());
+                searchTextList.AddString(beatmap.Metadata.Title.ToUpper());
+                searchTextList.AddString(beatmap.Metadata.TitleUnicode.ToUpper());
+                searchTextList.AddString(beatmap.Metadata.Artist.ToUpper());
+                searchTextList.AddString(beatmap.Metadata.ArtistUnicode.ToUpper());
+                searchTextList.AddString(beatmap.Metadata.Creator.ToUpper());
+                searchTextList.AddString(beatmap.Metadata.Tags.ToUpper());
+                searchTextList.AddString(beatmap.Metadata.Source.ToUpper());
+                searchTextList.AddString(beatmap.Metadata.Version.ToUpper());
+                
+                switch (option)
                 {
-                    if (keyword.StartsWith("${") && keyword.EndsWith("}"))
+                    case BeatmapFindOption.Contains when keyword.StartsWith("${") && keyword.EndsWith("}"):
                     {
-                        var newkeyw = keyword.Trim('$', '}', '{');
-                        if (beatmap.Metadata.Title.ToUpper() == newkeyw || beatmap.Metadata.TitleUnicode.ToUpper() == newkeyw ||
-                            beatmap.Metadata.Artist.ToUpper() == newkeyw || beatmap.Metadata.ArtistUnicode.ToUpper() == newkeyw ||
-                            beatmap.Metadata.Creator.ToUpper() == newkeyw || beatmap.Metadata.Tags.ToUpper() == newkeyw ||
-                            beatmap.Metadata.Source.ToUpper() == newkeyw ||
-                            beatmap.Metadata.Version.ToUpper() == newkeyw)
-                            if (!b.Contains(beatmap))
-                                b.Add(beatmap);
-                    }
-                    else if (allinfo.Contains(keyword))
-                    {
-                        b.Add(beatmap);
-                    }
-                }
+                        var accurateKeyword = keyword.Trim('$', '}', '{');
+                        if (searchTextList.ExactMatch(accurateKeyword))
+                        {
+                            beatmaps.Add(beatmap);
+                        }
 
-                if (option == BeatmapFindOption.NotContains)
-                {
-                    if (keyword.StartsWith("${") && keyword.EndsWith("}"))
-                    {
-                        var newkeyw = keyword.Trim('$', '}', '{');
-                        if (beatmap.Metadata.Title.ToUpper() != newkeyw && beatmap.Metadata.TitleUnicode.ToUpper() != newkeyw &&
-                            beatmap.Metadata.Artist.ToUpper() != newkeyw && beatmap.Metadata.ArtistUnicode.ToUpper() != newkeyw &&
-                            beatmap.Metadata.Creator.ToUpper() != newkeyw && beatmap.Metadata.Tags.ToUpper() != newkeyw &&
-                            beatmap.Metadata.Source.ToUpper() != newkeyw &&
-                            beatmap.Metadata.Version.ToUpper() != newkeyw)
-                            if (!b.Contains(beatmap))
-                                b.Add(beatmap);
+                        break;
                     }
-                    else if (!allinfo.Contains(keyword))
+                    case BeatmapFindOption.Contains:
                     {
-                        b.Add(beatmap);
+                        if (searchTextList.AllSubsequenceMatch(keyword))
+                        {
+                            beatmaps.Add(beatmap);
+                        }
+
+                        break;
                     }
+                    case BeatmapFindOption.NotContains when keyword.StartsWith("${") && keyword.EndsWith("}"):
+                    {
+                        var accurateKeyword = keyword.Trim('$', '}', '{');
+                        if (!searchTextList.ExactMatch(accurateKeyword))
+                        {
+                            beatmaps.Add(beatmap);
+                        }
+                        break;
+                    }
+                    case BeatmapFindOption.NotContains:
+                    {
+                        if (!searchTextList.AllSubsequenceMatch(keyword))
+                        {
+                            beatmaps.Add(beatmap);
+                        }
+
+                        break;
+                    }
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(option), option, null);
                 }
             }
 
-            return b;
+            return new OsuBeatmapCollection(beatmaps);
         }
 
         /// <summary>
@@ -130,12 +146,12 @@ namespace osuToolsV2.Database.Beatmap
         /// <param name="id">BeatmapID或BeatmapSetID</param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public List<OsuBeatmap> Find(int id, BeatmapIdType type = BeatmapIdType.BeatmapId)
+        public OsuBeatmapCollection SearchById(int id, BeatmapIdType type = BeatmapIdType.BeatmapId)
         {
             var lst = new List<OsuBeatmap>();
             if (id == -1)
             {
-                return new List<OsuBeatmap>();
+                return new OsuBeatmapCollection();
             }
             switch (type)
             {
@@ -148,8 +164,8 @@ namespace osuToolsV2.Database.Beatmap
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
-            
-            return lst;
+
+            return new OsuBeatmapCollection(lst);
         }
 
         /// <summary>
@@ -168,24 +184,25 @@ namespace osuToolsV2.Database.Beatmap
         /// <param name="ruleset"></param>
         /// <param name="option"></param>
         /// <returns></returns>
-        public OsuBeatmapCollection Find(LegacyRuleset ruleset,
+        public OsuBeatmapCollection SearchByRuleset(LegacyRuleset ruleset,
             BeatmapFindOption option = BeatmapFindOption.Contains)
         {
-            var bc = new OsuBeatmapCollection();
+            
+            HashSet<OsuBeatmap> beatmaps = new HashSet<OsuBeatmap>();
             foreach (var b in _beatmaps)
             {
                 switch (option)
                 {
                     case BeatmapFindOption.Contains:
-                        if (b.Ruleset.LegacyRuleset == ruleset && !bc.Contains(b))
+                        if (b.Ruleset.LegacyRuleset == ruleset)
                         {
-                            bc.Add(b);
+                            beatmaps.Add(b);
                         }
                         break;
                     case BeatmapFindOption.NotContains:
-                        if (b.Ruleset.LegacyRuleset != ruleset && !bc.Contains(b))
+                        if (b.Ruleset.LegacyRuleset != ruleset)
                         {
-                            bc.Add(b);
+                            beatmaps.Add(b);
                         }
                         break;
                     default:
@@ -193,7 +210,7 @@ namespace osuToolsV2.Database.Beatmap
                 }
             }
 
-            return bc;
+            return new OsuBeatmapCollection(beatmaps);
         }
 
         /// <summary>

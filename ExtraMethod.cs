@@ -33,9 +33,9 @@ namespace osuToolsV2
         /// </summary>
         /// <param name="modArr"></param>
         /// <returns></returns>
-        public static ModList ToModList(this Mod[] modArr)
+        public static ModManager ToModList(this Mod[] modArr)
         {
-            return ModList.FromModArray(modArr);
+            return ModManager.FromModEnumerable(modArr);
         }
         /// <summary>
         /// 将字符串转换成<seealso cref="Nullable{DateTime}"/>
@@ -281,5 +281,28 @@ namespace osuToolsV2
 
            return builder.ToString();
        }
+       
+#if NETFRAMEWORK
+        public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary.ContainsKey(key))
+            {
+                return false;
+            }
+            
+            dictionary.Add(key, value);
+            return true;
+        }
+        
+        public static TValue? GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue? defVal)
+        {
+            return !dictionary.TryGetValue(key, out var value) ? defVal : value;
+        }
+        
+        public static TValue? GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key)
+        {
+            return !dictionary.TryGetValue(key, out var value) ? default : value;
+        }
+#endif
     }
 }

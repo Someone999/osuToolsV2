@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using HsManCommonLibrary.ExtractMethods;
 using osuToolsV2.Game.Mods;
-using osuToolsV2.Rulesets.Osu.Mods;
 using SharpCompress.Compressors.LZMA;
 using Decoder = SharpCompress.Compressors.LZMA.Decoder;
 
@@ -9,20 +8,23 @@ namespace osuToolsV2.Replays;
 
 public class ReplayFrames
 {
+    private bool _hasIndicatorHeader;
     private List<ReplayFrame> _replayFrames = new List<ReplayFrame>();
     private long? _randomSeed;
     
     public long? RandomSeed => _randomSeed;
 
     public ReplayFrame[] Frames => _replayFrames.ToArray();
+    public double? ModsTimeRate { get; private set; }
 
     private void ApplyTimeRate(double timeRate, ReplayFrame replayFrame)
     {
-        var time = replayFrame.TimeFromLastAction / timeRate;
+        double oldModTimeRateScale = ModsTimeRate ?? 1;
+        var time = replayFrame.TimeFromLastAction / timeRate / oldModTimeRateScale;
         replayFrame.TimeFromLastAction = (long)time;
     }
-    
-    public void ApplyMods(IEnumerable<Mod>? mods)
+
+    private void ApplyModsInternal(IEnumerable<Mod>? mods, bool adjustActionTime)
     {
         if (mods == null)
         {
@@ -42,13 +44,64 @@ public class ReplayFrames
             timeRate *= changeTimeRateMod.TimeRate;
         }
 
+        if (!adjustActionTime)
+        {
+            ModsTimeRate = timeRate;
+            return;
+        }
+
         foreach (var replayFrame in _replayFrames)
         {
             ApplyTimeRate(timeRate, replayFrame);
         }
+
+        ModsTimeRate = timeRate;
+    }
+
+    public bool HasSameFrames(ReplayFrames frames)
+    {
+        if (frames._replayFrames.Count != _replayFrames.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < _replayFrames.Count; i++)
+        {
+            var selfFrame = _replayFrames[i];
+            var frame = frames._replayFrames[i];
+            if (!selfFrame.IsSameFrame(frame))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
     
-    public byte[] Compress() => CompressData(_replayFrames, _randomSeed);
+    public ReplayFrame[] SelectDifferentFrames(ReplayFrames frames)
+    {
+        var minCount = Math.Min(frames._replayFrames.Count, _replayFrames.Count);
+
+        
+        List<ReplayFrame> replayFrames = new List<ReplayFrame>();
+        for (var i = 0; i < minCount; i++)
+        {
+            var selfFrame = _replayFrames[i];
+            var frame = frames._replayFrames[i];
+            if (!selfFrame.IsSameFrame(frame))
+            {
+                replayFrames.Add(frame);
+            }
+        }
+
+        return replayFrames.ToArray();
+    }
+    public void ApplyMods(IEnumerable<Mod>? mods)
+    {
+        ApplyModsInternal(mods, false);
+    }
+    
+    public byte[] Compress() => CompressData(_replayFrames, _randomSeed, _hasIndicatorHeader);
 
     private static byte[] DecompressData(byte[] data)
     {
@@ -61,15 +114,20 @@ public class ReplayFrames
         _ = inputStream.Read(buffer, 0, 8);
         Decoder decoder = new Decoder();
         decoder.SetDecoderProperties(properties);
-        long outputSize = BitConverter.ToInt64(buffer);
+        long outputSize = BitConverter.ToInt64(buffer, 0);
         long inputSize = inputStream.Length - inputStream.Position;
         decoder.Code(inputStream, outputStream, inputSize, outputSize, null);
         return outputStream.ToArray();
     }
 
-    private static string BuildFrameString(List<ReplayFrame> frames, long? randomSeed)
+    private static string BuildFrameString(List<ReplayFrame> frames, long? randomSeed, bool hasHeader)
     {
-        StringBuilder builder = new StringBuilder("0|256|500|0,-1|256|500|0,");
+        StringBuilder builder = new StringBuilder();
+        if (hasHeader)
+        {
+            builder.Append("0|256|500|0,-1|256|500|0,");
+        }
+        
         var frameStrings = 
             frames.Select(f => $"{f.TimeFromLastAction}|{f.X}|{f.Y}|{(int)f.ButtonState}");
         var frameStr = string.Join(",", frameStrings);
@@ -81,9 +139,10 @@ public class ReplayFrames
         
         return builder.ToString();
     }
-    private static byte[] CompressData(List<ReplayFrame> frames, long? randanSeed = null)
+
+    private static byte[] CompressData(List<ReplayFrame> frames, long? randanSeed = null, bool hasHeader = true)
     {
-        return CompressData(BuildFrameString(frames, randanSeed));
+        return CompressData(BuildFrameString(frames, randanSeed, hasHeader));
     }
     
     
@@ -93,20 +152,26 @@ public class ReplayFrames
         var realData = str.GetBytes();
         var len = (long) realData.Length;
         MemoryStream outputStream = new MemoryStream();
-        outputStream.Write(properties);
-        outputStream.Write(BitConverter.GetBytes(len));
+        outputStream.Write(properties,0 , properties.Length);
+        var buffer = BitConverter.GetBytes(len);
+        outputStream.Write(buffer, 0, buffer.Length);
         var encoderParameters = LzmaEncoderProperties.Default;
         using (LzmaStream lzmaStream = new LzmaStream(encoderParameters, false, null, outputStream))
         {
-            lzmaStream.Write(realData);
+            lzmaStream.Write(realData, 0, realData.Length);
         }
 
         return outputStream.ToArray();
     }
 
-    private static void ProcessFrameData(byte[] additionalBytes, List<ReplayFrame> replayFrames, out long? randomSeed)
+    class ReplayFramesInternal
     {
-        randomSeed = null;
+        public bool HasHeader { get; set; }
+        public List<ReplayFrame> ReplayFrames { get; set; } = new List<ReplayFrame>();
+        public long? RandomSeed { get; set; }
+    }
+    private static void ProcessFrameData(byte[] additionalBytes, ReplayFramesInternal framesInternal)
+    {
         if (additionalBytes.Length <= 0)
         {
             return;
@@ -115,18 +180,21 @@ public class ReplayFrames
         string frames = Encoding.UTF8.GetString(DecompressData(additionalBytes));
         string[] frameStrings = frames.Split(',');
         long offset = 0;
+        int headerIndicatorCounter = 0;
         for (var i = 0; i < frameStrings.Length; i++)
         {
             var frameString = frameStrings[i];
             string[] frameData = frameString.Split('|');
             if (i < 2 && frameData[1] == "256" && frameData[2] == "-500")
             {
+                headerIndicatorCounter++;
                 continue;
             }
 
             if (frameData[0] == "-12345")
             {
-                randomSeed = long.Parse(frameData[3]);
+                framesInternal.RandomSeed ??= long.Parse(frameData[3]);
+                continue;
             }
 
             if (string.IsNullOrEmpty(frameString))
@@ -139,16 +207,28 @@ public class ReplayFrames
             double x = double.Parse(frameData[1]);
             double y = double.Parse(frameData[2]);
             ReplayButtonState buttonState = (ReplayButtonState)int.Parse(frameData[3]);
-            replayFrames.Add(new ReplayFrame(millisecond, x, y, buttonState) { Offset = offset });
+            framesInternal.ReplayFrames.Add(new ReplayFrame(millisecond, x, y, buttonState) { Offset = offset });
         }
 
-        replayFrames.Sort((x, y) => Math.Sign(x.Offset - y.Offset));
+        //framesInternal.ReplayFrames.Sort((x, y) => Math.Sign(x.Offset - y.Offset));
+        framesInternal.HasHeader = headerIndicatorCounter == 2;
     }
 
     public static ReplayFrames ReadFromCompressedData(byte[] data)
     {
         ReplayFrames replayFrames = new ReplayFrames();
-        ProcessFrameData(data, replayFrames._replayFrames, out replayFrames._randomSeed);
+        ReplayFramesInternal replayFramesInternal = new ReplayFramesInternal();
+        ProcessFrameData(data, replayFramesInternal);
+        replayFrames._randomSeed = replayFramesInternal.RandomSeed;
+        replayFrames._replayFrames = replayFramesInternal.ReplayFrames;
+        replayFrames._hasIndicatorHeader = replayFramesInternal.HasHeader;
+        return replayFrames;
+    }
+    
+    public static ReplayFrames ReadFromReplay(Replay replay)
+    {
+        ReplayFrames replayFrames = ReadFromCompressedData(replay.AdditionalData);
+        replayFrames.ApplyModsInternal(replay.ScoreInfo.Mods, false);
         return replayFrames;
     }
 }

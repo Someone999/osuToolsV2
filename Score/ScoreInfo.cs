@@ -17,7 +17,7 @@ public class ScoreInfo
     public bool Perfect { get; set; }
     public int Combo { get; set; }
     public IBeatmap? Beatmap { get; set; }
-    public ModList? Mods { get; set; }
+    public ModManager? Mods { get; set; }
     public List<double>? HitErrors { get; set; }
     public double? UnstableRate { get; set; }
     public int? SliderBreaks { get; set; }

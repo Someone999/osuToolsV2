@@ -51,7 +51,7 @@ public class BeatmapObjectWriter<TWriterType> : IBeatmapObjectWriter<IObjectWrit
         MetadataObjectWriter.Write(obj.Metadata);
         DifficultyObjectWriter.Write(obj.DifficultyAttributes);
         EventsObjectWriter.Write(obj);
-        TimingPointObjectWriter.Write(obj.TimingPoints);
+        TimingPointObjectWriter.Write(obj.TimingPointCollection);
         HitObjectsObjectWriter.Write(obj.HitObjects ?? new List<IHitObject>());
         IsWriting = false;
     }

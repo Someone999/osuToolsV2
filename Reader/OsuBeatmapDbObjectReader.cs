@@ -1,5 +1,4 @@
 ﻿using System.Security.Cryptography;
-using HsManCommonLibrary.Utils;
 using osuToolsV2.Beatmaps;
 using osuToolsV2.Database;
 using osuToolsV2.Database.Beatmap;
@@ -291,14 +290,19 @@ public class OsuBeatmapDbObjectReader : IObjectReader<BinaryReader, OsuBeatmapDb
         Reader.ReadByte();
 
         var ruleset = osuBeatmap.Ruleset.LegacyRuleset;
-        double noModStarRating;
+        double? noModStarRating = 0;
+        
         if (ruleset == null)
         {
-            noModStarRating = 0;
+            noModStarRating = null;
+        }
+        else if(osuBeatmap.ModStarPair[ruleset.Value].TryGetValue(0, out var tmpRating))
+        {
+            noModStarRating = tmpRating;
         }
         else
         {
-            noModStarRating = osuBeatmap.ModStarPair[ruleset.Value][0];
+            noModStarRating = null;
         }
 
         osuBeatmap.Stars = noModStarRating;
@@ -324,7 +328,7 @@ public class OsuBeatmapDbObjectReader : IObjectReader<BinaryReader, OsuBeatmapDb
         beatmapDb.Beatmaps = new OsuBeatmapCollection(ReadBeatmaps(beatmapDb.Manifest));
         beatmapDb.Manifest.Permission = (UserPermission)Reader.ReadInt32();
         beatmapDb.DatabaseFilePath = _dbPath;
-        beatmapDb.Md5 = MD5.HashData(File.ReadAllBytes(_dbPath)).GetMd5String();
+        beatmapDb.Md5 = MD5.Create().ComputeHash(File.ReadAllBytes(_dbPath)).GetMd5String();
         return beatmapDb;
     }
 }

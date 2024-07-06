@@ -4,6 +4,7 @@ using osuToolsV2.Beatmaps.HitObjects;
 using osuToolsV2.Beatmaps.HitObjects.Sounds;
 using osuToolsV2.Beatmaps.Misc;
 using osuToolsV2.Beatmaps.TimingPoints;
+using osuToolsV2.LazyLoaders;
 using osuToolsV2.Rulesets;
 using osuToolsV2.Score;
 using osuToolsV2.StoryBoard.Commands;
@@ -29,35 +30,137 @@ public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitOb
     {
         return $"{Metadata.Artist} - {Metadata.Title} [{Metadata.Version}]";
     }
-    public List<TimingPoint> TimingPoints { get; set; } = new();
-    public List<BreakTime> BreakTimes { get; internal set; } = new();
-    public StoryBoardCommandBase[]? InlineStoryBoardCommand { get; internal set; }
+
+    internal HitObjectLazyLoader? HitObjectLazyLoader { get; set; }
+    internal StoryBoardCommandLazyLoader? InlineStoryBoardCommandLazyLoader { get; set; }
+    internal StoryBoardCommandLazyLoader? StoryBoardCommandLazyLoader { get; set; }
+    internal TimingPointLazyLoader? TimingPointLazyLoader { get; set; }
+    private TimingPointCollection? _timingPointCollection;
+
+    public TimingPointCollection TimingPointCollection
+    {
+        get
+        {
+            if (_timingPointCollection != null)
+            {
+                return _timingPointCollection;
+            }
+
+            if (TimingPointLazyLoader == null)
+            {
+                throw new InvalidOperationException("Lazy loader not initialized properly");
+            }
+
+            _timingPointCollection = TimingPointLazyLoader.LoadObject();
+            return _timingPointCollection;
+        }
+        internal set => _timingPointCollection = value;
+    }
+
+    internal BreakTimeLazyLoader? BreakTimeLazyLoader { get; set; }
+    internal BreakTimeCollection? BreakTimeCollection;
+    public BreakTimeCollection? BreakTimes
+    {
+        get
+        {
+            if (BreakTimeCollection != null)
+            {
+                return BreakTimeCollection;
+            }
+
+            if (BreakTimeLazyLoader == null)
+            {
+                throw new InvalidOperationException("Lazy loader not initialized properly");
+            }
+
+            if (BreakTimeLazyLoader.Loaded)
+            {
+                return BreakTimeCollection;
+            }
+            
+            BreakTimeCollection = BreakTimeLazyLoader.LoadObject();
+            return BreakTimeCollection;
+        }
+        internal set => BreakTimeCollection = value;
+    }
+
+    private StoryBoardCommandBase[]? _inlineStoryBoardCommandBases;
+    private StoryBoardCommandBase[]? _storyBoardCommandBases;
+    public StoryBoardCommandBase[]? StoryBoardCommand
+    {
+        get
+        {
+            if (_storyBoardCommandBases != null)
+            {
+                return _storyBoardCommandBases;
+            }
+
+            if (StoryBoardCommandLazyLoader == null)
+            {
+                throw new InvalidOperationException("Lazy loader not initialized properly");
+            }
+
+            if (StoryBoardCommandLazyLoader.Loaded)
+            {
+                return _storyBoardCommandBases;
+            }
+            
+            _storyBoardCommandBases = StoryBoardCommandLazyLoader.LoadObject();
+            return _storyBoardCommandBases;
+        }
+        internal set => _storyBoardCommandBases = value;
+    }
+
+    public StoryBoardCommandBase[]? InlineStoryBoardCommand
+    {
+        get
+        {
+            if (_inlineStoryBoardCommandBases != null)
+            {
+                return _inlineStoryBoardCommandBases;
+            }
+
+            if (InlineStoryBoardCommandLazyLoader == null)
+            {
+                throw new InvalidOperationException("Lazy loader not initialized properly");
+            }
+
+            if (InlineStoryBoardCommandLazyLoader.Loaded)
+            {
+                return _inlineStoryBoardCommandBases;
+            }
+            
+            _inlineStoryBoardCommandBases = InlineStoryBoardCommandLazyLoader.LoadObject();
+            return _inlineStoryBoardCommandBases;
+        }
+        internal set => _inlineStoryBoardCommandBases = value;
+    }
     public BeatmapMetadata Metadata { get; set; } = new();
     public DifficultyAttributes DifficultyAttributes { get; set; } = new DifficultyAttributes();
 
-    public List<IHitObject>? HitObjects { get; set; }
+    private List<IHitObject>? _hitObjects;
+    public List<IHitObject>? HitObjects 
+    {
+        get
+        {
+            if (_hitObjects != null)
+            {
+                return _hitObjects;
+            }
+            
+            if (HitObjectLazyLoader == null)
+            {
+                throw new InvalidOperationException("Lazy loader not initialized properly");
+            }
+
+            _hitObjects = HitObjectLazyLoader.LoadObject();
+            return _hitObjects;
+        }
+
+        set => _hitObjects = value;
+    }
     
     public Ruleset Ruleset { get; set; } = new EmptyRuleset();
-    private double GetMostCommonBpm()
-    {
-        Dictionary<double, int> timingPointsTimes = new Dictionary<double, int>();
-        var unInheritedTimingPoints = TimingPoints.Where(p => !p.Inherited).ToArray();
-        if (unInheritedTimingPoints.Length == 1)
-        {
-            return unInheritedTimingPoints[0].Bpm;
-        }
-        foreach (var timingPoint in unInheritedTimingPoints)
-        {
-            double roundedBpm = Math.Round(timingPoint.Bpm, 2);
-            if (!timingPointsTimes.TryAdd(roundedBpm, 1))
-            {
-                timingPointsTimes[roundedBpm]++;
-            }
-        }
-        var orderedBpmList = from kv in timingPointsTimes orderby kv.Value descending select kv;
-        double mostCommonBpm = orderedBpmList.FirstOrDefault().Key;
-        return mostCommonBpm;
-    }
 
     private double? _internalBpm;
 
@@ -65,7 +168,7 @@ public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitOb
     {
         get
         {
-            _internalBpm ??= GetMostCommonBpm();
+            _internalBpm ??= TimingPointCollection.GetMostCommonBpm();
             return _internalBpm.Value;
         }
         set => _internalBpm = value;
@@ -104,5 +207,5 @@ public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitOb
 
 public class Beatmap : Beatmap<IHitObject>
 {
-    public static Beatmap FromFile(string path) => new DefaultFileBeatmapReader(path).Read();
+    public static Beatmap? FromFile(string path) => new DefaultFileBeatmapReader(path).Read();
 }

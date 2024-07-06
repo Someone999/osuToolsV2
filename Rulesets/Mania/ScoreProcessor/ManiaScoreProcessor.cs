@@ -1,4 +1,5 @@
-﻿using osuToolsV2.Game;
+﻿using osuToolsV2.Beatmaps.HitObjects.Mania;
+using osuToolsV2.Game;
 using osuToolsV2.Game.Mods;
 using osuToolsV2.Rulesets.Mania.Mods;
 using osuToolsV2.Score;
@@ -47,7 +48,12 @@ public class ManiaScoreProcessor : IScoreProcessor
     public int GetHitObjectCount(ScoreInfo scoreInfo)
     {
         var hitObjects = scoreInfo.Beatmap?.HitObjects;
-        var tmpHitObjectCount = hitObjects?.Count ?? 0;
+        if (hitObjects == null)
+        {
+            return 0;
+        }
+        var tmpHitObjectCount = hitObjects.Count;
+        
         var modList = scoreInfo.Mods;
         if (modList == null)
         {
@@ -55,7 +61,13 @@ public class ManiaScoreProcessor : IScoreProcessor
         }
         
         var hasScoreV2Mod = modList.Any(m => m is ManiaScoreV2Mod);
-        return hasScoreV2Mod ? tmpHitObjectCount * 2 : tmpHitObjectCount;
+        if (!hasScoreV2Mod)
+        {
+            return tmpHitObjectCount;
+        }
+        
+        var holdCount = hitObjects.Count(h => h is ManiaHold);
+        return tmpHitObjectCount + holdCount;
     }
 
     public double GetCount300Rate(ScoreInfo scoreInfo)

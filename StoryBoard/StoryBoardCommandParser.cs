@@ -1,4 +1,5 @@
-﻿using osuToolsV2.Graphic;
+﻿using System.Text;
+using osuToolsV2.Graphic;
 using osuToolsV2.StoryBoard.Commands;
 using osuToolsV2.StoryBoard.Commands.Resources;
 using osuToolsV2.StoryBoard.Enums;
@@ -36,7 +37,7 @@ namespace osuToolsV2.StoryBoard
             return i;
         }
 
-        static int GetCommaCount(string str)
+        /*static int GetCommaCount(string str)
         {
             int comma = 0;
             int quote = 0;
@@ -115,6 +116,42 @@ namespace osuToolsV2.StoryBoard
                 }
             }
             return args;
+        }*/
+
+        static string[] ArgumentParser(string str)
+        {
+            List<string> args = new List<string>();
+            Stack<bool> quoteStack = new Stack<bool>();
+            StringBuilder currentToken = new StringBuilder();
+            for (int i = 0; i < str.Length; i++)
+            {
+                switch (str[i])
+                {
+                    case ',':
+                        args.Add(currentToken.ToString());
+                        currentToken.Clear();
+                        break;
+                    case '"':
+                        i++;
+                        while (i < str.Length && str[i] != '"')
+                        {
+                            currentToken.Append(str[i]);
+                            i++;
+                        }
+                        
+                        break;
+                    default:
+                        currentToken.Append(str[i]);
+                        break;
+                }
+            }
+
+            if (currentToken.Length > 0)
+            {
+                args.Add(currentToken.ToString());
+            }
+
+            return args.ToArray();
         }
 
         public StoryBoardCommandBase[] Parse()
@@ -163,6 +200,7 @@ namespace osuToolsV2.StoryBoard
                 lastCommand = currentCommand;
                 lastSpace = space;
             }
+            
             GC.Collect();
             return commands.ToArray();
         }
@@ -179,6 +217,21 @@ namespace osuToolsV2.StoryBoard
             var origin = (StoryBoardOrigin)Enum.Parse(typeof(StoryBoardOrigin),data[2]);
             switch (type)
             {
+                case "Background":
+                case "0":
+                    return new Background()
+                    {
+                        Layer = (StoryBoardLayer)Enum.Parse(typeof(StoryBoardLayer), data[1]),
+                        FileName = data[2].Trim('\"'),
+                        Position = new OsuPixel(double.Parse(data[3]), double.Parse(data[4]))
+                    };
+                case "Video":
+                case "1":
+                    return new Video()
+                    {
+                        StartTime = double.Parse(data[1]),
+                        FileName = data[2].Trim('\"')
+                    };
                 case "Colour":
                 case "3":
                     return null;

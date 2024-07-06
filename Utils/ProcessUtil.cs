@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
-using osuToolsV2.Exceptions;
 using osuToolsV2.Native;
 
 namespace osuToolsV2.Utils;

@@ -1,8 +1,4 @@
 ﻿using osuToolsV2.Database.Score;
-using osuToolsV2.Exceptions;
-using osuToolsV2.Game.Legacy;
-using osuToolsV2.GameInfo;
-using osuToolsV2.Rulesets.Legacy;
 
 namespace osuToolsV2.Database
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using osuToolsV2.Exceptions;
 using osuToolsV2.GameInfo.Config;
 
@@ -67,7 +62,7 @@ namespace osuToolsV2.GameInfo
         }
 
         public void WaitGameExit() => _osuProcess.WaitForExit();
-        public async Task  WaitGameExitAsync() => await _osuProcess.WaitForExitAsync();
+        public async Task  WaitGameExitAsync() => await Task.Run(() => _osuProcess.WaitForExit());
         public bool IsRunning => !_osuProcess.HasExited;
         public event EventHandler OnExited
         {

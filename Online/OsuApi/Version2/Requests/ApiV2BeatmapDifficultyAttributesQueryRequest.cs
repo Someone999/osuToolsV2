@@ -1,29 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net.Http;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using osuToolsV2.Game.Legacy;
 using osuToolsV2.Online.OsuApi.Responses;
 using osuToolsV2.Online.OsuApi.Version2.Authenticating;
-using osuToolsV2.Online.OsuApi.Version2.Beatmap;
 using osuToolsV2.Online.OsuApi.Version2.Beatmap.Difficulties;
-using osuToolsV2.Rulesets.Legacy;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Requests;
-
-public class ApiV2BeatmapDifficultyAttributesQueryParameter
-{
-    [JsonIgnore]
-    public int BeatmapId { get; set; }
-    
-    [JsonProperty("mods")]
-    public LegacyGameMod? Mod { get; set; }
-    
-    [JsonProperty("ruleset")]
-    public string? Ruleset { get; set; }
-    
-    [JsonProperty("ruleset_id")]
-    public LegacyRuleset? RulesetId { get; set; }
-}
-
 
 public class ApiV2BeatmapDifficultyAttributesQueryRequest<TApiV2DifficultyAttributes>
     : IApiV2Request<TApiV2DifficultyAttributes, ApiV2BeatmapDifficultyAttributesQueryParameter> 

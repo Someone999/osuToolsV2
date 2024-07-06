@@ -1,20 +1,20 @@
 ﻿using osuToolsV2.Game.Mods;
 using osuToolsV2.Replays;
+using osuToolsV2.Rulesets;
 using osuToolsV2.Rulesets.Legacy;
-using osuToolsV2.Score;
 
 namespace osuToolsV2.Reader;
 
-public class ReplyObjectReader : IObjectReader<BinaryReader, Replay>
+public class ReplayObjectReader : IObjectReader<BinaryReader, Replay>
 {
     private BinaryReader _reader;
 
-    public ReplyObjectReader(Stream stream)
+    public ReplayObjectReader(Stream stream)
     {
         _reader = new BinaryReader(stream);
     }
     
-    public ReplyObjectReader(string fileName) : 
+    public ReplayObjectReader(string fileName) : 
         this(File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
     {
     }
@@ -27,10 +27,11 @@ public class ReplyObjectReader : IObjectReader<BinaryReader, Replay>
     public Replay? Read()
     {
         IsReading = true;
-        ScoreInfo scoreInfo = new ScoreInfo();
+        var legacyRuleset = (LegacyRuleset)Reader.ReadByte();
+        var ruleset = Ruleset.FromLegacyRuleset(legacyRuleset);
         Replay replay = new Replay
         {
-            LegacyRuleset = (LegacyRuleset)Reader.ReadByte(),
+            LegacyRuleset = legacyRuleset,
             GameVersion = Reader.ReadInt32(),
             BeatmapMd5 = Reader.ReadOsuString() ?? throw new FormatException(),
             PlayerName = Reader.ReadOsuString() ?? throw new FormatException(),
@@ -46,7 +47,7 @@ public class ReplyObjectReader : IObjectReader<BinaryReader, Replay>
                 Score = Reader.ReadInt32(),
                 MaxCombo = Reader.ReadInt16(),
                 Perfect = Reader.ReadByte() != 0,
-                Mods = ModList.FromInteger(Reader.ReadInt32())
+                Mods = ModManager.FromInteger(Reader.ReadInt32(), ruleset, false)
             }
         };
         string? lifeBarGraphStr = Reader.ReadOsuString();

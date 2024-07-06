@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net.Http;
+using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using osuToolsV2.Online.OsuApi.Responses;
@@ -26,6 +27,17 @@ public class OsuApiOAuthAuthenticator
         args.Add("client_secret", parameters.ClientCredentials.ClientSecret);
         args.Add("grant_type", parameters.GrantParameters.GrantType);
         args.Add("scope", string.Join(" ", parameters.GrantParameters.Scopes));
+
+        switch (parameters.GrantParameters.GrantType)
+        {
+            case OsuApiGrantType.AuthorizationCode:
+                
+                args.Add("code", parameters.GrantParameters.Code ?? throw CreateArgumentMissing("code"));
+
+                args.Add("redirect_uri",
+                    parameters.GrantParameters.RedirectUri ?? throw CreateArgumentMissing("redirect_uri"));
+                break;
+        }
 
         HttpRequestMessage requestMessage = new HttpRequestMessage();
         requestMessage.RequestUri = uriBuilder.Uri;
@@ -57,7 +69,13 @@ public class OsuApiOAuthAuthenticator
         HttpApiResponse<OsuApiV2ErrorInfo, OsuOAuthToken> apiResponse =
             new HttpApiResponse<OsuApiV2ErrorInfo, OsuOAuthToken>(errorInfo, token, result);
 
+        
         return apiResponse;
+
+        Exception CreateArgumentMissing(string argument)
+        {
+            return new InvalidOperationException($"Parameter \"{argument}\" is missing");
+        }
     }
 
     public async Task RevokeTokenAsync()

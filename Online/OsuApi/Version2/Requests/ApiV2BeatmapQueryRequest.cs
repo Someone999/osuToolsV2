@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net.Http;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using osuToolsV2.Online.OsuApi.Responses;
 using osuToolsV2.Online.OsuApi.Version2.Authenticating;
 using osuToolsV2.Online.OsuApi.Version2.Beatmap;
-using osuToolsV2.Rulesets.Taiko.Mods;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Requests;
 

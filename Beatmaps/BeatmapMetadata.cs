@@ -1,10 +1,20 @@
 ﻿using osuToolsV2.Beatmaps.BreakTimes;
-using osuToolsV2.GameInfo;
+using osuToolsV2.LazyLoaders;
+using osuToolsV2.StoryBoard.Commands.Resources;
 
 namespace osuToolsV2.Beatmaps;
 
 public class BeatmapMetadata
 {
+    public BeatmapMetadata()
+    {
+    }
+    public BeatmapMetadata(StoryBoardCommandLazyLoader storyBoardCommandLazyLoader)
+    {
+        storyBoardCommandLazyLoader.LoadObject();
+    }
+    
+
     public string Artist { get; set; } = "";
     public string ArtistUnicode { get; set; } = "";
     public string Title { get; set; } = "";
@@ -15,8 +25,8 @@ public class BeatmapMetadata
     public string Tags { get; set; } = "";
     public int? BeatmapFileVersion { get; set; }
     public string? AudioFileName { get; set; }
-    public BackgroundInfo? BackgroundInfo { get; set; }
-    public VideoInfo? VideoInfo { get; set; }
+    public BeatmapObjectHolder<Background> BackgroundHolder { get; set; } = new BeatmapObjectHolder<Background>();
+    public BeatmapObjectHolder<Video> VideoHolder { get; set; } = new BeatmapObjectHolder<Video>();
 
     public string? BeatmapFullPath { get; set; }
     public string? BeatmapFileName { get; set; }

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace osuToolsV2.Online.OsuApi.Version2.Beatmap;
+﻿namespace osuToolsV2.Online.OsuApi.Version2.Beatmap;
 
 public static class MessageType
 {

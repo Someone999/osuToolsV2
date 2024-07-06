@@ -35,7 +35,7 @@ public abstract class BeatmapConverter<THitObject> where THitObject: IHitObject
         converted.SpecialStyle = beatmap.SpecialStyle;
         converted.StackLeniency = beatmap.StackLeniency;
         converted.TimelineZoom = beatmap.TimelineZoom;
-        converted.TimingPoints = beatmap.TimingPoints;
+        converted.TimingPointCollection = beatmap.TimingPointCollection;
         converted.WidescreenStoryboard = beatmap.WidescreenStoryboard;
         converted.AudioLeadIn = beatmap.AudioLeadIn;
         converted.LetterboxInBreaks = beatmap.LetterboxInBreaks;

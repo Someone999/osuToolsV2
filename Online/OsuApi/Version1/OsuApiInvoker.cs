@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net.Http;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using osuToolsV2.Online.OsuApi.Responses;
 

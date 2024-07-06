@@ -1,5 +1,4 @@
-﻿using HsManCommonLibrary.NestedValues.Attributes;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using osuToolsV2.Rulesets.Legacy;
 
 namespace osuToolsV2.Online.OsuApi.Version1;

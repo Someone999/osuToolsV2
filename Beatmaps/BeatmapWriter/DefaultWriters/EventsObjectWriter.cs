@@ -37,7 +37,7 @@ public class EventsObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjectWri
     {
         IsWriting = true;
         Writer.Write($"[Events]{Environment.NewLine}");
-        if (obj.BreakTimes.Count > 0)
+        if (obj.BreakTimes != null)
         {
             foreach (var breakTime in obj.BreakTimes)
             {
@@ -45,15 +45,17 @@ public class EventsObjectWriter<TWriterType> : IObjectWriter<Beatmap, IObjectWri
             }
         }
 
-        if (obj.Metadata.BackgroundInfo is { HasBackground: true })
+        var bgHolder = obj.Metadata.BackgroundHolder;
+        if (bgHolder.IsInitialized() && bgHolder.Value != null)
         {
-            var bgInfo = obj.Metadata.BackgroundInfo;
-            Writer.Write($"0,0,\"{bgInfo.FileName}\",{bgInfo.X},{bgInfo.Y}{Environment.NewLine}");
+            var bgInfo = bgHolder.Value;
+            Writer.Write($"0,0,\"{bgInfo.FileName}\",{bgInfo.Position.X},{bgInfo.Position.Y}{Environment.NewLine}");
         }
-        if (obj.Metadata.VideoInfo is { HasVideo: true })
+        var viHolder = obj.Metadata.VideoHolder;
+        if (viHolder.IsInitialized() && viHolder.Value != null)
         {
-            var viInfo = obj.Metadata.VideoInfo;
-            Writer.Write($"1,0,\"{viInfo.FileName},{viInfo.X},{viInfo.Y}\"{Environment.NewLine}");
+            var viInfo = viHolder.Value;
+            Writer.Write($"1,0,\"{viInfo.FileName}\"{Environment.NewLine}");
         }
 
         if (obj.InlineStoryBoardCommand == null)

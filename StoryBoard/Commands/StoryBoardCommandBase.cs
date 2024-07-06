@@ -1,6 +1,6 @@
 ﻿namespace osuToolsV2.StoryBoard.Commands
 {
-    public abstract class StoryBoardCommandBase//: IOsuFileContent
+    public abstract class StoryBoardCommandBase
     {
         public List<SubStoryBoardCommand> SubCommands { get;  set; } = new ();
         public SubStoryBoardCommand AsSubStoryBoardCommand() => (SubStoryBoardCommand) this;

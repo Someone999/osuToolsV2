@@ -1,13 +1,7 @@
-﻿using System.Text;
-using Microsoft.VisualBasic;
-using osuToolsV2.Game.Mods;
-using osuToolsV2.Rulesets;
+﻿using osuToolsV2.Rulesets;
 using osuToolsV2.Rulesets.Legacy;
 using osuToolsV2.Score;
 using osuToolsV2.Writer;
-using SharpCompress.Compressors;
-using ZstdSharp;
-using Decoder = SharpCompress.Compressors.LZMA.Decoder;
 
 namespace osuToolsV2.Replays;
 

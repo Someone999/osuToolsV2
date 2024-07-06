@@ -42,7 +42,8 @@ namespace osuToolsV2.Database.Beatmap
                 return 0;
             }
 
-            return modDifficultyPair.GetValueOrDefault(modCombine, 0);
+            var r = modDifficultyPair.TryGetValue(modCombine, out var val);
+            return r ? val : 0;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using osuToolsV2.Online.OsuApi.Version2.Requests;
+﻿using System.Net.Http;
+using osuToolsV2.Online.OsuApi.Version2.Requests;
 
 namespace osuToolsV2.Online.OsuApi.Responses;
 

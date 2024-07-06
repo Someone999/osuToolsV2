@@ -3,7 +3,7 @@ using osuToolsV2.Writer;
 
 namespace osuToolsV2.Beatmaps.BeatmapWriter.DefaultWriters;
 
-public class TimingPointsObjectWriter<TWriterType> : IObjectWriter<List<TimingPoint>, IObjectWriter<TWriterType>>
+public class TimingPointsObjectWriter<TWriterType> : IObjectWriter<IEnumerable<TimingPoint>, IObjectWriter<TWriterType>>
 {
 
     public TimingPointsObjectWriter(IObjectWriter<TWriterType> objectWriter)
@@ -33,7 +33,7 @@ public class TimingPointsObjectWriter<TWriterType> : IObjectWriter<List<TimingPo
         }
         Write(timingPoints);
     }
-    public void Write(List<TimingPoint> obj)
+    public void Write(IEnumerable<TimingPoint> obj)
     {
         IsWriting = true;
         Writer.Write($"[TimingPoints]{Environment.NewLine}");

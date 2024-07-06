@@ -1,6 +1,4 @@
 ﻿using osuToolsV2.Replays;
-using osuToolsV2.Rulesets.Legacy;
-using osuToolsV2.Score;
 
 namespace osuToolsV2.Writer.Replays;
 

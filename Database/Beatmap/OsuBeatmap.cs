@@ -122,7 +122,7 @@ namespace osuToolsV2.Database.Beatmap
         ///     将OsuBeatmap转化成<seealso cref="Beatmap" />
         /// </summary>
         /// <returns></returns>
-        public osuToolsV2.Beatmaps.Beatmap ToBeatmap()
+        public osuToolsV2.Beatmaps.Beatmap? ToBeatmap()
         {
             OsuInfo info = OsuInfo.GetInstance();
             return new DefaultFileBeatmapReader(Path.Combine(info.BeatmapDirectory, FolderName,

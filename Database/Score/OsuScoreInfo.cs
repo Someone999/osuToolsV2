@@ -1,9 +1,5 @@
-﻿using System.Diagnostics;
-using osuToolsV2.Database.Beatmap;
-using osuToolsV2.Exceptions;
-using osuToolsV2.Game.Legacy;
+﻿using osuToolsV2.Database.Beatmap;
 using osuToolsV2.Game.Mods;
-using osuToolsV2.Reader;
 using osuToolsV2.Rulesets.Legacy;
 using osuToolsV2.Score;
 using osuToolsV2.Score.ScoreProcessor;
