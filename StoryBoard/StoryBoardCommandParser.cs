@@ -201,7 +201,7 @@ namespace osuToolsV2.StoryBoard
                 lastSpace = space;
             }
             
-            GC.Collect();
+            //GC.Collect();
             return commands.ToArray();
         }
 

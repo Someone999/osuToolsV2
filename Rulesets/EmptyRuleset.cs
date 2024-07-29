@@ -1,4 +1,5 @@
-﻿using osuToolsV2.Game.Mods;
+﻿using osuToolsV2.Beatmaps;
+using osuToolsV2.Game.Mods;
 using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Rulesets;
@@ -7,6 +8,7 @@ public class EmptyRuleset : Ruleset
 {
 
     public override string Name => "None";
+
     public override IScoreProcessor CreateScoreProcessor()
     {
         return EmptyScoreProcessor.Instance;

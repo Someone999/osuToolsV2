@@ -9,8 +9,10 @@ namespace osuToolsV2.Game.Mods
         public abstract string ShortName { get; }
         public virtual double ScoreMultiplier { get;  } = 1.0;
         public virtual ModType ModType { get;  } = ModType.Fun;
+
         public virtual void Apply(DifficultyAttributes difficulty)
-        { }
+        {
+        }
         public virtual bool IsRanked => true;
         public virtual bool AllowsFail() => true;
         public virtual Type[] ConflictMods => Type.EmptyTypes;

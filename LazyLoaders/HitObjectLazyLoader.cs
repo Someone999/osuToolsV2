@@ -50,23 +50,23 @@ public class HitObjectLazyLoader : ILazyLoader<List<IHitObject>>
     List<IHitObject> LoadObjectNoLock()
     {
         List<IHitObject> hitObjects = new List<IHitObject>();
+        IHitObjectCreator hitObjectCreator = _beatmap.Ruleset.LegacyRuleset switch
+        {
+            LegacyRuleset.Osu => new OsuHitObjectCreator(),
+            LegacyRuleset.Taiko => new TaikoHitObjectCreator(),
+            LegacyRuleset.Catch => new CatchHitObjectCreator(),
+            LegacyRuleset.Mania => new ManiaHitObjectCreator(),
+            LegacyRuleset.None => throw new InvalidBeatmapException(),
+            _ => throw new InvalidBeatmapException()
+        };
+
+        if (hitObjectCreator == null)
+        {
+            throw new InvalidBeatmapException();
+        }
+        
         foreach (var line in _hitObjectDefinitions)
         {
-            IHitObjectCreator hitObjectCreator = _beatmap.Ruleset.LegacyRuleset switch
-            {
-                LegacyRuleset.Osu => new OsuHitObjectCreator(),
-                LegacyRuleset.Taiko => new TaikoHitObjectCreator(),
-                LegacyRuleset.Catch => new CatchHitObjectCreator(),
-                LegacyRuleset.Mania => new ManiaHitObjectCreator(),
-                LegacyRuleset.None => throw new InvalidBeatmapException(),
-                _ => throw new InvalidBeatmapException()
-            };
-
-            if (hitObjectCreator == null)
-            {
-                throw new InvalidBeatmapException();
-            }
-
             hitObjects.Add(hitObjectCreator.CreateHitObject(line.Split(','), _beatmap));
         }
 

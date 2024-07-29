@@ -8,7 +8,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Someone999</Authors>
         <RepositoryUrl>https://github.com/Someone999/osuToolsV2</RepositoryUrl>
-        <PackageVersion>1.0.54</PackageVersion>
+        <PackageVersion>1.0.55</PackageVersion>
         <IsPackable>false</IsPackable>
         <OutputType>Exe</OutputType>
     </PropertyGroup>

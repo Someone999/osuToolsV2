@@ -1,4 +1,6 @@
-﻿namespace osuToolsV2.Score.ScoreCalculators;
+﻿using osuToolsV2.Rulesets;
+
+namespace osuToolsV2.Score.ScoreCalculators;
 
 public class Judgement
 {

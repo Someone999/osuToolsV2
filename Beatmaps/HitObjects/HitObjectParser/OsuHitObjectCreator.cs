@@ -20,6 +20,7 @@ public class OsuHitObjectCreator : IHitObjectCreator
             {
                 continue;
             }
+            
             oriHitObjType |= (OriginalHitObjectType)(1 << i);
         }
 
@@ -68,6 +69,9 @@ public class OsuHitObjectCreator : IHitObjectCreator
             // EdgeSounds are ignored.
             if (data.Length <= 8)
             {
+                hitObject.Position = new OsuPixel(double.Parse(xStr), double.Parse(yStr));
+                hitObject.StartTime = double.Parse(startTimeStr);
+                hitObject.HitSound = (HitSound)Enum.Parse(typeof(HitSound),hitSoundStr);
                 return slider;
             }
             Regex hitSampleMatcher = new Regex(@"\d+:\d+:\d+:(?:.*?)?"); 

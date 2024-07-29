@@ -323,12 +323,22 @@ public class OsuBeatmapDbObjectReader : IObjectReader<BinaryReader, OsuBeatmapDb
     
     public OsuBeatmapDb Read()
     {
-        OsuBeatmapDb beatmapDb = new OsuBeatmapDb();
-        ReadManifest(beatmapDb);
-        beatmapDb.Beatmaps = new OsuBeatmapCollection(ReadBeatmaps(beatmapDb.Manifest));
-        beatmapDb.Manifest.Permission = (UserPermission)Reader.ReadInt32();
-        beatmapDb.DatabaseFilePath = _dbPath;
-        beatmapDb.Md5 = MD5.Create().ComputeHash(File.ReadAllBytes(_dbPath)).GetMd5String();
-        return beatmapDb;
+        try
+        {
+            OsuBeatmapDb beatmapDb = new OsuBeatmapDb();
+            ReadManifest(beatmapDb);
+            beatmapDb.Beatmaps = new OsuBeatmapCollection(ReadBeatmaps(beatmapDb.Manifest));
+            beatmapDb.Manifest.Permission = (UserPermission)Reader.ReadInt32();
+            beatmapDb.DatabaseFilePath = _dbPath;
+            beatmapDb.Md5 = MD5.Create().ComputeHash(File.ReadAllBytes(_dbPath)).GetMd5String();
+            Reader.Dispose();
+            return beatmapDb;
+        }
+        catch (Exception)
+        {
+            Reader.Dispose();
+            throw;
+        }
+       
     }
 }

@@ -1,4 +1,5 @@
-﻿using osuToolsV2.Game.Mods;
+﻿using osuToolsV2.Beatmaps;
+using osuToolsV2.Game.Mods;
 using osuToolsV2.Rulesets.Catch.Mods;
 using osuToolsV2.Rulesets.Catch.ScoreProcessor;
 using osuToolsV2.Rulesets.Legacy;
@@ -19,6 +20,7 @@ public class CatchRuleset : Ruleset
         new CatchCinemaMod(), new CatchScoreV2Mod()
     };
     public override bool IsLegacyRuleset => true;
+    
     public override LegacyRuleset? LegacyRuleset => Legacy.LegacyRuleset.Catch;
     public override IScoreProcessor CreateScoreProcessor()
     {

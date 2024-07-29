@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using osuToolsV2.Beatmaps.BreakTimes;
 using osuToolsV2.Beatmaps.HitObjects;
@@ -43,26 +44,30 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
     private static readonly Regex InvalidPathCharsRegex = 
         new Regex("[" + new string(Path.GetInvalidPathChars()
             .Concat(Path.GetInvalidFileNameChars()).ToArray()) + "]");
+
+
+    private string NormalizePath(string path)
+    {
+        return InvalidPathCharsRegex.Replace(path, "");
+    }
+
+    
+    private string GetBeatmapSetStoryBoardFileName(BeatmapMetadata metadata)
+    {
+        var file = $"{metadata.Artist} - {metadata.Title} ({metadata.Creator}).osb";
+        string normalized = NormalizePath(file);
+        return normalized;
+    }
+    
+    
+    
     StoryBoardCommandLazyLoader CreateStoryBoardCommandLazyLoader(Beatmap b)
     {
         var lines = new List<string>();
         var beatmapFolder = Path.GetDirectoryName(_beatmapFile) ?? throw new InvalidOperationException();
         var metadata = _beatmap.Metadata;
-        var beatmapStoryBoardFile =
-            $"{metadata.Artist} - {metadata.Title}[{metadata.Version}] ({metadata.Creator}).osb";
-
-        beatmapStoryBoardFile = InvalidPathCharsRegex.Replace(beatmapStoryBoardFile, "");
+        var beatmapSetStoryBoardFile = GetBeatmapSetStoryBoardFileName(metadata);
         
-        beatmapStoryBoardFile = Path.Combine(beatmapFolder, beatmapStoryBoardFile);
-        if (File.Exists(beatmapStoryBoardFile))
-        {
-            lines.AddRange(File.ReadAllLines(beatmapStoryBoardFile));
-        }
-        
-        var beatmapSetStoryBoardFile =
-            $"{metadata.Artist} - {metadata.Title} ({metadata.Creator}).osb";
-        
-        beatmapSetStoryBoardFile = InvalidPathCharsRegex.Replace(beatmapSetStoryBoardFile, "");
         
         beatmapSetStoryBoardFile = Path.Combine(beatmapFolder, beatmapSetStoryBoardFile);
         
@@ -70,7 +75,6 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         {
             lines.AddRange(File.ReadAllLines(beatmapSetStoryBoardFile));
         }
-
         
         _ = lines.FirstOrDefault(f =>
         {
@@ -300,6 +304,14 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         };
 
         _beatmap.Metadata.VideoHolder.BindValue(video);
+
+        var beatmapDir = Path.GetDirectoryName(_beatmap.Metadata.BeatmapFullPath);
+        if (string.IsNullOrEmpty(beatmapDir))
+        {
+            throw new InvalidOperationException();
+        }
+        
+        _beatmap.Metadata.VideoHolder.FullPath =  Path.Combine(beatmapDir, video.FileName);
         return FindState.Found;
     }
     
@@ -335,7 +347,13 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         background.Position = new OsuPixel(x, y);
         
         _beatmap.Metadata.BackgroundHolder.BindValue(background);
+        var beatmapDir = Path.GetDirectoryName(_beatmap.Metadata.BeatmapFullPath);
+        if (string.IsNullOrEmpty(beatmapDir))
+        {
+            throw new InvalidOperationException();
+        }
         
+        _beatmap.Metadata.BackgroundHolder.FullPath =  Path.Combine(beatmapDir, background.FileName);
         return FindState.Found;
     }
     

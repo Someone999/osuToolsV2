@@ -1,5 +1,6 @@
 ﻿
 using System.Reflection;
+using osuToolsV2.Beatmaps;
 using osuToolsV2.Logger;
 using osuToolsV2.Rulesets.Legacy;
 using osuToolsV2.Game.Mods;
@@ -58,9 +59,6 @@ public abstract class Ruleset
     public abstract Mod[] AvailableMods {get;}
     public virtual LegacyRuleset? LegacyRuleset => null;
     public virtual bool IsLegacyRuleset => false;
-
-    
-
     public static bool operator == (Ruleset? a, Ruleset? b)
     {
         if (a is null && b is null)
