@@ -1,7 +1,6 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using System.Text;
 
-namespace osuToolsV2
+namespace osuToolsV2.ExtraMethods
 {
     /// <summary>
     ///   

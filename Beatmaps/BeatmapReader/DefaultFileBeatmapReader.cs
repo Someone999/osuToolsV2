@@ -8,6 +8,7 @@ using osuToolsV2.Beatmaps.HitObjects.Sounds;
 using osuToolsV2.Beatmaps.Misc;
 using osuToolsV2.Beatmaps.TimingPoints;
 using osuToolsV2.Exceptions;
+using osuToolsV2.ExtraMethods;
 using osuToolsV2.Graphic;
 using osuToolsV2.LazyLoaders;
 using osuToolsV2.Reader;

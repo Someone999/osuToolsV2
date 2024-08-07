@@ -2,6 +2,7 @@
 using osuToolsV2.Beatmaps;
 using osuToolsV2.Database;
 using osuToolsV2.Database.Beatmap;
+using osuToolsV2.ExtraMethods;
 using osuToolsV2.GameInfo;
 using osuToolsV2.Replays;
 using osuToolsV2.Rulesets;

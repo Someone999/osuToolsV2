@@ -1,6 +1,6 @@
 ﻿namespace osuToolsV2.Replays;
 
-public static class inaryReaderExtendMethods
+public static class BinaryReaderExtendMethods
 {
     public static string ReadOsuString(this BinaryReader reader)
     {

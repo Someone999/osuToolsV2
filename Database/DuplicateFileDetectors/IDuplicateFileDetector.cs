@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using osuToolsV2.ExtraMethods;
 using osuToolsV2.Reader;
 
 namespace osuToolsV2.Database.DuplicateFileDetectors;
