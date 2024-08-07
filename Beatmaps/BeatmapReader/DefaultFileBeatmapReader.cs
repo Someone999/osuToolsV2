@@ -190,11 +190,12 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         switch (key)
         {
             case "Bookmarks":
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
                 {
                     break;
                 }
 
+                
                 _beatmap.Bookmarks.AddRange(from strVal in value.Split(',') select int.Parse(strVal));
                 break;
             case "DistanceSpacing":

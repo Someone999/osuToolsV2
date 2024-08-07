@@ -29,32 +29,17 @@ public class Class1
 {
     static void Main(string[] args)
     {
-        /*var e = Environment.GetCommandLineArgs();
-        OsuBeatmapDbObjectReader reader = new OsuBeatmapDbObjectReader();
-        var db = reader.Read();
-        var osuBeatmap = db.Beatmaps.SearchByKeyword("Slave tower another")[0];
-        var scoreDbReader = new OsuScoreDbObjectReader();
-        var scoreDb = scoreDbReader.Read();
-        if (scoreDb == null)
+        var fileName = @"D:\a\s\osu\osu!\Songs\Quantum-RM-01\Quantum(None) [mania].osu";
+        var reader = new DefaultFileBeatmapReader(fileName);
+        var b = reader.Read();
+        if (b == null)
         {
             return;
         }
-
-        var scores = scoreDb
-            .Scores
-            .Where(s => s.BeatmapMd5 == osuBeatmap.Metadata.Md5Hash)
-            .OrderByDescending(b => b.PlayTime)
-            .ToArray();
-        foreach (var score in scores)
-        {
-            Console.WriteLine(ScoreVisualUtil.BuildScoreDisplayString(score, new OsuScoreProcessor()));
-            Console.WriteLine();
-        }*/
-
-        /*OsuDbDuplicateFileDetector detector = new OsuDbDuplicateFileDetector();
-        var x = detector.GetDuplicateFilesByMd5(OsuInfo.GetInstance().OsuDirectory);*/
+        var x = b.HitObjects;
+        var y = b.InlineStoryBoardCommand;
+        var z = b.TimingPointCollection;
         
-
     }
 
     internal class Abc

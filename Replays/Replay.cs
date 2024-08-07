@@ -11,8 +11,9 @@ public class Replay
     public Ruleset GetRuleset() => Ruleset.FromLegacyRuleset(LegacyRuleset);
     public int GameVersion { get; set; }
     public ScoreInfo ScoreInfo { get; internal set; } = new ScoreInfo();
-    public string ReplayMd5 { get; set; } = Md5Tools.InvalidMd5;
-    public string BeatmapMd5 { get; set; } = Md5Tools.InvalidMd5;
+    private static readonly string InvalidMd5 = "                                "; 
+    public string ReplayMd5 { get; set; } = InvalidMd5;
+    public string BeatmapMd5 { get; set; } = InvalidMd5;
     public string PlayerName { get; set; } = "";
     public DateTime PlayTime { get; set; } = DateTime.Now;
     internal readonly List<LifeBarGraph> LifeBarGraphsInternal = new List<LifeBarGraph>();

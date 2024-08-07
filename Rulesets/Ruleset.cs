@@ -48,7 +48,10 @@ public abstract class Ruleset
     public static Ruleset FromRulesetName(string name)
     {
         if (_rulesets != null)
+        {
             return _rulesets[name];
+        }
+        
         _rulesets = new Dictionary<string, Ruleset>();
         InitRulesets();
         return _rulesets[name];

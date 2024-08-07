@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using HsManCommonLibrary.ExtractMethods;
 using osuToolsV2.Utils;
 
 namespace osuToolsV2.GameInfo
@@ -219,7 +220,7 @@ namespace osuToolsV2.GameInfo
             {
                 builder.AppendLine(data.Key.StartsWith("#Comment") ? data.Value : $"{data.Key} = {data.Value}");
             }
-            byte[] dataBytes = builder.ToString().ToBytes();
+            byte[] dataBytes = builder.ToString().GetBytes();
             stream.Write(dataBytes,0,dataBytes.Length);
         }
 
