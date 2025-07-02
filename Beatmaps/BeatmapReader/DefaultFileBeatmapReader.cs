@@ -60,10 +60,10 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         return normalized;
     }
 
-    IEnumerable<string> LazyLines(string path)
+    private IEnumerable<string> LazyLines(string path)
     {
-        FileStream fileStream = File.OpenRead(path);
-        StreamReader reader = new StreamReader(fileStream);
+        using FileStream fileStream = File.OpenRead(path);
+        using StreamReader reader = new StreamReader(fileStream);
         while (true)
         {
             var line = reader.ReadLine();
