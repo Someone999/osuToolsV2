@@ -66,10 +66,6 @@ public class Class1
         {
             Console.WriteLine(h.AsMainStoryBoardCommand().FileName);
         }
-
-
-
-
     }
 
     

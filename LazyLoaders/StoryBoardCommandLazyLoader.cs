@@ -12,7 +12,7 @@ namespace osuToolsV2.LazyLoaders;
 public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
 {
     private StoryBoardCommandBase[]? _cache;
-    private readonly IEnumerable<string>? _storyBoardCommandDefinitions;
+    private IEnumerable<string>? _storyBoardCommandDefinitions;
     private readonly Beatmap _beatmap;
 
     public StoryBoardCommandLazyLoader(Beatmap beatmap, IEnumerable<string> storyBoardCommandDefinitions)
@@ -133,6 +133,7 @@ public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
         Loaded = true;
         Loading = false;
         _cache = parser.Parse();
+        _storyBoardCommandDefinitions = null;
         return _cache;
     }
 }
