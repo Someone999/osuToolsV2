@@ -84,6 +84,11 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         
         
         beatmapSetStoryBoardFile = Path.Combine(beatmapFolder, beatmapSetStoryBoardFile);
+        if (!File.Exists(beatmapSetStoryBoardFile))
+        {
+            return new StoryBoardCommandLazyLoader(b, ArraySegment<string>.Empty);
+        }
+        
         string? videoLine = null;
         string? backgroundLine = null;
         var lines =  LazyLines(beatmapSetStoryBoardFile);
@@ -120,7 +125,7 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
     {
         string? videoLine = null;
         string? backgroundLine = null;
-        var beatmapFullPath = b.Metadata.BeatmapFullPath ?? throw new InvalidOperationException();
+        _ = b.Metadata.BeatmapFullPath ?? throw new InvalidOperationException();
         string[] linesArr = lines.ToArray();
         foreach (var line in linesArr)
         {
