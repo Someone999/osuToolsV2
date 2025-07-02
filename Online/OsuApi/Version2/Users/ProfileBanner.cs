@@ -14,5 +14,5 @@ public class ProfileBanner
     public string Image { get; set; } = "";
 
     [JsonProperty("image@2x")]
-    public string Image2x { get; set; } = "";
+    public string Image2X { get; set; } = "";
 }

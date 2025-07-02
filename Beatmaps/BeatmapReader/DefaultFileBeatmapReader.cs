@@ -35,7 +35,7 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
     static readonly Regex VersionMatcher = new Regex("osu file format v(\\d*)");
     private Beatmap _beatmap = new Beatmap();
     private string _beatmapFile;
-    private StringReader? _reader;
+    private StreamReader? _reader;
 
     public DefaultFileBeatmapReader(string filePath)
     {
@@ -59,69 +59,113 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         string normalized = NormalizePath(file);
         return normalized;
     }
-    
-    
+
+    IEnumerable<string> LazyLines(string path)
+    {
+        FileStream fileStream = File.OpenRead(path);
+        StreamReader reader = new StreamReader(fileStream);
+        while (true)
+        {
+            var line = reader.ReadLine();
+            if (line == null)
+            {
+                yield break;
+            }
+            
+            yield return line;
+        }
+    }
     
     StoryBoardCommandLazyLoader CreateStoryBoardCommandLazyLoader(Beatmap b)
     {
-        var lines = new List<string>();
         var beatmapFolder = Path.GetDirectoryName(_beatmapFile) ?? throw new InvalidOperationException();
         var metadata = _beatmap.Metadata;
         var beatmapSetStoryBoardFile = GetBeatmapSetStoryBoardFileName(metadata);
         
         
         beatmapSetStoryBoardFile = Path.Combine(beatmapFolder, beatmapSetStoryBoardFile);
-        
-        if (File.Exists(beatmapSetStoryBoardFile))
+        string? videoLine = null;
+        string? backgroundLine = null;
+        var lines =  LazyLines(beatmapSetStoryBoardFile);
+        foreach (var line in lines)
         {
-            lines.AddRange(File.ReadAllLines(beatmapSetStoryBoardFile));
+            if (videoLine == null)
+            {
+                var state = FindVideo(line);
+                if (state is FindState.Found or FindState.OffsetTooLate)
+                {
+                    videoLine = line;
+                }
+            }
+
+            if (backgroundLine == null)
+            {
+                var state = FindBackground(line);
+                if (state is FindState.Found or FindState.OffsetTooLate)
+                {
+                    backgroundLine = line;
+                }
+            }
+
+            // 如果两个都找到了就提前结束
+            if (videoLine != null && backgroundLine != null)
+                break;
         }
         
-        _ = lines.FirstOrDefault(f =>
-        {
-            var state = FindVideo(f);
-            return state is FindState.Found or FindState.OffsetTooLate;
-        });
         
-        _ = lines.FirstOrDefault(f =>
-        {
-            var state = FindBackground(f);
-            return state is FindState.Found or FindState.OffsetTooLate;
-        });
-        
-        return new StoryBoardCommandLazyLoader(lines, b);
+        return new StoryBoardCommandLazyLoader(b, LazyLines(beatmapSetStoryBoardFile));
     }
     
-    StoryBoardCommandLazyLoader CreateInlineStoryBoardCommandLazyLoader(List<string> lines, Beatmap b)
+    StoryBoardCommandLazyLoader CreateInlineStoryBoardCommandLazyLoader(Beatmap b, IEnumerable<string> lines)
     {
-        _ = lines.FirstOrDefault(f =>
+        string? videoLine = null;
+        string? backgroundLine = null;
+        var beatmapFullPath = b.Metadata.BeatmapFullPath ?? throw new InvalidOperationException();
+        string[] linesArr = lines.ToArray();
+        foreach (var line in linesArr)
         {
-            var state = FindVideo(f);
-            return state is FindState.Found or FindState.OffsetTooLate;
-        });
+            if (videoLine == null)
+            {
+                var state = FindVideo(line);
+                if (state is FindState.Found or FindState.OffsetTooLate)
+                {
+                    videoLine = line;
+                }
+            }
+
+            if (backgroundLine == null)
+            {
+                var state = FindBackground(line);
+                if (state is FindState.Found or FindState.OffsetTooLate)
+                {
+                    backgroundLine = line;
+                }
+            }
+
+            // 如果两个都找到了就提前结束
+            if (videoLine != null && backgroundLine != null)
+            {
+                break;
+            }
+        }
         
-        _ = lines.FirstOrDefault(f =>
-        {
-            var state = FindBackground(f);
-            return state is FindState.Found or FindState.OffsetTooLate;
-        });
-        
-        return new StoryBoardCommandLazyLoader(lines, b);
+        return new StoryBoardCommandLazyLoader(b, linesArr);
     }
 
-    HitObjectLazyLoader CreateHitObjectLazyLoader(List<string> lines, Beatmap b)
+    HitObjectLazyLoader CreateHitObjectLazyLoader(Beatmap b, IEnumerable<string> lines)
     {
-        return new HitObjectLazyLoader(lines, b);
+        var beatmapFullPath = b.Metadata.BeatmapFullPath ?? throw new InvalidOperationException();
+        return new HitObjectLazyLoader(b, lines);
     }
 
-    TimingPointLazyLoader CreateTimingPointLazyLoader(List<string> lines)
+    TimingPointLazyLoader CreateTimingPointLazyLoader(IEnumerable<string> lines)
     {
         return new TimingPointLazyLoader(lines);
     }
 
-    BreakTimeLazyLoader CreateBreakTimeLazyLoader(List<string> lines, Beatmap b)
+    BreakTimeLazyLoader CreateBreakTimeLazyLoader(Beatmap b, IEnumerable<string> lines)
     {
-        return new BreakTimeLazyLoader(lines, b);
+        return new BreakTimeLazyLoader(b, lines);
     }
     
 
@@ -305,7 +349,7 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
             FileName = splitData[2].Trim('"')
         };
 
-        _beatmap.Metadata.VideoHolder.BindValue(video);
+        _beatmap.Metadata.VideoHolder.SetValue(video);
 
         var beatmapDir = Path.GetDirectoryName(_beatmap.Metadata.BeatmapFullPath);
         if (string.IsNullOrEmpty(beatmapDir))
@@ -348,7 +392,7 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         var y = double.Parse(splitData[4]);
         background.Position = new OsuPixel(x, y);
         
-        _beatmap.Metadata.BackgroundHolder.BindValue(background);
+        _beatmap.Metadata.BackgroundHolder.SetValue(background);
         var beatmapDir = Path.GetDirectoryName(_beatmap.Metadata.BeatmapFullPath);
         if (string.IsNullOrEmpty(beatmapDir))
         {
@@ -402,19 +446,19 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
             return null;
         }
         
-        _reader = new StringReader(File.ReadAllText(_beatmapFile));
+        _reader = new StreamReader(_beatmapFile);
         IsReading = true;
         DataSection currentSection = DataSection.None;
         string? line = Reader.ReadLine();
         if (line == null)
         {
-            throw new InvalidBeatmapException();
+            return null;
         }
 
         Match m = VersionMatcher.Match(line);
         if (!m.Success)
         {
-            throw new InvalidBeatmapException();
+            return null;
         }
 
         _beatmap.Metadata.BeatmapFileVersion = int.Parse(m.Groups[1].Value);
@@ -488,18 +532,18 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
             }
         }
         
-        _beatmap.HitObjectLazyLoader = CreateHitObjectLazyLoader(hitObjects, _beatmap);
+        _beatmap.HitObjectLazyLoader = CreateHitObjectLazyLoader(_beatmap, hitObjects);
         _beatmap.TimingPointLazyLoader = CreateTimingPointLazyLoader(timingPoints);
-        _beatmap.InlineStoryBoardCommandLazyLoader = CreateInlineStoryBoardCommandLazyLoader(storyboardCommand, _beatmap);
+        _beatmap.InlineStoryBoardCommandLazyLoader = CreateInlineStoryBoardCommandLazyLoader(_beatmap, storyboardCommand);
         _beatmap.StoryBoardCommandLazyLoader = CreateStoryBoardCommandLazyLoader(_beatmap);
-        _beatmap.BreakTimeLazyLoader = CreateBreakTimeLazyLoader(storyboardCommand, _beatmap);
+        _beatmap.BreakTimeLazyLoader = CreateBreakTimeLazyLoader(_beatmap, storyboardCommand);
         IsReading = false;
         return _beatmap;
     }
 
-    public StringReader Reader
+    public StreamReader Reader
     {
-        get => _reader ?? throw new InvalidOperationException("StringReader not initialized.");
+        get => _reader ?? throw new InvalidOperationException("StringReader is not initialized.");
         set
         {
             if (IsReading)
@@ -513,7 +557,7 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
 
     public bool IsReading { get; private set; }
 
-    object? IObjectReader<StringReader>.Read()
+    object? IObjectReader<StreamReader>.Read()
     {
         return Read();
     }

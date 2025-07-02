@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using HsManCommonLibrary.Utils;
 using osuToolsV2.Beatmaps.BreakTimes;
-using EqualityUtils = HsManCommonLibrary.ValueHolders.EqualityUtils;
 
 namespace osuToolsV2.Beatmaps;
 
@@ -30,7 +29,8 @@ public class BreakTimeCollection : IEnumerable<BreakTime>
         FindEquals = 4
     }
     
-    private static BreakTime? BinarySearchByOffset(List<BreakTime> list, double offset, BinaryFindFlags findFlags)
+    private static BreakTime? BinarySearchByOffset(List<BreakTime> list, 
+        double offset, BinaryFindFlags findFlags, out int index)
     {
         if (findFlags.HasFlag(BinaryFindFlags.FindLess) && findFlags.HasFlag(BinaryFindFlags.FindLarger))
         {
@@ -48,13 +48,17 @@ public class BreakTimeCollection : IEnumerable<BreakTime>
             switch (compareResult)
             {
                 case 0 when findFlags.HasFlag(BinaryFindFlags.FindEquals):
+                {
+                    index = mid;
                     return list[mid];
+                }
                 case > 0:
                 {
                     if (findFlags.HasFlag(BinaryFindFlags.FindLarger))
                     {
                         if (mid == 0 || list[mid - 1].StartTime.CompareTo(offset) < 0)
                         {
+                            index = mid;
                             return list[mid];
                         }
                     }
@@ -67,6 +71,7 @@ public class BreakTimeCollection : IEnumerable<BreakTime>
                     {
                         if (mid == list.Count - 1 || list[mid + 1].StartTime.CompareTo(offset) > 0)
                         {
+                            index = mid;
                             return list[mid];
                         }
                     }
@@ -75,11 +80,12 @@ public class BreakTimeCollection : IEnumerable<BreakTime>
                 }
             }
         }
-
+        
+        index = -1;
         return null;
     }
 
-    public BreakTime? SearchBreakTimeAfter(double offset, bool inclusiveOffset)
+    public BreakTime? SearchBreakTimeAfter(double offset, bool inclusiveOffset, out int index)
     {
 
         var flags = BinaryFindFlags.FindLarger;
@@ -88,10 +94,10 @@ public class BreakTimeCollection : IEnumerable<BreakTime>
             flags |= BinaryFindFlags.FindEquals;
         }
         
-        return BinarySearchByOffset(_breakTimes, offset, flags);
+        return BinarySearchByOffset(_breakTimes, offset, flags, out index);
     }
     
-    public BreakTime? SearchBreakTimeBefore(double offset, bool inclusiveOffset)
+    public BreakTime? SearchBreakTimeBefore(double offset, bool inclusiveOffset, out int index)
     {
         var flags = BinaryFindFlags.FindLess;
         if (inclusiveOffset)
@@ -99,29 +105,29 @@ public class BreakTimeCollection : IEnumerable<BreakTime>
             flags |= BinaryFindFlags.FindEquals;
         }
         
-        return BinarySearchByOffset(_breakTimes, offset, flags);
+        return BinarySearchByOffset(_breakTimes, offset, flags, out index);
     }
     
-    public int GetIndexOf(double offset, bool inclusiveOffset)
-    {
-        var flags = BinaryFindFlags.FindLess;
-        if (inclusiveOffset)
-        {
-            flags |= BinaryFindFlags.FindEquals;
-        }
-        
-        var r = BinarySearchByOffset(_breakTimes, offset, flags);
-        if (r == null)
-        {
-            return -1;
-        }
-        
-        return _breakTimes.IndexOf(r);
-    }
+    // public int GetIndexOf(double offset, bool inclusiveOffset, out int index)$
+    // {
+    //     var flags = BinaryFindFlags.FindLess;
+    //     if (inclusiveOffset)
+    //     {
+    //         flags |= BinaryFindFlags.FindEquals;
+    //     }
+    //     
+    //     var r = BinarySearchByOffset(_breakTimes, offset, flags, out index);
+    //     if (r == null)
+    //     {
+    //         return -1;
+    //     }
+    //     
+    //     return _breakTimes.IndexOf(r);
+    // }
     
     public bool InPeriod(double offset)
     {
-        var last = SearchBreakTimeBefore(offset, true);
+        var last = SearchBreakTimeBefore(offset, true, out _);
         if (last == null)
         {
             return false;

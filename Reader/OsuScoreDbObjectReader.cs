@@ -27,7 +27,7 @@ public class OsuScoreDbObjectReader : IObjectReader<BinaryReader, OsuScoreDb>
         _reader = new BinaryReader(stream);
     }
     
-    public OsuScoreDbObjectReader() : this(Path.Combine(OsuInfo.GetInstance().OsuDirectory, "scores.db"))
+    public OsuScoreDbObjectReader() : this(Path.Combine(OsuInfoOld.GetInstance().OsuDirectory, "scores.db"))
     {
     }
     
@@ -40,9 +40,19 @@ public class OsuScoreDbObjectReader : IObjectReader<BinaryReader, OsuScoreDb>
     public OsuScoreDb? Read()
     {
         OsuScoreDb scoreDb = new OsuScoreDb();
-        scoreDb.Manifest = ReadManifest();
-        scoreDb.ScoresInternal = ReadScores();
-        return scoreDb;
+        try
+        {
+            
+            scoreDb.Manifest = ReadManifest();
+            scoreDb.ScoresInternal = ReadScores();
+            return scoreDb;
+        }
+        catch (Exception e)
+        {
+            Reader.Dispose();
+            return scoreDb;
+        }
+       
     }
 
     public BinaryReader Reader

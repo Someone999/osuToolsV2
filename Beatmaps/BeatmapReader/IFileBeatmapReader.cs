@@ -2,6 +2,6 @@
 
 namespace osuToolsV2.Beatmaps.BeatmapReader;
 
-public interface IFileBeatmapReader : IObjectReader<StringReader, Beatmap>
+public interface IFileBeatmapReader : IObjectReader<StreamReader, Beatmap>
 {
 }

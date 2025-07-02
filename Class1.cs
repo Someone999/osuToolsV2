@@ -1,48 +1,76 @@
-﻿using System.Collections;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using HsManCommonLibrary.Utils;
+﻿using System.Diagnostics;
+using System.Text.Json.Nodes;
+using HsManCommonLibrary.NestedValues.Attributes;
+using HsManCommonLibrary.NestedValues.NestedValueAdapters;
+using HsManCommonLibrary.NestedValues.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using osuToolsV2.Beatmaps;
-using osuToolsV2.Beatmaps.BeatmapReader;
-using osuToolsV2.Database;
-using osuToolsV2.Database.Beatmap;
-using osuToolsV2.Database.DuplicateFileDetectors;
 using osuToolsV2.Game.Mods;
-using osuToolsV2.GameInfo;
+using osuToolsV2.Online.OsuApi.Version1;
 using osuToolsV2.Reader;
 using osuToolsV2.Replays;
-using osuToolsV2.Rulesets.Legacy;
-using osuToolsV2.Rulesets.Osu;
-using osuToolsV2.Rulesets.Osu.Mods;
-using osuToolsV2.Rulesets.Osu.ScoreProcessor;
-using osuToolsV2.Utils;
-using SharpCompress;
+using osuToolsV2.Rulesets.Mania.Mods;
+using osuToolsV2.Rulesets.Mania.ScoreProcessor;
+using osuToolsV2.Score;
+using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2;
 
-public static class BinaryConverter
+class A
 {
+    [AutoAssign]
+    public List<ApiBeatmap> Beatmaps { get; set; } = new List<ApiBeatmap>();
 }
-
 public class Class1
 {
     static void Main(string[] args)
     {
-        var fileName = @"D:\a\s\osu\osu!\Songs\Quantum-RM-01\Quantum(None) [mania].osu";
-        var reader = new DefaultFileBeatmapReader(fileName);
-        var b = reader.Read();
-        if (b == null)
+
+        /*var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        var fileContent = File.ReadAllText(Path.Combine(desktop, "get_beatmaps.json"));
+        var objs = JsonConvert.DeserializeObject<JArray>(fileContent);
+        var nestedVal = new JsonNestedValueStoreAdapter().ToNestedValue(objs);
+        
+        Stopwatch myImplStopwatch = new Stopwatch();
+        myImplStopwatch.Start();
+        A beatmaps = new A();
+        for (int i = 0; i < 50; i++)
+        {
+            ObjectAssigner.AssignTo(beatmaps, nestedVal, null);
+        }
+        
+        myImplStopwatch.Stop();
+        Console.WriteLine($"My impl elapsed time: {myImplStopwatch.ElapsedMilliseconds} ms");
+        
+        Stopwatch newtonsoftStopwatch = new Stopwatch();
+        newtonsoftStopwatch.Start();
+        for (int i = 0; i < 50; i++)
+        {
+            var x = objs!.ToObject<ApiBeatmap[]>();
+        }
+        
+        newtonsoftStopwatch.Stop();
+        Console.WriteLine($"Newtonoft elapsed time: {newtonsoftStopwatch.ElapsedMilliseconds} ms");*/
+
+        string path = @"D:\a\s\osu\osu!\Songs\552712 Marshmello - Alone\Marshmello - Alone (Pachiru) [Secretpipe's Normal].osu";
+        var beatmap = Beatmap.FromFile(path);
+        var hitObjects = beatmap?.StoryBoardCommand;
+        if (hitObjects == null)
         {
             return;
         }
-        var x = b.HitObjects;
-        var y = b.InlineStoryBoardCommand;
-        var z = b.TimingPointCollection;
+
         
+        foreach (var h in hitObjects)
+        {
+            Console.WriteLine(h.AsMainStoryBoardCommand().FileName);
+        }
+
+
+
+
     }
 
-    internal class Abc
-    {
-    }
+    
 }

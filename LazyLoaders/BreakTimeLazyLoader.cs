@@ -6,22 +6,34 @@ namespace osuToolsV2.LazyLoaders;
 
 public class BreakTimeLazyLoader : ILazyLoader<BreakTimeCollection>
 {
-    private readonly IEnumerable<string> _storyBoardCommandDefinitions;
     private readonly Beatmap _beatmap;
+    private IEnumerable<string>? _lines;
+    private BreakTimeCollection? _cached;
 
-    public BreakTimeLazyLoader(IEnumerable<string> storyBoardCommandDefinitions, Beatmap beatmap)
+    public BreakTimeLazyLoader(Beatmap beatmap, IEnumerable<string> lines)
     {
-        _storyBoardCommandDefinitions = storyBoardCommandDefinitions;
         _beatmap = beatmap;
+        _lines = lines;
     }
+
     public bool Loaded { get; private set; }
-    public bool Loading { get; private set; }
+    public bool Loading { get; private set;  }
 
     public BreakTimeCollection LoadObject()
     {
+        if (_cached != null)
+        {
+            return  _cached;
+        }
+
+        if (_lines == null)
+        {
+            throw new InvalidOperationException();
+        }
+        
         List<BreakTime> breakTimes = new List<BreakTime>();
         Loading = true;
-        foreach (var definition in _storyBoardCommandDefinitions)
+        foreach (var definition in _lines)
         {
             if (string.IsNullOrEmpty(definition))
             {
@@ -50,6 +62,8 @@ public class BreakTimeLazyLoader : ILazyLoader<BreakTimeCollection>
 
         Loaded = true;
         Loading = false;
-        return new BreakTimeCollection(breakTimes);
+        _lines = null;
+        _cached = new BreakTimeCollection(breakTimes);
+        return _cached;
     }
 }

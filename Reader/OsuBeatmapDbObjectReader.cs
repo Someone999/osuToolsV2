@@ -30,7 +30,7 @@ public class OsuBeatmapDbObjectReader : IObjectReader<BinaryReader, OsuBeatmapDb
         _reader = new BinaryReader(stream);
     }
 
-    public OsuBeatmapDbObjectReader() : this(Path.Combine(OsuInfo.GetInstance().OsuDirectory, "osu!.db"))
+    public OsuBeatmapDbObjectReader() : this(Path.Combine(OsuInfoOld.GetInstance().OsuDirectory, "osu!.db"))
     {
     }
     

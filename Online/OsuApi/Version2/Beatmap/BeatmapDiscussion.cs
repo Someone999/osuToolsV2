@@ -6,13 +6,13 @@ namespace osuToolsV2.Online.OsuApi.Version2.Beatmap;
 public class BeatmapDiscussion
 {
     [JsonProperty("beatmap")]
-    public ApiV2BeatmapExtended? Beatmap { get; internal set; }
+    public ApiV2Beatmap? Beatmap { get; internal set; }
 
     [JsonProperty("beatmap_id")]
     public int? BeatmapId { get; internal set; }
 
     [JsonProperty("beatmapset")]
-    public ApiV2BeatmapSetExtended? Beatmapset { get; internal set; }
+    public ApiV2BeatmapSet? Beatmapset { get; internal set; }
 
     [JsonProperty("beatmapset_id")]
     public int BeatmapsetId { get; internal set; }

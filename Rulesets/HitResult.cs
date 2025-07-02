@@ -7,5 +7,6 @@ public enum HitResult
     Hit300,
     Hit100,
     Hit50,
-    HitMiss
+    HitMiss,
+    None
 }

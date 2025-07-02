@@ -7,9 +7,9 @@ using osuToolsV2.Online.OsuApi.Version2.Beatmap;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Requests;
 
-public class ApiV2BeatmapQueryRequest : IApiV2Request<ApiV2BeatmapExtended, int>
+public class ApiV2BeatmapQueryRequest : IApiV2Request<ApiV2Beatmap, int>
 {
-    public async Task<OsuApiV2Response<ApiV2BeatmapExtended>> QueryAsync(OsuOAuthToken token, OsuApiQueryContext<int> context)
+    public async Task<OsuApiV2Response<ApiV2Beatmap>> QueryAsync(OsuOAuthToken token, OsuApiQueryContext<int> context)
     {
         HttpClient httpClient = new HttpClient();
         HttpRequestMessage requestMessage = new HttpRequestMessage();
@@ -26,16 +26,16 @@ public class ApiV2BeatmapQueryRequest : IApiV2Request<ApiV2BeatmapExtended, int>
 
         bool isError = jObj.ContainsKey("error");
         OsuApiV2ErrorInfo? errorInfo = null;
-        ApiV2BeatmapExtended? extended = null;
+        ApiV2Beatmap? extended = null;
         if (isError)
         {
             errorInfo = jObj.ToObject<OsuApiV2ErrorInfo>();
         }
         else
         {
-            extended = jObj.ToObject<ApiV2BeatmapExtended>();
+            extended = jObj.ToObject<ApiV2Beatmap>();
         }
 
-        return new OsuApiV2Response<ApiV2BeatmapExtended>(errorInfo, extended, res);
+        return new OsuApiV2Response<ApiV2Beatmap>(errorInfo, extended, res);
     }
 }

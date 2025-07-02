@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using HsManCommonLibrary.Exceptions;
 using osuToolsV2.Exceptions;
 using osuToolsV2.GameInfo.Config;
 
@@ -19,51 +20,10 @@ namespace osuToolsV2.GameInfo
             _osuProcess = process;
         }
 
-        public static OsuProcess? FindOsuProcess()
-        {
-            Process[] processes = Process.GetProcessesByName("osu!");
-            return processes.Length > 0 ? new OsuProcess(processes[0]) : null;
-        }
-
-        public static OsuProcess WaitForOsuProcess(int detectInterval = 500, int timeoutMilliseconds = -1)
-        {
-            OsuProcess? process = null;
-            int totalTime = 0;
-            while (process == null)
-            {
-                process = FindOsuProcess();
-                Thread.Sleep(detectInterval);
-                totalTime += detectInterval;
-                if (timeoutMilliseconds != -1 && totalTime > timeoutMilliseconds)
-                {
-                    throw new ProcessFindTimeoutException("寻找进程超时");
-                }
-            }
-
-            return process;
-        }
-
-        public static async Task<OsuProcess> WaitForOsuProcessAsync(int detectInterval = 500, int timeoutMilliseconds = -1)
-        {
-            OsuProcess? process = null;
-            int totalTime = 0;
-            while (process == null)
-            {
-                process = FindOsuProcess();
-                await Task.Delay(detectInterval);
-                totalTime += detectInterval;
-                if (totalTime > timeoutMilliseconds)
-                {
-                    throw new ProcessFindTimeoutException("寻找进程超时");
-                }
-            }
-
-            return process;
-        }
-
         public void WaitGameExit() => _osuProcess.WaitForExit();
-        public async Task  WaitGameExitAsync() => await Task.Run(() => _osuProcess.WaitForExit());
+        public async Task WaitGameExitAsync() => await Task.Run(() => _osuProcess.WaitForExit());
         public bool IsRunning => !_osuProcess.HasExited;
+
         public event EventHandler OnExited
         {
             add => _osuProcess.Exited += value;
@@ -79,29 +39,18 @@ namespace osuToolsV2.GameInfo
             }
         }
 
-        public string GameConfigFilePath
+        public string GameDirectory
         {
             get
             {
-                var gameDirectory = Path.GetDirectoryName(GamePath);
-                if (string.IsNullOrEmpty(gameDirectory))
+                var dir = Path.GetDirectoryName(GamePath);
+                if (string.IsNullOrEmpty(dir))
                 {
-                    throw new NotOsuProcessException("The specified process maybe not an Osu process");
+                    throw new HsManException("Unable to get game directory");
                 }
 
-                var configPath = Path.Combine(gameDirectory, $"osu!.{Environment.UserName}.cfg");
-                if (!File.Exists(configPath))
-                {
-                    throw new NotOsuProcessException("The specified process maybe not an Osu process");
-                }
-
-                return configPath;
+                return dir;
             }
-        }
-
-        public OsuConfig LoadGameConfigFromFile()
-        {
-            return new OsuConfig(GameConfigFilePath);
         }
     }
 }

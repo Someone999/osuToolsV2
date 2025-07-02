@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using HsManCommonLibrary.ExtractMethods;
+using HsManCommonLibrary.ExtraMethods;
 using osuToolsV2.Utils;
 
 namespace osuToolsV2.GameInfo
@@ -9,7 +9,7 @@ namespace osuToolsV2.GameInfo
     /// <summary>
     /// 包含游戏的基础信息与配置文件信息
     /// </summary>
-    public class OsuInfo
+    public class OsuInfoOld
     {
         [DllImport("kernel32")]
         private static extern bool IsWow64Process(IntPtr hProcess, ref bool wow64Process);
@@ -143,7 +143,7 @@ namespace osuToolsV2.GameInfo
         /// <summary>
         /// 初始化新的OsuInfo对象
         /// </summary>
-        private OsuInfo()
+        private OsuInfoOld()
         {
             if (FindOsuProcess() != null)
             {
@@ -166,7 +166,8 @@ namespace osuToolsV2.GameInfo
         /// 返回指定属性的值
         /// </summary>
         /// <param name="propertyName">属性名称</param>
-        /// <returns>存在返回值，不存在返回null</returns>
+        /// <returns>存在返回值，不存在返回null</returns>.
+        /// 
         public string? GetPropertyValue(string propertyName)
         {
             if (propertyName.StartsWith("#"))
@@ -225,14 +226,14 @@ namespace osuToolsV2.GameInfo
         }
 
         private static readonly object StaticLocker = new object();
-        private static volatile OsuInfo? _ins;
+        private static volatile OsuInfoOld? _ins;
 
         public static void RecreateInstance()
         {
-            _ins = new OsuInfo();
+            _ins = new OsuInfoOld();
         }
         
-        public static OsuInfo GetInstance()
+        public static OsuInfoOld GetInstance()
         {
             if (_ins != null)
             {
@@ -246,7 +247,7 @@ namespace osuToolsV2.GameInfo
                     return _ins;
                 }
 
-                _ins = new OsuInfo();
+                _ins = new OsuInfoOld();
             }
 
             return _ins;

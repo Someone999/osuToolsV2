@@ -2,5 +2,5 @@
 
 public interface IScoreCalculator
 {
-    int CalculateScore(ScoreInfo scoreInfo, Judgement judgement);
+    double CalculateScore(ScoreInfo scoreInfo);
 }

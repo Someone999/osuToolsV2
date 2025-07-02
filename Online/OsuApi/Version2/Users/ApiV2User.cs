@@ -1,15 +1,13 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Users;
 
-public class User
+public class ApiV2User
 {
     [JsonProperty("id")]
     public int Id { get; set; }
-
-    [JsonProperty("username")]
-    public string Username { get; set; } = "";
-
+    
     [JsonProperty("avatar_url")]
     public string AvatarUrl { get; set; } = "";
 
@@ -38,7 +36,10 @@ public class User
     public bool PmFriendsOnly { get; set; }
 
     [JsonProperty("profile_colour")]
-    public string? ProfileColour { get; set; } 
+    public string? ProfileColour { get; set; }
+
+    [JsonProperty("username")]
+    public string UserName { get; set; } = "";
 
     [JsonProperty("account_history")]
     public List<UserAccountHistory>? AccountHistory { get; set; }
@@ -53,56 +54,68 @@ public class User
     public List<UserBadge>? Badges { get; set; }
 
     [JsonProperty("beatmap_playcounts_count")]
-    public int BeatmapPlaycountsCount { get; set; }
+    public int? BeatmapPlaycountsCount { get; set; }
+    
+    [JsonProperty]
+    public JToken? Blocks { get; set; }
+    
+    [JsonProperty]
+    public JToken? Country { get; set; }
+    
+    [JsonProperty]
+    public JToken? Cover { get; set; }
 
     [JsonProperty("favourite_beatmapset_count")]
-    public int FavouriteBeatmapsetCount { get; set; }
+    public int? FavouriteBeatmapsetCount { get; set; }
 
     [JsonProperty("follower_count")]
-    public int FollowerCount { get; set; }
+    public int? FollowerCount { get; set; }
 
     [JsonProperty("graveyard_beatmapset_count")]
-    public int GraveyardBeatmapsetCount { get; set; }
+    public int? GraveyardBeatmapsetCount { get; set; }
 
     [JsonProperty("guest_beatmapset_count")]
-    public int GuestBeatmapsetCount { get; set; }
+    public int? GuestBeatmapsetCount { get; set; }
 
     [JsonProperty("loved_beatmapset_count")]
-    public int LovedBeatmapsetCount { get; set; }
+    public int? LovedBeatmapsetCount { get; set; }
 
     [JsonProperty("mapping_follower_count")]
-    public int MappingFollowerCount { get; set; }
+    public int? MappingFollowerCount { get; set; }
 
     [JsonProperty("pending_beatmapset_count")]
-    public int PendingBeatmapsetCount { get; set; }
+    public int? PendingBeatmapsetCount { get; set; }
 
     [JsonProperty("ranked_beatmapset_count")]
-    public int RankedBeatmapsetCount { get; set; }
+    public int? RankedBeatmapsetCount { get; set; }
 
     [JsonProperty("scores_best_count")]
-    public int ScoresBestCount { get; set; }
+    public int? ScoresBestCount { get; set; }
 
     [JsonProperty("scores_first_count")]
-    public int ScoresFirstCount { get; set; }
+    public int? ScoresFirstCount { get; set; }
 
     [JsonProperty("scores_recent_count")]
-    public int ScoresRecentCount { get; set; }
+    public int? ScoresRecentCount { get; set; }
 
     [JsonProperty("session_verified")]
-    public bool SessionVerified { get; set; }
+    public bool? SessionVerified { get; set; }
 
     [JsonProperty("support_level")]
-    public int SupportLevel { get; set; }
+    public int? SupportLevel { get; set; }
 
     [JsonProperty("unread_pm_count")]
-    public int UnreadPmCount { get; set; }
+    public int? UnreadPmCount { get; set; }
 
     [JsonProperty("user_achievements")]
     public List<UserAchievement>? UserAchievements { get; set; }
 
-    /*[JsonProperty("user_preferences")]
-    public UserPreferences UserPreferences { get; set; }*/
+    [JsonProperty("user_preferences")]
+    public JObject? UserPreferences { get; set; }
+}
 
+public class ApiV2UserExtended : ApiV2User
+{
     [JsonProperty("cover_url")] 
     public string CoverUrl { get; set; } = "";
 

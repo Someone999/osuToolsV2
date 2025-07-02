@@ -12,7 +12,7 @@ public class ReplayFrame
         ButtonState = buttonState;
     }
 
-    public long Offset { get; internal set; }
+    public long Offset { get; internal init; }
     public long TimeFromLastAction { get; set; }
     public double X { get; set; }
     public double Y { get; set; }

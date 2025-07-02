@@ -16,7 +16,7 @@ namespace osuToolsV2.Database.Beatmap
     public class OsuBeatmap : IBeatmap
     {
         internal List<OsuBeatmapTimingPoint> TimingPointsInternal = new List<OsuBeatmapTimingPoint>();
-
+        
         /// <summary>
         ///     谱面的难度星级
         /// </summary>
@@ -124,8 +124,8 @@ namespace osuToolsV2.Database.Beatmap
         /// <returns></returns>
         public osuToolsV2.Beatmaps.Beatmap? ToBeatmap()
         {
-            OsuInfo info = OsuInfo.GetInstance();
-            return new DefaultFileBeatmapReader(Path.Combine(info.BeatmapDirectory, FolderName,
+            OsuInfoOld infoOld = OsuInfoOld.GetInstance();
+            return new DefaultFileBeatmapReader(Path.Combine(infoOld.BeatmapDirectory, FolderName,
                 Metadata.BeatmapFileName ?? "")).Read();
         }
 

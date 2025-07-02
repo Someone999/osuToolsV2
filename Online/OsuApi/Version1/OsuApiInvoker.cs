@@ -45,8 +45,15 @@ public static class OsuApiInvoker
             return new HttpApiResponse<JToken, TResult>(jsonData, default, res);
         }
 
-       
-        return new HttpApiResponse<JToken, TResult>(null, jsonData.ToObject<TResult>() , res);
+        try
+        {
+            var data = jsonData.ToObject<TResult>();
+            return new HttpApiResponse<JToken, TResult>(null,data , res);
+        }
+        catch (Exception)
+        {
+            return new HttpApiResponse<JToken, TResult>(null, default, res);
+        }
     }
     
     public static async Task<HttpApiResponse<TError, TResult>> InvokeApiAsync<TResult, TError>(OsuApiRequest request)

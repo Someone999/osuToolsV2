@@ -11,20 +11,30 @@ namespace osuToolsV2.LazyLoaders;
 
 public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
 {
-    
-    private readonly IEnumerable<string> _storyBoardCommandDefinitions;
+    private StoryBoardCommandBase[]? _cache;
+    private readonly IEnumerable<string>? _storyBoardCommandDefinitions;
     private readonly Beatmap _beatmap;
 
-    public StoryBoardCommandLazyLoader(IEnumerable<string> storyBoardCommandDefinitions, Beatmap beatmap)
+    public StoryBoardCommandLazyLoader(Beatmap beatmap, IEnumerable<string> storyBoardCommandDefinitions)
     {
-        _storyBoardCommandDefinitions = storyBoardCommandDefinitions;
         _beatmap = beatmap;
+        _storyBoardCommandDefinitions = storyBoardCommandDefinitions;
     }
 
     public bool Loaded { get; private set; }
-    public bool Loading { get; private set; }
+    public bool Loading { get; private set;}
+
     public StoryBoardCommandBase[] LoadObject()
     {
+        if (_cache != null)
+        {
+            return _cache;
+        }
+
+        if (_storyBoardCommandDefinitions == null)
+        {
+            throw new InvalidOperationException();
+        }
         Loading = true;
         List<string> realStoryCommand = new List<string>();
         List<BreakTime> breakTimes = new List<BreakTime>();
@@ -68,7 +78,7 @@ public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
                     var y = double.Parse(splitData[4]);
                     background.Position = new OsuPixel(x, y);
         
-                    _beatmap.Metadata.BackgroundHolder.BindValue(background);
+                    _beatmap.Metadata.BackgroundHolder.SetValue(background);
                     
                     var fullPath0 = _beatmap.Metadata.BeatmapFullPath;
                     if (string.IsNullOrEmpty(fullPath0))
@@ -92,7 +102,7 @@ public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
                         FileName = splitData[2].Trim('"')
                     };
 
-                    _beatmap.Metadata.VideoHolder.BindValue(video);
+                    _beatmap.Metadata.VideoHolder.SetValue(video);
                     var fullPath = _beatmap.Metadata.BeatmapFullPath;
                     if (string.IsNullOrEmpty(fullPath))
                     {
@@ -122,6 +132,7 @@ public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
         StoryBoardCommandParser parser = new StoryBoardCommandParser(realStoryCommand.ToArray());
         Loaded = true;
         Loading = false;
-        return parser.Parse();
+        _cache = parser.Parse();
+        return _cache;
     }
 }

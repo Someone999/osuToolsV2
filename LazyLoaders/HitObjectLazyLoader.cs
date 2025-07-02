@@ -8,18 +8,19 @@ namespace osuToolsV2.LazyLoaders;
 
 public class HitObjectLazyLoader : ILazyLoader<List<IHitObject>>
 {
-    private readonly IEnumerable<string> _hitObjectDefinitions;
     private readonly Beatmap _beatmap;
+    private IEnumerable<string>? _lines;
     private List<IHitObject>? _cache;
     private ReaderWriterLockSlim _readerWriterLock = new ReaderWriterLockSlim();
 
-    public HitObjectLazyLoader(IEnumerable<string> hitObjectDefinitions, Beatmap beatmap)
+    public HitObjectLazyLoader(Beatmap beatmap, IEnumerable<string> lines)
     {
-        _hitObjectDefinitions = hitObjectDefinitions;
         _beatmap = beatmap;
+        _lines = lines;
     }
 
-    public bool Loaded { get; private set; }
+
+    public bool Loaded { get; private set;  }
     public bool Loading { get; private set; }
 
     public List<IHitObject> LoadObject()
@@ -49,6 +50,16 @@ public class HitObjectLazyLoader : ILazyLoader<List<IHitObject>>
 
     List<IHitObject> LoadObjectNoLock()
     {
+        if (_cache != null)
+        {
+            return _cache;
+        }
+        
+        if (_lines == null)
+        {
+            throw new InvalidOperationException();
+        }
+        
         List<IHitObject> hitObjects = new List<IHitObject>();
         IHitObjectCreator hitObjectCreator = _beatmap.Ruleset.LegacyRuleset switch
         {
@@ -65,7 +76,7 @@ public class HitObjectLazyLoader : ILazyLoader<List<IHitObject>>
             throw new InvalidBeatmapException();
         }
         
-        foreach (var line in _hitObjectDefinitions)
+        foreach (var line in _lines)
         {
             hitObjects.Add(hitObjectCreator.CreateHitObject(line.Split(','), _beatmap));
         }
@@ -73,7 +84,7 @@ public class HitObjectLazyLoader : ILazyLoader<List<IHitObject>>
         Loaded = true;
         Loading = false;
         _cache = hitObjects;
-        
+        _lines = null;
         return hitObjects;
     }
 }

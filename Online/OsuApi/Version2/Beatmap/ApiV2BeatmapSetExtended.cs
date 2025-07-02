@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Beatmap;
 
-public class ApiV2BeatmapSetExtended
+public class ApiV2BeatmapSet
 {
     [JsonProperty("artist")]
     public string Artist { get; set; }= "";
@@ -56,6 +56,12 @@ public class ApiV2BeatmapSetExtended
 
     [JsonProperty("video")]
     public bool Video { get; internal set; }
+    
+    
+}
+
+public class ApiV2BeatmapSetExtended : ApiV2BeatmapSet
+{
 
     [JsonProperty("availability")]
     public Availability Availability { get; internal set; } = new Availability();
@@ -97,7 +103,7 @@ public class ApiV2BeatmapSetExtended
     public bool IsFavourite { get; internal set; }
     
     [JsonProperty]
-    public List<ApiV2BeatmapExtended>? Beatmaps { get; internal set; }
+    public List<ApiV2Beatmap>? Beatmaps { get; internal set; }
     
     [JsonProperty]
     public JArray? Converts { get; internal set; }

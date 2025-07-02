@@ -5,7 +5,7 @@ using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Utils;
 
-public class ScoreVisualUtil
+public class ScoreVisualizeUtil
 {
     private static string BuildHitsDisplayString(ScoreInfo scoreInfo)
     {
@@ -34,7 +34,7 @@ public class ScoreVisualUtil
         StringBuilder stringBuilder = new StringBuilder();
         
         stringBuilder.Append($"Player: {osuScoreInfo.PlayerName} ")
-            .Append($"Played at: {osuScoreInfo.PlayTime} ")
+            .Append($"Played at: {osuScoreInfo.PlayTime.ToLocalTime()} ")
             .Append($"Accuracy: {accuracy:p2}").AppendLine();
         
         stringBuilder.Append($"Score: {scoreInfo.Score} " + BuildHitsDisplayString(scoreInfo));

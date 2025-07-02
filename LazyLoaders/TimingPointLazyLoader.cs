@@ -4,12 +4,11 @@ namespace osuToolsV2.LazyLoaders;
 
 public class TimingPointLazyLoader : ILazyLoader<TimingPointCollection>
 {
-        
-    private readonly IEnumerable<string> _timingPointDefinitions;
+    private readonly IEnumerable<string> _lines;
 
-    public TimingPointLazyLoader(IEnumerable<string> timingPointDefinitions)
+    public TimingPointLazyLoader(IEnumerable<string> lines)
     {
-        _timingPointDefinitions = timingPointDefinitions;
+        _lines = lines;
     }
 
     public bool Loaded { get; private set; }
@@ -19,7 +18,7 @@ public class TimingPointLazyLoader : ILazyLoader<TimingPointCollection>
     {
         Loading = true;
         List<TimingPoint> timingPoints = new List<TimingPoint>();
-        foreach (var line in _timingPointDefinitions)
+        foreach (var line in _lines)
         {
             if (string.IsNullOrEmpty(line))
             {

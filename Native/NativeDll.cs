@@ -37,7 +37,7 @@ public class NativeDll
     public T? GetFunctionAs<T>(string funcName) where T : Delegate
     {
         var funcPtr = GetFunction(funcName);
-        return funcPtr == IntPtr.Zero ? default : Marshal.GetDelegateForFunctionPointer<T>(funcPtr);
+        return funcPtr == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<T>(funcPtr);
     }
 
     public static NativeDll Kernel32 { get; } = new NativeDll("kernel32.dll");

@@ -5,7 +5,7 @@ using osuToolsV2.Rulesets.Legacy;
 
 namespace osuToolsV2.Online.OsuApi.Version2.Beatmap;
 
-public class ApiV2BeatmapExtended
+public class ApiV2Beatmap
 {
     [JsonProperty("beatmapset_id")]
     public int BeatmapSetId { get; internal set; }
@@ -30,7 +30,11 @@ public class ApiV2BeatmapExtended
 
     [JsonProperty("version")]
     public string Version { get; internal set; } = "";
-    
+}
+
+
+public class ApiV2BeatmapExtended : ApiV2Beatmap
+{
     [JsonProperty]
     public float Accuracy { get; internal set; }
     

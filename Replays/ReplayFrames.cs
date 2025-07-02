@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using HsManCommonLibrary.ExtractMethods;
+using HsManCommonLibrary.ExtraMethods;
 using osuToolsV2.Game.Mods;
 using SharpCompress.Compressors.LZMA;
 using Decoder = SharpCompress.Compressors.LZMA.Decoder;
