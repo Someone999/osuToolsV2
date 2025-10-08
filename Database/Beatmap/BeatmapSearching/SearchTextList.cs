@@ -42,15 +42,13 @@ public class SearchTextList
     }
     
     
-    public bool AllMatch(Func<string, bool> predict)
+    public bool AllMatch(Func<string, bool> predicate)
     {
-        return _searchList.All(predict);
+        return _searchList.All(predicate);
     }
     
     public bool ExactMatch(string keyword)
     {
         return _searchList.Any(s => s == keyword);
     }
-
-    
 }

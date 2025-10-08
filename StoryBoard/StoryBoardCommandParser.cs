@@ -36,88 +36,7 @@ namespace osuToolsV2.StoryBoard
             }
             return i;
         }
-
-        /*static int GetCommaCount(string str)
-        {
-            int comma = 0;
-            int quote = 0;
-            for (int i = 0; i < str.Length; i++)
-            {
-                var ch = str[i];
-                if (ch == ',')
-                {
-                    if (quote % 2 != 0)
-                    {
-                        continue;
-                    }
-                    comma++;
-                }
-
-                if (ch == '\"')
-                {
-                    quote++;
-                }
-            }
-
-            if (quote % 2 != 0)
-            {
-                throw new FormatException("Quote not match");
-            }
-            return comma;
-        }
-        static int[] GetCommaIdx(string str)
-        {
-            int commaCount = GetCommaCount(str);
-            int[] commas = new int[commaCount + 1];
-            commas[0] = 0;
-            int comma = 1;
-            int quote = 0;
-            for (int i = 0; i < str.Length; i++)
-            {
-                var ch = str[i];
-                if (ch == ',')
-                {
-                    if (quote % 2 != 0)
-                    {
-                        continue;
-                    }
-                    commas[comma++] = i;
-                }
-
-                if (ch == '\"')
-                {
-                    quote++;
-                }
-            }
-            if (quote % 2 != 0)
-            {
-                throw new FormatException("Quote not match");
-            }
-            return commas;
-        }
-        static string[] ArgumentParser(string str)
-        {
-            int[] commaIdx = GetCommaIdx(str);
-            string[] args = new string[commaIdx.Length];
-            for (int i = 0; i < commaIdx.Length; i++)
-            {
-                if (i == 0)
-                {
-                    args[i] = str.Substring(0, commaIdx[1]);
-                }
-                else if (i != commaIdx.Length - 1)
-                {
-                    int len = commaIdx[i + 1] - commaIdx[i];
-                    args[i] = str.Substring(commaIdx[i] + 1, len - 1);
-                }
-                else
-                {
-                    args[i] = str.Substring(commaIdx[i] + 1);
-                }
-            }
-            return args;
-        }*/
-
+        
         static string[] ArgumentParser(string str)
         {
             List<string> args = new List<string>();
@@ -156,7 +75,6 @@ namespace osuToolsV2.StoryBoard
 
         public StoryBoardCommandBase[] Parse()
         {
-            //Stack<StoryBoardCommandBase> commandStack = new Stack<StoryBoardCommandBase>();
             List<StoryBoardCommandBase> commands = new();
             StoryBoardCommandBase? parentCommand = null;
             int lastSpace = int.MaxValue;

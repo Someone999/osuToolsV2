@@ -52,20 +52,7 @@ public class Class1
         
         newtonsoftStopwatch.Stop();
         Console.WriteLine($"Newtonoft elapsed time: {newtonsoftStopwatch.ElapsedMilliseconds} ms");*/
-
-        string path = @"D:\a\s\osu\osu!\Songs\552712 Marshmello - Alone\Marshmello - Alone (Pachiru) [Secretpipe's Normal].osu";
-        var beatmap = Beatmap.FromFile(path);
-        var hitObjects = beatmap?.StoryBoardCommand;
-        if (hitObjects == null)
-        {
-            return;
-        }
-
         
-        foreach (var h in hitObjects)
-        {
-            Console.WriteLine(h.AsMainStoryBoardCommand().FileName);
-        }
     }
 
     

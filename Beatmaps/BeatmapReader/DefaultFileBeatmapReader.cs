@@ -114,7 +114,9 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
 
             // 如果两个都找到了就提前结束
             if (videoLine != null && backgroundLine != null)
+            {
                 break;
+            }
         }
         
         

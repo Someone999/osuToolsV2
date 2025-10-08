@@ -4,14 +4,14 @@ class GroupCollector<TKey, TValue> where TKey: notnull
 {
     class GroupSelector
     {
-        public GroupSelector(TKey key, Func<TValue, bool> predict)
+        public GroupSelector(TKey key, Func<TValue, bool> predicate)
         {
             Key = key;
-            Predict = predict;
+            Predicate = predicate;
         }
 
         public TKey Key { get; set; }
-        public Func<TValue, bool> Predict { get; set; }
+        public Func<TValue, bool> Predicate { get; set; }
     }
     private readonly TValue[] _array;
     private List<GroupSelector> _selectors = new List<GroupSelector>();
@@ -20,9 +20,9 @@ class GroupCollector<TKey, TValue> where TKey: notnull
         _array = enumerable.ToArray();
     }
 
-    public void AddGroup(TKey key, Func<TValue, bool> predict)
+    public void AddGroup(TKey key, Func<TValue, bool> predicate)
     {
-        _selectors.Add(new GroupSelector(key, predict));
+        _selectors.Add(new GroupSelector(key, predicate));
     }
     
     public Dictionary<TKey, TValue[]> CollectGroups()
@@ -33,7 +33,7 @@ class GroupCollector<TKey, TValue> where TKey: notnull
         {
             foreach (var selector in _selectors)
             {
-                if (!selector.Predict(item))
+                if (!selector.Predicate(item))
                 {
                     continue;
                 }
