@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using osuToolsV2.Online.OsuApi.Version2.Beatmap;
 using osuToolsV2.Online.OsuApi.Version2.Multiplayer;
-using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Online.OsuApi.Version2;
 

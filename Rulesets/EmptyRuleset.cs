@@ -1,5 +1,4 @@
-﻿using osuToolsV2.Beatmaps;
-using osuToolsV2.Game.Mods;
+﻿using osuToolsV2.Game.Mods;
 using osuToolsV2.Score.ScoreProcessor;
 
 namespace osuToolsV2.Rulesets;

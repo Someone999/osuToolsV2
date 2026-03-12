@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-
-namespace osuToolsV2.Online.OsuApi.Responses;
+﻿namespace osuToolsV2.Online.OsuApi.Responses;
 
 public class HttpApiResponse<TError, TData> : ApiResponse<TError, TData, HttpResponseMessage>
 {

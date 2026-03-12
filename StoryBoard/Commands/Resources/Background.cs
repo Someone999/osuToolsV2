@@ -1,5 +1,4 @@
-﻿using HsManCommonLibrary.ValueHolders;
-using osuToolsV2.Graphic;
+﻿using osuToolsV2.Graphic;
 
 namespace osuToolsV2.StoryBoard.Commands.Resources;
 

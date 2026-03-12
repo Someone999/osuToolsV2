@@ -1,6 +1,4 @@
-﻿using osuToolsV2.Rulesets;
-
-namespace osuToolsV2.Beatmaps;
+﻿namespace osuToolsV2.Beatmaps;
 
 
 public class DifficultyAttributes

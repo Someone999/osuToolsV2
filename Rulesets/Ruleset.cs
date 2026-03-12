@@ -1,6 +1,5 @@
 ﻿
 using System.Reflection;
-using osuToolsV2.Beatmaps;
 using osuToolsV2.Logger;
 using osuToolsV2.Rulesets.Legacy;
 using osuToolsV2.Game.Mods;

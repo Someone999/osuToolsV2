@@ -1,6 +1,4 @@
-﻿using osuToolsV2.Exceptions;
-
-namespace osuToolsV2.GameInfo;
+﻿namespace osuToolsV2.GameInfo;
 
 public static class CommonOsuConfigKeys
 {

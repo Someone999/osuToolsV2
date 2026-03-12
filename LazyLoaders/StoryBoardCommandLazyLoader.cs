@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using osuToolsV2.Beatmaps;
+﻿using osuToolsV2.Beatmaps;
 using osuToolsV2.Beatmaps.BreakTimes;
 using osuToolsV2.Graphic;
 using osuToolsV2.StoryBoard;

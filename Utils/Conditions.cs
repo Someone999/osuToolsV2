@@ -1,6 +1,4 @@
-﻿using osuToolsV2.Replays;
-
-namespace osuToolsV2.Utils;
+﻿namespace osuToolsV2.Utils;
 
 public class Conditions
 {

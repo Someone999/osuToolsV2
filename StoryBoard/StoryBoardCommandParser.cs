@@ -1,10 +1,8 @@
-﻿using System.Globalization;
-using System.Text;
+﻿using System.Text;
 using osuToolsV2.Graphic;
 using osuToolsV2.StoryBoard.Commands;
 using osuToolsV2.StoryBoard.Commands.Resources;
 using osuToolsV2.StoryBoard.Enums;
-using osuToolsV2.StoryBoard.Transitions;
 using osuToolsV2.StoryBoard.Transitions.TransitionCreators;
 
 namespace osuToolsV2.StoryBoard

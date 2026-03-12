@@ -1,5 +1,4 @@
-﻿using osuToolsV2.Beatmaps;
-using osuToolsV2.Game.Legacy;
+﻿using osuToolsV2.Game.Legacy;
 
 namespace osuToolsV2.Game.Mods
 {

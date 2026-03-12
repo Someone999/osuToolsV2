@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace osuToolsV2.Skins.Objects;
+﻿namespace osuToolsV2.Skins.Objects;
 
 public interface ISkinImage : ISkinObject
 {

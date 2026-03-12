@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using HsManCommonLibrary.Exceptions;
 using osuToolsV2.Exceptions;
-using osuToolsV2.GameInfo.Config;
 
 namespace osuToolsV2.GameInfo
 {

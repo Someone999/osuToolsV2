@@ -1,7 +1,4 @@
-﻿using HsManCommonLibrary.CommandLine.Matchers;
-using osuToolsV2.StoryBoard.Commands;
-
-namespace osuToolsV2.StoryBoard.Transitions.TransitionCreators;
+﻿namespace osuToolsV2.StoryBoard.Transitions.TransitionCreators;
 
 public interface ITransitionGenerator
 {

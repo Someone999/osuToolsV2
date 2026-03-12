@@ -1,6 +1,4 @@
-﻿﻿using System.Collections.Generic;
-
-namespace osuToolsV2.StoryBoard.Transitions.TransitionCreators;
+﻿﻿namespace osuToolsV2.StoryBoard.Transitions.TransitionCreators;
 
 public class MoveXTransitionGenerator : ITransitionGenerator
 {

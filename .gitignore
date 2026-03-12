@@ -3,5 +3,6 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+Obsolete
 Class1.cs
 GroupCollector.cs

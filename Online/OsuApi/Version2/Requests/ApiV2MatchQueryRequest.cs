@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using osuToolsV2.Online.OsuApi.Responses;
-using osuToolsV2.Online.OsuApi.Version1.Multiplayer.Matches;
 using osuToolsV2.Online.OsuApi.Version2.Authenticating;
 using osuToolsV2.Online.OsuApi.Version2.Multiplayer;
 

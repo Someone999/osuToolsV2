@@ -1,5 +1,4 @@
-﻿using osuToolsV2.Beatmaps;
-using osuToolsV2.Game.Mods;
+﻿using osuToolsV2.Game.Mods;
 using osuToolsV2.Rulesets.Catch.Mods;
 using osuToolsV2.Rulesets.Catch.ScoreProcessor;
 using osuToolsV2.Rulesets.Legacy;

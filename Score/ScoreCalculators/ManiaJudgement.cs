@@ -1,5 +1,4 @@
-﻿using osuToolsV2.Game.Mods;
-using osuToolsV2.Rulesets;
+﻿using osuToolsV2.Rulesets;
 
 namespace osuToolsV2.Score.ScoreCalculators;
 

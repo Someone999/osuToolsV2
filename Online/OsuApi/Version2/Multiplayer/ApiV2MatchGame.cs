@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using osuToolsV2.Online.OsuApi.Version2.Beatmap;
 using osuToolsV2.Rulesets.Legacy;

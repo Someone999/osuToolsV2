@@ -1,21 +1,13 @@
 ﻿using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
-using osuToolsV2.Beatmaps.BreakTimes;
-using osuToolsV2.Beatmaps.HitObjects;
-using osuToolsV2.Beatmaps.HitObjects.HitObjectParser;
 using osuToolsV2.Beatmaps.HitObjects.Sounds;
 using osuToolsV2.Beatmaps.Misc;
-using osuToolsV2.Beatmaps.TimingPoints;
-using osuToolsV2.Exceptions;
 using osuToolsV2.ExtraMethods;
 using osuToolsV2.Graphic;
 using osuToolsV2.LazyLoaders;
 using osuToolsV2.Reader;
 using osuToolsV2.Rulesets;
 using osuToolsV2.Rulesets.Legacy;
-using osuToolsV2.StoryBoard;
-using osuToolsV2.StoryBoard.Commands;
 using osuToolsV2.StoryBoard.Commands.Resources;
 using osuToolsV2.StoryBoard.Enums;
 
@@ -25,16 +17,15 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
 {
     private enum FindState
     {
-        None,
         Found,
         NotFound,
         OffsetTooLate,
         Skipped
     }
-    private static MD5 _md5Clac = MD5.Create();
+    private static readonly MD5 Md5Calc = MD5.Create();
     static readonly Regex VersionMatcher = new Regex("osu file format v(\\d*)");
-    private Beatmap _beatmap = new Beatmap();
-    private string _beatmapFile;
+    private readonly Beatmap _beatmap = new Beatmap();
+    private readonly string _beatmapFile;
     private StreamReader? _reader;
 
     public DefaultFileBeatmapReader(string filePath)
@@ -161,8 +152,10 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
 
     HitObjectLazyLoader CreateHitObjectLazyLoader(Beatmap b, IEnumerable<string> lines)
     {
-        var beatmapFullPath = b.Metadata.BeatmapFullPath ?? throw new InvalidOperationException();
-        return new HitObjectLazyLoader(b, lines);
+        var beatmapFullPath = b.Metadata.BeatmapFullPath;
+        return beatmapFullPath == null 
+            ? throw new InvalidOperationException("Failed to obtain the full path of the beatmap.") 
+            : new HitObjectLazyLoader(b, lines);
     }
 
     TimingPointLazyLoader CreateTimingPointLazyLoader(IEnumerable<string> lines)
@@ -203,12 +196,12 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
                 _beatmap.Ruleset = Ruleset.FromLegacyRuleset(legacyRuleset);
                 break;
             case "LetterboxInBreaks":
-                int rslt0 = int.Parse(value);
-                _beatmap.LetterboxInBreaks = rslt0 != 0;
+                int result0 = int.Parse(value);
+                _beatmap.LetterboxInBreaks = result0 != 0;
                 break;
             case "UseSkinSprites":
-                int rslt1 = int.Parse(value);
-                _beatmap.UseSkinSprites = rslt1 != 0;
+                int result1 = int.Parse(value);
+                _beatmap.UseSkinSprites = result1 != 0;
                 break;
             case "OverlayPosition":
                 _beatmap.OverlayPosition = (OverlayPosition)Enum.Parse(typeof(OverlayPosition), value);
@@ -217,8 +210,8 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
                 _beatmap.SkinPreference = value;
                 break;
             case "EpilepsyWarning":
-                int rslt2 = int.Parse(value);
-                _beatmap.EpilepsyWarning = rslt2 != 0;
+                int result2 = int.Parse(value);
+                _beatmap.EpilepsyWarning = result2 != 0;
                 break;
             case "CountdownOffset":
                 _beatmap.CountdownOffset = double.Parse(value);
@@ -227,12 +220,12 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
                 _beatmap.SpecialStyle = (SpecialStyle)Enum.Parse(typeof(SpecialStyle), value);
                 break;
             case "WidescreenStoryboard":
-                int rslt3 = int.Parse(value);
-                _beatmap.WidescreenStoryboard = rslt3 != 0;
+                int result3 = int.Parse(value);
+                _beatmap.WidescreenStoryboard = result3 != 0;
                 break;
             case "SamplesMatchPlaybackRate":
-                int rslt4 = int.Parse(value);
-                _beatmap.SamplesMatchPlaybackRate = rslt4 != 0;
+                int result4 = int.Parse(value);
+                _beatmap.SamplesMatchPlaybackRate = result4 != 0;
                 break;
         }
     }
@@ -469,7 +462,7 @@ public class DefaultFileBeatmapReader : IFileBeatmapReader
         }
 
         _beatmap.Metadata.BeatmapFileVersion = int.Parse(m.Groups[1].Value);
-        _beatmap.Metadata.Md5Hash = _md5Clac.ComputeHash(File.ReadAllBytes(_beatmapFile)).GetMd5String();
+        _beatmap.Metadata.Md5Hash = Md5Calc.ComputeHash(File.ReadAllBytes(_beatmapFile)).GetMd5String();
         string beatmapFileName = Path.GetFileNameWithoutExtension(_beatmapFile);
         string beatmapDirectory = Path.GetDirectoryName(_beatmapFile) ?? "./";
         List<string> storyboardCommand = new List<string>();

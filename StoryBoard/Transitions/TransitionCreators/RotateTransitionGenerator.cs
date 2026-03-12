@@ -1,5 +1,4 @@
-﻿﻿using System.Collections.Generic;
-using osuToolsV2.StoryBoard.Math;
+﻿using osuToolsV2.StoryBoard.Math;
 
 namespace osuToolsV2.StoryBoard.Transitions.TransitionCreators;
 

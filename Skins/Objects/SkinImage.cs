@@ -1,8 +1,4 @@
-﻿using System.Drawing;
-using System.Runtime.Versioning;
-using osuToolsV2.Attributes;
-
-namespace osuToolsV2.Skins.Objects;
+﻿namespace osuToolsV2.Skins.Objects;
 
 public class SkinImage : ISkinImage
 {
