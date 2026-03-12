@@ -150,8 +150,14 @@ public class OsuBeatmapDbObjectReader : IObjectReader<BinaryReader, OsuBeatmapDb
         {
             Reader.ReadByte();
             var mod = Reader.ReadInt32();
-            Reader.ReadByte();
-            var stars = Reader.ReadDouble();
+            var delim = Reader.ReadByte();
+            var stars = delim switch
+            {
+                0x0c => Reader.ReadSingle(),
+                0x0d => Reader.ReadDouble(),
+                _ => throw new InvalidDataException($"0xc or 0xd expected, but found {delim:X}")
+            };
+            
             dict.TryAdd(mod, stars);
         }
 

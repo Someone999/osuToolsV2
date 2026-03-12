@@ -119,13 +119,23 @@ namespace osuToolsV2.Database.Beatmap
         }
 
         /// <summary>
-        ///     将OsuBeatmap转化成<seealso cref="Beatmap" />
+        ///     将OsuBeatmap转化成<seealso cref="osuToolsV2.Beatmaps.Beatmap" />
         /// </summary>
         /// <returns></returns>
         public osuToolsV2.Beatmaps.Beatmap? ToBeatmap()
         {
             OsuInfoOld infoOld = OsuInfoOld.GetInstance();
             return new DefaultFileBeatmapReader(Path.Combine(infoOld.BeatmapDirectory, FolderName,
+                Metadata.BeatmapFileName ?? "")).Read();
+        }
+        
+        /// <summary>
+        ///     将OsuBeatmap转化成<seealso cref="osuToolsV2.Beatmaps.Beatmap" />
+        /// </summary>
+        /// <returns></returns>
+        public osuToolsV2.Beatmaps.Beatmap? ToBeatmap(string beatmapDirectory)
+        {
+            return new DefaultFileBeatmapReader(Path.Combine(beatmapDirectory, FolderName,
                 Metadata.BeatmapFileName ?? "")).Read();
         }
 

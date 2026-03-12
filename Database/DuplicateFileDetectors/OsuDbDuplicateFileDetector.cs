@@ -1,4 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
+using HsManCommonLibrary.Common.ConditionChains;
 using osuToolsV2.ExtraMethods;
 using osuToolsV2.Reader;
 
@@ -6,10 +8,54 @@ namespace osuToolsV2.Database.DuplicateFileDetectors;
 
 public class OsuDbDuplicateFileDetector : IDuplicateFileDetector
 {
+    private struct FileMetadata
+    {
+        public long FileSize { get; set; }
+
+        public FileMetadata(FileInfo info)
+        {
+            FileSize = info.Length;
+        }
+
+        public override int GetHashCode()
+        {
+            return FileSize.GetHashCode();
+        }
+
+        public override bool Equals([NotNullWhen(true)] object? obj)
+        {
+            Condition condition = new Condition();
+            condition.Set(obj is long l && l == FileSize);
+            var e = condition.CreateEvaluator();
+            bool finalState = false;
+            e.ChainCompleted += (_, state) => finalState = state;
+            e.Execute(new ConditionContext());
+            return finalState;
+        }
+    }
+    
+    private IEnumerable<string> FilterFiles(IEnumerable<string> files)
+    {
+        Dictionary<FileMetadata, List<string>> dict = new(); 
+        foreach(var file in files)
+        {
+            FileInfo info = new FileInfo(file);
+            dict[new FileMetadata(info)].Add(file);
+        }
+        
+        List<string> filteredFiles = new();
+        foreach (var pair in dict.Where(pair => pair.Value.Count != 1))
+        {
+            filteredFiles.AddRange(pair.Value);
+        }
+
+        return filteredFiles;
+    }
+
     public Dictionary<string, HashSet<string>> GetDuplicateFilesByMd5(string dir)
     {
         Dictionary<string, HashSet<string>> duplicateMap = new Dictionary<string, HashSet<string>>();
-        var files = Directory.GetFiles(dir, "osu!.db.*", SearchOption.TopDirectoryOnly);
+        var files = FilterFiles(Directory.GetFiles(dir, "osu!.db.*", SearchOption.TopDirectoryOnly));
         foreach (var file in files)
         {
             var data = File.ReadAllBytes(file);
@@ -33,7 +79,7 @@ public class OsuDbDuplicateFileDetector : IDuplicateFileDetector
     public Dictionary<string,  HashSet<string>> GetDuplicateFilesByFileContent(string dir)
     {
         Dictionary<DuplicateJudgementInfo, HashSet<string>> duplicateMap = new Dictionary<DuplicateJudgementInfo, HashSet<string>>();
-        var files = Directory.GetFiles(dir, "osu!.db.*", SearchOption.TopDirectoryOnly);
+        var files = FilterFiles(Directory.GetFiles(dir, "osu!.db.*", SearchOption.TopDirectoryOnly));
         //var md5Checked = GetDuplicateFilesByMd5(dir);
         
         foreach (var file in files)

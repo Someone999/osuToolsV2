@@ -84,9 +84,9 @@ public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitOb
         internal set => BreakTimeCollection = value;
     }
 
-    private StoryBoardCommandBase[]? _inlineStoryBoardCommandBases;
-    private StoryBoardCommandBase[]? _storyBoardCommandBases;
-    public StoryBoardCommandBase[]? StoryBoardCommand
+    private IReadOnlyList<StoryBoardCommandBase>? _inlineStoryBoardCommandBases;
+    private IReadOnlyList<StoryBoardCommandBase>? _storyBoardCommandBases;
+    public IReadOnlyList<StoryBoardCommandBase>? StoryBoardCommand
     {
         get
         {
@@ -111,7 +111,7 @@ public class Beatmap<THitObject> : IBeatmap<THitObject> where THitObject: IHitOb
         internal set => _storyBoardCommandBases = value;
     }
 
-    public StoryBoardCommandBase[]? InlineStoryBoardCommand
+    public IReadOnlyList<StoryBoardCommandBase>? InlineStoryBoardCommand
     {
         get
         {

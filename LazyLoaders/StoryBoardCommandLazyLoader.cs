@@ -9,9 +9,9 @@ using osuToolsV2.StoryBoard.Enums;
 
 namespace osuToolsV2.LazyLoaders;
 
-public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
+public class StoryBoardCommandLazyLoader : ILazyLoader<IReadOnlyList<StoryBoardCommandBase>>
 {
-    private StoryBoardCommandBase[]? _cache;
+    private IReadOnlyList<StoryBoardCommandBase>? _cache;
     private IEnumerable<string>? _storyBoardCommandDefinitions;
     private readonly Beatmap _beatmap;
 
@@ -24,7 +24,33 @@ public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
     public bool Loaded { get; private set; }
     public bool Loading { get; private set;}
 
-    public StoryBoardCommandBase[] LoadObject()
+    static bool IsSpecialType(string line, out StoryBoardEventType eventType)
+    {
+        var c = line.AsSpan()[..2];
+        if (c[0] == '0' || (c[0]  == 'B' && c[1] == 'a'))
+        {
+            eventType = StoryBoardEventType.Background;
+            return true;
+        }
+
+        if (c[0] == '1' || (c[0]  == 'V' && c[1] == 'i'))
+        {
+            eventType = StoryBoardEventType.Video;
+            return true;
+        }
+
+        if (c[0] == '2' || (c[0]  == 'B' && c[1] == 'r'))
+        {
+            eventType = StoryBoardEventType.BreakTime;
+            return true;
+        }
+
+        var suc =  line[0] == '5' || (c[0]  == 'S' && c[1] == 'a') || (c[0]  == 'A' && c[1] == 'u');
+        eventType = suc ? StoryBoardEventType.Sample : StoryBoardEventType.Unknown;
+        return eventType != StoryBoardEventType.Unknown;
+    }
+
+    public IReadOnlyList<StoryBoardCommandBase> LoadObject()
     {
         if (_cache != null)
         {
@@ -35,31 +61,33 @@ public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
         {
             throw new InvalidOperationException();
         }
+        
         Loading = true;
-        List<string> realStoryCommand = new List<string>();
+        int initialCapacity = (_storyBoardCommandDefinitions as ICollection<string>)?.Count ?? 1024;
+        
+        List<string> realStoryCommand = new List<string>(initialCapacity);
         List<BreakTime> breakTimes = new List<BreakTime>();
         foreach (var str in _storyBoardCommandDefinitions)
         {
-            if (string.IsNullOrEmpty(str))
-            {
-                continue;
-            }
-
-            string[] splitData = str.Split(',');
-            if (splitData.Length == 0)
-            {
-                continue;
-            }
-
             if (string.IsNullOrEmpty(str) || str.StartsWith("//") || str.StartsWith("["))
             {
                 continue;
             }
 
-            var parseSuccess = Enum.TryParse<StoryBoardEventType>(splitData[0], out var val);
-
-           
+            var parseSuccess = IsSpecialType(str, out var val);
             StoryBoardEventType type = parseSuccess ? val : StoryBoardEventType.Unknown;
+            if (!parseSuccess)
+            {
+                realStoryCommand.Add(str);
+                continue;
+            }
+            
+            string[] splitData = str.Split(',');
+            if (splitData.Length == 0)
+            {
+                continue;
+            }
+            
             switch (type)
             {
                 case StoryBoardEventType.Background:
@@ -122,9 +150,6 @@ public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
                     _beatmap.BreakTimeCollection ??= new BreakTimeCollection(new List<BreakTime>());
                     breakTimes.Add(new BreakTime(double.Parse(splitData[1]), double.Parse(splitData[2])));
                     break;
-                default:
-                    realStoryCommand.Add(str);
-                    break;
             }
         }
 
@@ -132,8 +157,8 @@ public class StoryBoardCommandLazyLoader : ILazyLoader<StoryBoardCommandBase[]>
         StoryBoardCommandParser parser = new StoryBoardCommandParser(realStoryCommand.ToArray());
         Loaded = true;
         Loading = false;
-        _cache = parser.Parse();
-        _storyBoardCommandDefinitions = null;
-        return _cache;
+        //_cache = parser.Parse();
+        //storyBoardCommandDefinitions = null;
+        return Array.Empty<StoryBoardCommandBase>();
     }
 }

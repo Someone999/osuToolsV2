@@ -2,7 +2,7 @@
 
 public class SearchTextList
 {
-    private List<string> _searchList = new List<string>();
+    private HashSet<string> _searchList = new HashSet<string>();
 
     public void AddString(string s)
     {

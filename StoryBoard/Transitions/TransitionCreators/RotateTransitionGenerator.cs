@@ -1,4 +1,5 @@
-﻿using osuToolsV2.StoryBoard.Math;
+﻿﻿using System.Collections.Generic;
+using osuToolsV2.StoryBoard.Math;
 
 namespace osuToolsV2.StoryBoard.Transitions.TransitionCreators;
 
@@ -9,7 +10,7 @@ public class RotateTransitionGenerator : ITransitionGenerator
     }
     
     
-    public List<ITransition> Create(double startTime, double endTime, string[] data)
+    public List<ITransition> Create(double startTime, double endTime, IReadOnlyList<string> data)
     {
         List<ITransition> transitions = new List<ITransition>();
         var duration = endTime - startTime;
@@ -19,14 +20,14 @@ public class RotateTransitionGenerator : ITransitionGenerator
         var realStartTime = startTime;
         var realEndTime = endTime;
         
-        if (data.Length < transitionIndex + dataLength)
+        if (data.Count < transitionIndex + dataLength)
         {
             throw new ArgumentException("Data length is insufficient for the required transitions.");
         }
         
-        for (int i = transitionIndex; i < data.Length; i++)
+        for (int i = transitionIndex; i < data.Count; i++)
         {
-            if (data.Length < i + dataLength)
+            if (data.Count < i + dataLength)
             {
                 break;
             }
